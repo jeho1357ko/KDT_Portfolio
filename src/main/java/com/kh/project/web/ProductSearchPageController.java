@@ -28,11 +28,11 @@ public class ProductSearchPageController {
     
     @GetMapping("/search")
     public String searchPage(
-            @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String status,
-            @RequestParam(required = false) String price,
-            @RequestParam(required = false) String sort,
-            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(value = "keyword", required = false) String keyword,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "price", required = false) String price,
+            @RequestParam(value = "sort", required = false) String sort,
+            @RequestParam(value = "page", defaultValue = "1") int page,
             Model model,
             HttpServletRequest request) {
         

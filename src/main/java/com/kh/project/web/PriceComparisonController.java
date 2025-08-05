@@ -90,7 +90,7 @@ public class PriceComparisonController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getPriceTrend(
             @PathVariable String productName,
-            @RequestParam(defaultValue = "6") int months) {
+            @RequestParam(value = "months", defaultValue = "6") int months) {
         try {
             Map<String, Object> result = priceComparisonService.getPriceTrend(productName, months);
             return ResponseEntity.ok(result);
@@ -103,7 +103,7 @@ public class PriceComparisonController {
     // 데이터 동기화 (관리자용)
     @PostMapping("/api/sync")
     @ResponseBody
-    public ResponseEntity<String> syncPublicData(@RequestParam String date) {
+    public ResponseEntity<String> syncPublicData(@RequestParam(value = "date") String date) {
         try {
             priceComparisonService.syncPublicData(date);
             return ResponseEntity.ok("데이터 동기화 완료");
@@ -151,9 +151,9 @@ public class PriceComparisonController {
     @GetMapping("/api/search")
     @ResponseBody
     public ResponseEntity<List<ProductPrice>> searchProducts(
-            @RequestParam(required = false) String productName,
-            @RequestParam(required = false) String grade,
-            @RequestParam(required = false) String category) {
+            @RequestParam(value = "productName", required = false) String productName,
+            @RequestParam(value = "grade", required = false) String grade,
+            @RequestParam(value = "category", required = false) String category) {
         try {
             List<ProductPrice> prices = priceComparisonService.searchProducts(productName, grade, category);
             return ResponseEntity.ok(prices);
@@ -182,7 +182,7 @@ public class PriceComparisonController {
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getProductDetailPrices(
             @PathVariable String productName,
-            @RequestParam(required = false) Double currentPrice) {
+            @RequestParam(value = "currentPrice", required = false) Double currentPrice) {
         try {
             Map<String, Object> result = priceComparisonService.getProductDetailPrices(productName, currentPrice);
             return ResponseEntity.ok(result);
@@ -208,7 +208,7 @@ public class PriceComparisonController {
     // 매칭 가능한 상품명 검색 API
     @GetMapping("/api/products/matching")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> searchMatchingProducts(@RequestParam String name) {
+    public ResponseEntity<Map<String, Object>> searchMatchingProducts(@RequestParam(value = "name") String name) {
         try {
             log.info("매칭 상품명 검색: {}", name);
             
