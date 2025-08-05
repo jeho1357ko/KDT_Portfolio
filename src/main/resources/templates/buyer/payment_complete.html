@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>주문 완료</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/buyer/payment_complete.css}">
+</head>
+<body>
+    <!-- 네비게이션 바 -->
+    <header class="navbar-container">
+        <div class="navbar">
+            <a th:href="@{/home}" class="logo-container" aria-label="홈으로 이동">
+                <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+                <span class="brand-name">planT</span>
+            </a>
+            <div class="navbar-buttons">
+                <th:block th:if="${session.loginBuyer != null}">
+                    <a th:href="@{/buyer/info}" class="user-name" th:text="${session.loginBuyer.nickname}" aria-label="내 정보"></a>
+                    <a th:href="@{/buyer/cart/{bid}(bid=${session.loginBuyer.buyerId})}" class="btn-outline">장바구니</a>
+                </th:block>
+                <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
+                    <button type="submit" class="btn-filled">로그아웃</button>
+                </form>
+            </div>
+        </div>
+    </header>
+
+    <!-- 주문 완료 메인 컨텐츠 -->
+    <main class="completion-container">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="주문 완료 아이콘" aria-hidden="true">
+        <h1>주문이 완료되었습니다!</h1>
+        <p>고객님의 주문이 성공적으로 처리되었습니다.<br>주문 내역은 '주문 내역 보기'에서 확인하실 수 있습니다.</p>
+        
+        <!-- 성공 메시지 -->
+        <div class="success-message" role="alert">
+            <span>✅ 주문이 정상적으로 완료되었습니다. 감사합니다!</span>
+        </div>
+        
+        <!-- 주문 상품 요약 -->
+        <section class="order-summary">
+            <h2>주문 상품 정보</h2>
+            <div id="completedOrderList" aria-label="주문 완료 상품 목록">
+                <!-- JavaScript로 동적 렌더링 -->
+            </div>
+        </section>
+
+        <!-- 액션 버튼 그룹 -->
+        <div class="button-group">
+            <a href="/home" class="btn-home" aria-label="홈으로 이동">홈으로 가기</a>
+            <a href="/buyer/orders" class="btn-history" aria-label="주문 내역 보기">주문 내역 보기</a>
+        </div>
+    </main>
+
+    <script th:src="@{/js/buyer/payment_complete.js}"></script>
+</body>
+</html> 

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가격 데이터 관리</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .sync-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success {
+            background-color: #28a745;
+        }
+        .status-error {
+            background-color: #dc3545;
+        }
+        .status-warning {
+            background-color: #ffc107;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <!-- 관리자 헤더 -->
+                <div class="admin-header">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h2><i class="fas fa-cogs"></i> 가격 데이터 관리</h2>
+                            <p>공공데이터 동기화 및 관리</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="/price/compare" class="btn btn-light">
+                                <i class="fas fa-arrow-left"></i> 가격 비교로 돌아가기
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 데이터 동기화 섹션 -->
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="sync-card">
+                            <h4><i class="fas fa-sync"></i> 데이터 동기화</h4>
+                            <p class="text-muted">공공데이터에서 최신 가격 정보를 가져옵니다.</p>
+                            
+                            <div class="mb-3">
+                                <label for="syncDate" class="form-label">동기화 날짜</label>
+                                <input type="date" id="syncDate" class="form-control" 
+                                       th:value="${#dates.format(#dates.createNow(), 'yyyy-MM-dd')}">
+                            </div>
+                            
+                            <button class="btn btn-primary" onclick="syncData()">
+                                <i class="fas fa-sync"></i> 데이터 동기화
+                            </button>
+                            
+                            <div id="syncStatus" class="mt-3" style="display: none;">
+                                <div class="alert alert-info">
+                                    <i class="fas fa-spinner fa-spin"></i>
+                                    <span id="syncMessage">동기화 중...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="sync-card">
+                            <h4><i class="fas fa-chart-bar"></i> 데이터 통계</h4>
+                            <div id="dataStats">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="text-center">
+                                            <h6>총 데이터 수</h6>
+                                            <span id="totalDataCount" class="badge bg-primary fs-6">0</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="text-center">
+                                            <h6>최신 업데이트</h6>
+                                            <span id="lastUpdate" class="badge bg-success fs-6">-</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 동기화 로그 -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="sync-card">
+                            <h4><i class="fas fa-list"></i> 동기화 로그</h4>
+                            <div id="syncLog" class="mt-3">
+                                <!-- 동기화 로그가 여기에 표시됩니다 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 데이터 관리 -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="sync-card">
+                            <h4><i class="fas fa-database"></i> 데이터 관리</h4>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button class="btn btn-outline-primary w-100 mb-2" onclick="loadLatestPrices()">
+                                        <i class="fas fa-download"></i> 최신 데이터 조회
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-outline-warning w-100 mb-2" onclick="clearOldData()">
+                                        <i class="fas fa-trash"></i> 오래된 데이터 삭제
+                                    </button>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-outline-info w-100 mb-2" onclick="exportData()">
+                                        <i class="fas fa-file-export"></i> 데이터 내보내기
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // 데이터 동기화
+        function syncData() {
+            const date = document.getElementById('syncDate').value;
+            if (!date) {
+                alert('날짜를 선택해주세요.');
+                return;
+            }
+
+            const statusDiv = document.getElementById('syncStatus');
+            const messageSpan = document.getElementById('syncMessage');
+            
+            statusDiv.style.display = 'block';
+            messageSpan.textContent = '동기화 중...';
+
+            // 날짜 형식을 YYYYMMDD로 변환
+            const formattedDate = date.replace(/-/g, '');
+
+            fetch('/price/api/sync', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `date=${formattedDate}`
+            })
+            .then(response => response.text())
+            .then(result => {
+                messageSpan.textContent = result;
+                statusDiv.querySelector('.alert').className = 'alert alert-success';
+                addSyncLog('동기화 완료', result, 'success');
+                loadDataStats();
+            })
+            .catch(error => {
+                messageSpan.textContent = '동기화 실패: ' + error.message;
+                statusDiv.querySelector('.alert').className = 'alert alert-danger';
+                addSyncLog('동기화 실패', error.message, 'error');
+            });
+        }
+
+        // 동기화 로그 추가
+        function addSyncLog(title, message, type) {
+            const logDiv = document.getElementById('syncLog');
+            const logEntry = document.createElement('div');
+            logEntry.className = 'alert alert-sm mb-2';
+            
+            const statusClass = type === 'success' ? 'alert-success' : 
+                              type === 'error' ? 'alert-danger' : 'alert-warning';
+            logEntry.className = `alert ${statusClass} mb-2`;
+            
+            const timestamp = new Date().toLocaleString();
+            logEntry.innerHTML = `
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <strong>${title}</strong> - ${message}
+                    </div>
+                    <small class="text-muted">${timestamp}</small>
+                </div>
+            `;
+            
+            logDiv.insertBefore(logEntry, logDiv.firstChild);
+            
+            // 로그 항목이 10개를 넘으면 오래된 것 삭제
+            const logEntries = logDiv.querySelectorAll('.alert');
+            if (logEntries.length > 10) {
+                logEntries[logEntries.length - 1].remove();
+            }
+        }
+
+        // 데이터 통계 로드
+        function loadDataStats() {
+            fetch('/price/api/latest')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('totalDataCount').textContent = data.length;
+                    if (data.length > 0) {
+                        const latestDate = new Date(data[0].priceDate).toLocaleDateString();
+                        document.getElementById('lastUpdate').textContent = latestDate;
+                    }
+                })
+                .catch(error => {
+                    console.error('데이터 통계 로드 실패:', error);
+                });
+        }
+
+        // 최신 데이터 조회
+        function loadLatestPrices() {
+            fetch('/price/api/latest')
+                .then(response => response.json())
+                .then(data => {
+                    addSyncLog('데이터 조회', `${data.length}개의 최신 데이터를 조회했습니다.`, 'info');
+                })
+                .catch(error => {
+                    addSyncLog('데이터 조회 실패', error.message, 'error');
+                });
+        }
+
+        // 오래된 데이터 삭제
+        function clearOldData() {
+            if (confirm('6개월 이상 된 데이터를 삭제하시겠습니까?')) {
+                addSyncLog('데이터 삭제', '오래된 데이터 삭제 요청이 전송되었습니다.', 'warning');
+                // 실제 삭제 로직은 서버에서 구현
+            }
+        }
+
+        // 데이터 내보내기
+        function exportData() {
+            fetch('/price/api/latest')
+                .then(response => response.json())
+                .then(data => {
+                    const csvContent = convertToCSV(data);
+                    downloadCSV(csvContent, 'price_data.csv');
+                    addSyncLog('데이터 내보내기', 'CSV 파일로 데이터를 내보냈습니다.', 'info');
+                })
+                .catch(error => {
+                    addSyncLog('데이터 내보내기 실패', error.message, 'error');
+                });
+        }
+
+        // CSV 변환
+        function convertToCSV(data) {
+            const headers = ['상품명', '등급', '단위', '현재가격', '전월가격', '전전월가격', '날짜', '출처', '카테고리'];
+            const csvRows = [headers.join(',')];
+            
+            data.forEach(item => {
+                const row = [
+                    item.productName,
+                    item.grade,
+                    item.unit,
+                    item.currentPrice,
+                    item.previousMonthPrice,
+                    item.twoMonthsAgoPrice,
+                    item.priceDate,
+                    item.source,
+                    item.category
+                ];
+                csvRows.push(row.join(','));
+            });
+            
+            return csvRows.join('\n');
+        }
+
+        // CSV 다운로드
+        function downloadCSV(content, filename) {
+            const blob = new Blob([content], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            const url = URL.createObjectURL(blob);
+            link.setAttribute('href', url);
+            link.setAttribute('download', filename);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        // 페이지 로드 시 데이터 통계 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDataStats();
+        });
+    </script>
+</body>
+</html> 

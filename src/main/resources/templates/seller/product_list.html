@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>상품 목록</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/seller/product_list.css}">
+</head>
+<body>
+  <!-- 네비게이션 바 -->
+  <header class="navbar-container">
+    <div class="navbar">
+      <a th:href="@{/home}" class="logo-container">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
+      </a>
+      <div class="navbar-buttons">
+        <a th:if="${name != null}" th:href="@{/seller/myPage/{sid}(sid=${sid})}" style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
+          <span th:text="${name}">님</span>
+        </a>
+        <a th:href="@{/seller/main/{sid}(sid=${sid})}" class="btn-outline">대시보드</a>
+        <form th:action="@{/seller/logout}" method="post" style="display:inline;">
+          <button type="submit" class="btn-filled">로그아웃</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <h2>상품 목록</h2>
+
+    <div class="list-container">
+      <form id="productActionForm" th:action="@{/seller/products/delete}" method="post">
+        <input type="hidden" name="sid" th:value="${sid}" />
+        
+        <div class="list-header">
+          <div class="header-buttons">
+            <a th:href="@{/seller/add/{sid}(sid=${sid})}" class="action-btn add-btn">상품 등록</a>
+            <select id="bulkStatusSelect" class="bulk-status-select" disabled>
+              <option value="">상태 변경</option>
+              <option value="판매중">판매중</option>
+              <option value="재고소진">재고소진</option>
+              <option value="비활성화">비활성화</option>
+            </select>
+          </div>
+        </div>
+
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th class="checkbox-column">
+                <input type="checkbox" id="selectAll" />
+              </th>
+              <th class="number-column">번호</th>
+              <th class="title-column">게시글 제목</th>
+              <th class="price-column">가격</th>
+              <th class="stock-column">재고</th>
+              <th class="status-column">판매 상태</th>
+              <th class="date-column">등록일</th>
+              <th class="action-column">관리</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:if="${products == null || products.isEmpty()}">
+              <td colspan="8" class="empty-message">등록된 상품이 없습니다.</td>
+            </tr>
+            <tr th:each="product, stat : ${products}">
+              <td class="checkbox-column">
+                <input type="checkbox" name="productIds" th:value="${product.productId}" />
+              </td>
+              <td class="number-column" th:text="${stat.count}">1</td>
+              <td class="title title-column">
+                <a th:href="@{/seller/product/{id}(id=${product.productId})}" th:text="${product.title}">게시글 제목</a>
+              </td>
+              <td class="price-column">
+                <span th:text="${product.price}"></span>원
+              </td>
+              <td class="stock-column">
+                <span th:text="${product.quantity}"></span>개
+              </td>
+              <td class="status-column">
+                <select class="status-select" th:attr="data-product-id=${product.productId}" onchange="updateProductStatus(this)">
+                  <option value="판매중" th:selected="${product.status == '판매중'}">판매중</option>
+                  <option value="비활성화" th:selected="${product.status == '비활성화'}">비활성화</option>
+                  <option value="재고소진" th:selected="${product.status == '재고소진'}">재고소진</option>
+                </select>
+              </td>
+              <td class="date-column" th:text="${product.cdate}">2024/05/21</td>
+              <td class="action-column">
+                <a th:href="@{/seller/product/{id}/edit(id=${product.productId})}" class="edit-btn">수정</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </form>
+    </div>
+  </div>
+
+  <script th:src="@{/js/seller/product_list.js}"></script>
+</body>
+</html>

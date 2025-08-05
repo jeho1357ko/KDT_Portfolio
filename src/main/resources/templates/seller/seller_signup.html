@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>판매자 회원가입</title>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/seller/signup.css}">
+</head>
+<body>
+  <!-- 네비게이션 바 -->
+  <header class="navbar-container">
+    <div class="navbar">
+      <a th:href="@{/home}" class="logo-container">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
+      </a>
+      <div class="navbar-buttons">
+        <a th:href="@{/common/select_login}" class="btn-outline">로그인</a>
+        <a th:href="@{/common/select_signup}" class="btn-filled">회원가입</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 회원가입 폼 -->
+  <div class="signup-container">
+    <!-- 서버 에러 메시지 표시 -->
+    <div th:if="${error}" class="server-error" th:text="${error}"></div>
+    
+    <form th:action="@{/seller/signup}" method="post" th:object="${sellerSignupForm}" id="signupForm">
+      <h2>판매자 회원가입</h2>
+
+      <!-- 이메일 -->
+      <div class="form-row">
+        <label for="email">이메일</label>
+        <div class="input-col">
+          <input type="email" id="email" th:field="*{email}" placeholder="이메일 입력" required />
+          <div id="error-email" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 비밀번호 -->
+      <div class="form-row">
+        <label for="password">비밀번호</label>
+        <div class="input-col">
+          <input type="password" id="password" th:field="*{password}" placeholder="비밀번호 입력" required />
+          <div id="error-password" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 상호명 -->
+      <div class="form-row">
+        <label for="shopName">상호명</label>
+        <div class="input-col">
+          <input type="text" id="shopName" th:field="*{shopName}" placeholder="상호명 입력" required />
+          <div id="error-shopName" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 사업자등록번호 -->
+      <div class="form-row">
+        <label for="bizRegNo">사업자등록번호</label>
+        <div class="input-col">
+          <input type="text" id="bizRegNo" th:field="*{bizRegNo}" maxlength="12" placeholder="000-00-00000" required />
+          <div id="error-bizRegNo" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 대표자 이름 -->
+      <div class="form-row">
+        <label for="name">대표자 이름</label>
+        <div class="input-col">
+          <input type="text" id="name" th:field="*{name}" placeholder="대표자 이름 입력" required />
+          <div id="error-name" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 전화번호 -->
+      <div class="form-row">
+        <label for="tel">전화번호</label>
+        <div class="input-col">
+          <input type="text" id="tel" th:field="*{tel}" maxlength="13" placeholder="010-0000-0000" required />
+          <div id="error-tel" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 가게 주소 -->
+      <div class="form-row">
+        <label for="postNumber">가게 주소</label>
+        <div class="input-col">
+          <div class="postcode-group">
+            <input type="text" id="postNumber" th:field="*{postNumber}" placeholder="우편번호" readonly required>
+            <button type="button" id="searchPostNumberBtn">주소 검색</button>
+          </div>
+          <input type="text" id="shopAddress" th:field="*{shopAddress}" placeholder="주소" readonly required>
+          <input type="text" id="detailAddress" name="detailAddress" placeholder="상세주소를 입력해주세요." required>
+          <div id="error-address" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <button type="submit" class="signup-btn">회원가입</button>
+    </form>
+  </div>
+
+  <script th:src="@{/js/seller/signup.js}"></script>
+</body>
+</html>

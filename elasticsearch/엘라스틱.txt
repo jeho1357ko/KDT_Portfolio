@@ -1,0 +1,398 @@
+get /
+
+put /product
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "my_custom_analyzer" : {
+          "type" : "custom",
+          "tokenizer" : "nori_tokenizer",
+          "filter" :  [
+            "lowercase",
+            "nori_readingform",
+            "nori_part_of_speech"
+    ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "productId":     { "type": "long" },                  
+      "sellerId":      { "type": "long" },                 
+      "title":         { "type": "text", "analyzer": "my_custom_analyzer" },
+      "productName":   { "type": "text", "analyzer": "my_custom_analyzer" }, 
+      "price":         { "type": "long" },                   
+      "deliveryMethod":{ "type": "keyword" },               
+      "countryOfOrigin":        { "type": "keyword" },              
+      "status":        { "type": "keyword" },               
+      "cdate":     { "type": "date" }   
+    }
+  }
+}
+
+
+DELETE /product
+
+get /product
+
+get /product/_search
+
+PUT /product/_doc/1
+{"productId": 1,"sellerId": 1,"productName": "상추","title": "유기농 상추 200g","price": 4000,"deliveryMethod": "CJ대한통운","countryOfOrigin": "대한민국 강원도","status": "판매중","cdate": "2022-03-12"}
+
+PUT /product/_doc/2
+{
+  "productId": 2,
+  "sellerId": 1,
+  "productName": "깻잎",
+  "title": "향긋한 깻잎 한 묶음",
+  "price": 3500,
+  "deliveryMethod": "한진택배",
+  "countryOfOrigin": "대한민국 전라북도",
+  "status": "판매중",
+  "cdate": "2022-04-10"
+}
+
+PUT /product/_doc/3
+{
+  "productId": 3,
+  "sellerId": 2,
+  "productName": "무",
+  "title": "아삭아삭한 무 1개",
+  "price": 2500,
+  "deliveryMethod": "우체국택배",
+  "countryOfOrigin": "대한민국 충청남도",
+  "status": "판매중",
+  "cdate": "2022-05-01"
+}
+
+PUT /product/_doc/4
+{
+  "productId": 4,
+  "sellerId": 2,
+  "productName": "배추",
+  "title": "절임용 배추 3포기",
+  "price": 8000,
+  "deliveryMethod": "CJ대한통운",
+  "countryOfOrigin": "대한민국 강원도",
+  "status": "재고소진",
+  "cdate": "2022-06-18"
+}
+
+PUT /product/_doc/5
+{
+  "productId": 5,
+  "sellerId": 3,
+  "productName": "당근",
+  "title": "달콤한 당근 1kg",
+  "price": 3000,
+  "deliveryMethod": "로젠택배",
+  "countryOfOrigin": "대한민국 경상북도",
+  "status": "판매중",
+  "cdate": "2022-07-03"
+}
+
+PUT /product/_doc/6
+{
+  "productId": 6,
+  "sellerId": 3,
+  "productName": "오이",
+  "title": "아삭한 오이 3개입",
+  "price": 2700,
+  "deliveryMethod": "한진택배",
+  "countryOfOrigin": "대한민국 전라남도",
+  "status": "비활성화",
+  "cdate": "2022-08-09"
+}
+
+PUT /product/_doc/7
+{
+  "productId": 7,
+  "sellerId": 4,
+  "productName": "감자",
+  "title": "수미감자 2kg",
+  "price": 5000,
+  "deliveryMethod": "CJ대한통운",
+  "countryOfOrigin": "대한민국 강원도",
+  "status": "판매중",
+  "cdate": "2022-09-11"
+}
+
+PUT /product/_doc/8
+{
+  "productId": 8,
+  "sellerId": 4,
+  "productName": "양파",
+  "title": "양파 1망 (3kg)",
+  "price": 6200,
+  "deliveryMethod": "로젠택배",
+  "countryOfOrigin": "대한민국 경상남도",
+  "status": "재고소진",
+  "cdate": "2022-10-15"
+}
+
+PUT /product/_doc/9
+{
+  "productId": 9,
+  "sellerId": 5,
+  "productName": "애호박",
+  "title": "애호박 2개입",
+  "price": 4000,
+  "deliveryMethod": "한진택배",
+  "countryOfOrigin": "대한민국 충청북도",
+  "status": "판매중",
+  "cdate": "2022-11-02"
+}
+
+PUT /product/_doc/10
+{
+  "productId": 10,
+  "sellerId": 5,
+  "productName": "고구마",
+  "title": "호박고구마 2kg",
+  "price": 9500,
+  "deliveryMethod": "우체국택배",
+  "countryOfOrigin": "대한민국 전라남도",
+  "status": "판매중",
+  "cdate": "2022-11-18"
+}
+
+PUT /product/_doc/11
+{
+  "productId": 11,
+  "sellerId": 1,
+  "productName": "청경채",
+  "title": "청경채 한 묶음",
+  "price": 3200,
+  "deliveryMethod": "CJ대한통운",
+  "countryOfOrigin": "대한민국 제주도",
+  "status": "판매중",
+  "cdate": "2022-12-01"
+}
+
+PUT /product/_doc/12
+{
+  "productId": 12,
+  "sellerId": 6,
+  "productName": "브로콜리",
+  "title": "유기농 브로콜리 1송이",
+  "price": 4200,
+  "deliveryMethod": "한진택배",
+  "countryOfOrigin": "대한민국 충청남도",
+  "status": "비활성화",
+  "cdate": "2023-01-12"
+}
+
+PUT /product/_doc/13
+{
+  "productId": 13,
+  "sellerId": 6,
+  "productName": "파프리카",
+  "title": "알록달록 파프리카 3개입",
+  "price": 6000,
+  "deliveryMethod": "우체국택배",
+  "countryOfOrigin": "대한민국 경기도",
+  "status": "판매중",
+  "cdate": "2023-02-10"
+}
+
+PUT /product/_doc/14
+{
+  "productId": 14,
+  "sellerId": 3,
+  "productName": "상추",
+  "title": "상큼한 상추 300g",
+  "price": 4100,
+  "deliveryMethod": "로젠택배",
+  "countryOfOrigin": "대한민국 강원도",
+  "status": "판매중",
+  "cdate": "2023-03-03"
+}
+
+PUT /product/_doc/15
+{
+  "productId": 15,
+  "sellerId": 2,
+  "productName": "방울토마토",
+  "title": "방울토마토 500g",
+  "price": 5200,
+  "deliveryMethod": "CJ대한통운",
+  "countryOfOrigin": "대한민국 경상북도",
+  "status": "판매중",
+  "cdate": "2023-04-05"
+}
+
+PUT /product/_doc/16
+{
+  "productId": 16,
+  "sellerId": 2,
+  "productName": "고추",
+  "title": "청양고추 한 줌",
+  "price": 3800,
+  "deliveryMethod": "로젠택배",
+  "countryOfOrigin": "대한민국 전라북도",
+  "status": "재고소진",
+  "cdate": "2023-04-20"
+}
+
+PUT /product/_doc/17
+{
+  "productId": 17,
+  "sellerId": 5,
+  "productName": "콩나물",
+  "title": "신선한 콩나물 500g",
+  "price": 2200,
+  "deliveryMethod": "한진택배",
+  "countryOfOrigin": "대한민국 대구",
+  "status": "판매중",
+  "cdate": "2023-05-03"
+}
+
+PUT /product/_doc/18
+{
+  "productId": 18,
+  "sellerId": 4,
+  "productName": "시금치",
+  "title": "영양 가득 시금치 300g",
+  "price": 3600,
+  "deliveryMethod": "CJ대한통운",
+  "countryOfOrigin": "대한민국 울산",
+  "status": "판매중",
+  "cdate": "2023-06-01"
+}
+
+PUT /product/_doc/19
+{
+  "productId": 19,
+  "sellerId": 1,
+  "productName": "부추",
+  "title": "향긋한 부추 한 묶음",
+  "price": 3000,
+  "deliveryMethod": "우체국택배",
+  "countryOfOrigin": "대한민국 경기도",
+  "status": "판매중",
+  "cdate": "2023-06-10"
+}
+
+PUT /product/_doc/20
+{
+  "productId": 20,
+  "sellerId": 6,
+  "productName": "양배추",
+  "title": "신선한 양배추 1통",
+  "price": 4900,
+  "deliveryMethod": "로젠택배",
+  "countryOfOrigin": "대한민국 세종",
+  "status": "비활성화",
+  "cdate": "2023-06-15"
+}
+
+
+get /product/_search
+
+
+
+
+//일반 검색용 DSL 
+
+get /product/_search
+{
+  "from": 0,
+  "size": 10,
+  "sort" : [
+    { "_score": "desc" },               
+    { "cdate": "desc" }
+  ],
+  "highlight": {
+    "pre_tags": ["<span style='color:red'>"],
+    "post_tags": ["</span>"],
+    "fields" : {
+      "title": {}
+    }
+  },
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "title": "상추"
+          }
+        }
+      ],
+    "filter": [
+      {
+        "range": {
+          "price": {
+            "gte": 3000,
+            "lte": 6000
+          }
+        }
+      },
+      {
+        "term": {
+          "status": "판매중"
+         }
+        }
+     ]
+    }
+  }
+}
+
+
+POST /product/_analyze
+{
+  "analyzer": "my_custom_analyzer",
+  "text": "유기농 상추 200g"
+}
+
+GET _cat/indices?v
+
+GET /product/_search
+{
+  "size": 10,
+  "_source": ["status"],
+  "query": {
+    "match_all": {}
+  }
+}
+
+get /product
+{
+"cdate": {
+  "type": "date",
+  "format": "strict_date_optional_time||epoch_millis"
+}}
+
+POST /product/_analyze
+{
+  "analyzer": "my_custom_analyzer",
+  "text": "상추"
+}
+
+GET product/_search
+{
+  "query": {
+    "bool": {
+      "must_not": {
+        "exists": {
+          "field": "title"
+        }
+      }
+    }
+  },
+  "size": 5
+}
+
+GET product/_search
+{
+  "query": {
+    "script": {
+      "script": {
+        "source": "doc['title.keyword'].size() == 0 || !(doc['title.keyword'].value instanceof String)",
+        "lang": "painless"
+      }
+    }
+  }
+}

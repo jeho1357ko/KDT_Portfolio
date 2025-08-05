@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>구매자 정보 수정</title>
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link th:href="@{/css/buyer/edit.css}" rel="stylesheet">
+</head>
+<body>
+  <!-- 네비게이션 바 -->
+  <header class="navbar-container">
+    <div class="navbar">
+      <a th:href="@{/home}" class="logo-container" aria-label="홈으로 이동">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
+      </a>
+      <div class="navbar-buttons">
+        <a th:href="@{/buyer/info}" class="btn-outline" aria-label="내 정보">내 정보</a>
+        <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
+          <button type="submit" class="btn-filled">로그아웃</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="edit-container">
+    <h1>구매자 정보 수정</h1>
+    
+    <form th:action="@{/buyer/edit}" method="post" th:object="${buyerEditForm}" class="edit-form" novalidate>
+      <!-- 전역 오류 메시지 표시 -->
+      <div th:if="${#fields.hasGlobalErrors()}" class="global-error" role="alert" aria-live="polite">
+        <div th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div>
+      </div>
+
+      <!-- 이메일 필드 -->
+      <div class="form-row">
+        <label for="email">이메일 (수정 불가)</label>
+        <input type="email" 
+               id="email" 
+               th:field="*{email}" 
+               readonly 
+               aria-describedby="email-description">
+        <div id="email-description" class="sr-only">이메일은 수정할 수 없습니다.</div>
+      </div>
+
+      <!-- 이름 필드 -->
+      <div class="form-row">
+        <label for="name">이름 (수정 불가)</label>
+        <input type="text" 
+               id="name" 
+               th:field="*{name}" 
+               readonly 
+               aria-describedby="name-description">
+        <div id="name-description" class="sr-only">이름은 수정할 수 없습니다.</div>
+      </div>
+
+      <!-- 닉네임 필드 -->
+      <div class="form-row">
+        <label for="nickname">닉네임</label>
+        <input type="text" 
+               id="nickname" 
+               th:field="*{nickname}" 
+               required 
+               aria-describedby="nickname-error"
+               placeholder="닉네임을 입력하세요">
+        <div th:if="${#fields.hasErrors('nickname')}" 
+             th:errors="*{nickname}" 
+             id="nickname-error"
+             class="error-message" 
+             role="alert" 
+             aria-live="polite"></div>
+      </div>
+
+      <!-- 연락처 필드 -->
+      <div class="form-row">
+        <label for="tel">연락처</label>
+        <input type="tel" 
+               id="tel" 
+               th:field="*{tel}" 
+               maxlength="13" 
+               placeholder="010-0000-0000" 
+               required 
+               aria-describedby="tel-error tel-help"
+               pattern="[0-9]{3}-[0-9]{4}-[0-9]{4}">
+        <div id="tel-help" class="sr-only">연락처는 010-0000-0000 형식으로 입력해주세요.</div>
+        <div th:if="${#fields.hasErrors('tel')}" 
+             th:errors="*{tel}" 
+             id="tel-error"
+             class="error-message" 
+             role="alert" 
+             aria-live="polite"></div>
+      </div>
+
+      <!-- 성별 필드 -->
+      <div class="form-row">
+        <label for="gender">성별</label>
+        <select id="gender" 
+                th:field="*{gender}" 
+                aria-describedby="gender-error">
+          <option value="">선택해주세요</option>
+          <option value="남성">남성</option>
+          <option value="여성">여성</option>
+        </select>
+        <div th:if="${#fields.hasErrors('gender')}" 
+             th:errors="*{gender}" 
+             id="gender-error"
+             class="error-message" 
+             role="alert" 
+             aria-live="polite"></div>
+      </div>
+
+      <!-- 생년월일 필드 -->
+      <div class="form-row">
+        <label for="birth">생년월일</label>
+        <input type="date" 
+               id="birth" 
+               name="birth"
+               th:field="*{birth}"
+               aria-describedby="birth-error">
+        <div th:if="${#fields.hasErrors('birth')}" 
+             th:errors="*{birth}" 
+             id="birth-error"
+             class="error-message" 
+             role="alert" 
+             aria-live="polite"></div>
+      </div>
+
+      <!-- 주소 필드 -->
+      <div class="form-row">
+        <label for="postNumber">주소</label>
+        <div class="input-col">
+          <div class="postcode-group">
+            <input type="text" 
+                   id="postNumber" 
+                   name="postNumber" 
+                   th:field="*{postNumber}" 
+                   placeholder="우편번호" 
+                   readonly 
+                   aria-describedby="postcode-help">
+            <button type="button" 
+                    id="searchPostcodeBtn" 
+                    onclick="addressManager.openAddressPopup()" 
+                    aria-label="주소 검색">
+              주소 검색
+            </button>
+          </div>
+          <div id="postcode-help" class="sr-only">주소 검색 버튼을 클릭하여 우편번호를 찾으세요.</div>
+          <div th:if="${#fields.hasErrors('postNumber')}" 
+               th:errors="*{postNumber}" 
+               class="error-message" 
+               role="alert" 
+               aria-live="polite"></div>
+
+          <input type="text" 
+                 id="address" 
+                 placeholder="주소" 
+                 readonly 
+                 aria-describedby="address-help">
+          <div id="address-help" class="sr-only">주소 검색을 통해 자동으로 입력됩니다.</div>
+          
+          <input type="text" 
+                 id="detailAddress" 
+                 placeholder="상세주소" 
+                 aria-describedby="detail-address-help">
+          <div id="detail-address-help" class="sr-only">상세주소를 입력해주세요.</div>
+
+          <div th:if="${#fields.hasErrors('address')}" 
+               th:errors="*{address}" 
+               class="error-message" 
+               role="alert" 
+               aria-live="polite"></div>
+
+          <!-- 서버로 보낼 최종 주소값 (숨겨진 필드) -->
+          <input type="hidden" 
+                 id="fullAddress" 
+                 name="address" 
+                 th:field="*{address}">
+        </div>
+      </div>
+
+      <!-- 폼 액션 버튼 -->
+      <div class="form-actions" role="group" aria-label="폼 액션">
+        <button type="button" 
+                class="cancel-btn" 
+                onclick="location.href='/buyer/info'"
+                aria-label="취소하고 내 정보 페이지로 이동">
+          취소
+        </button>
+        <button type="submit" 
+                class="save-btn" 
+                aria-label="정보 저장">
+          저장
+        </button>
+      </div>
+    </form>
+  </main>
+
+  <script th:src="@{/js/buyer/edit.js}"></script>
+</body>
+</html>

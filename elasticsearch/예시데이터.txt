@@ -1,0 +1,927 @@
+-- 판매자
+
+
+INSERT INTO seller (email, password, biz_reg_no, shop_name, name,shop_address, tel, pic,post_number, status
+)
+VALUES ('test1@naver.com', 'qazwsx1466!!', '123-45-67890', '제주농산', '김철수',
+        '제주도 제주시 애월읍 123', '064-123-4567', NULL, 54321, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test2@naver.com', 'qazwsx1466!!', '234-56-78901', '청정해물', '이영희',
+        '부산광역시 해운대구 해운대로 456', '051-987-6543', NULL, 12345, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test3@naver.com', 'qazwsx1466!!', '345-67-89012', '강원산골직송', '박지훈',
+        '강원도 평창군 대관령면 789', '033-222-3333', NULL, 67890, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test4@naver.com', 'qazwsx1466!!', '456-78-90123', '완도수산물마켓', '최미정',
+        '전라남도 완도군 해변로 77', '061-888-9999', NULL, 98765, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test5@naver.com', 'qazwsx1466!!', '567-89-01234', '해풍맞은쌈채소', '정우성',
+        '충청북도 청주시 흥덕구 산단로 88', '043-333-4444', NULL, 11223, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test6@naver.com', 'qazwsx1466!!', '678-90-12345', '강화섬직송마켓', '김민아',
+        '인천광역시 강화군 선원면 55', '032-444-5555', NULL, 33445, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test7@naver.com', 'qazwsx1466!!', '789-01-23456', '한라봉직판장', '송하준',
+        '제주특별자치도 서귀포시 남원읍 101', '064-567-8910', NULL, 55667, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test8@naver.com', 'qazwsx1466!!', '890-12-34567', '우리쌀농장', '조현서',
+        '경기도 여주시 세종로 11', '031-999-0000', NULL, 77889, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test9@naver.com', 'qazwsx1466!!', '901-23-45678', '남도김치마켓', '이정후',
+        '전라남도 순천시 향매로 22', '061-100-2000', NULL, 88990, '활성화');
+
+INSERT INTO seller (
+  email, password, biz_reg_no, shop_name, name,
+  shop_address, tel, pic, post_number, status
+)
+VALUES ('test10@naver.com', 'qazwsx1466!!', '012-34-56789', '고랭지채소직송', '배수진',
+        '강원도 정선군 정암로 9', '033-123-7890', NULL, 99001, '활성화');
+
+
+
+-- 판매글 
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  6,
+  '고랭지 배추',
+  '건강한 밥상의 고랭지 배추',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 제주',
+  '고랭지 배추은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  989,
+  'https://cdn.pixabay.com/photo/2017/09/26/13/40/cabbage-2785913_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  6,
+  '제주 감귤',
+  '직접 재배한 제주 감귤',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 경북',
+  '제주 감귤은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  774,
+  'https://cdn.pixabay.com/photo/2016/11/21/15/53/mandarins-1841137_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  2,
+  '강화 속노랑 고구마',
+  '건강한 밥상의 강화 속노랑 고구마',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 충남',
+  '강화 속노랑 고구마은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  182,
+  'https://cdn.pixabay.com/photo/2019/11/04/14/34/sweet-potatoes-4599912_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '완도 건미역',
+  '바로 수확한 완도 건미역',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 제주',
+  '완도 건미역은/는 정성껏 키운 신선한 농산물입니다.',
+  8000,
+  640,
+  'https://cdn.pixabay.com/photo/2018/04/14/18/09/seaweed-3318966_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  9,
+  '남해 멸치',
+  '신선하고 맛있는 남해 멸치',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 경북',
+  '남해 멸치은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  508,
+  'https://cdn.pixabay.com/photo/2020/09/29/13/13/fish-5612133_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '해남 쌀',
+  '건강한 밥상의 해남 쌀',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 전남',
+  '해남 쌀은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  887,
+  'https://cdn.pixabay.com/photo/2020/03/01/10/30/rice-4892235_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '횡성 한우 1등급',
+  '신선하고 맛있는 횡성 한우 1등급',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 강원도',
+  '횡성 한우 1등급은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  184,
+  'https://cdn.pixabay.com/photo/2020/11/17/20/38/beef-5751432_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  4,
+  '정선 곤드레',
+  '직접 재배한 정선 곤드레',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 경북',
+  '정선 곤드레은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  705,
+  'https://cdn.pixabay.com/photo/2023/03/18/03/40/gondre-7859776_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  5,
+  '무농약 깻잎',
+  '직접 재배한 무농약 깻잎',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '쿠팡로켓',
+  '대한민국 강원도',
+  '무농약 깻잎은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  717,
+  'https://cdn.pixabay.com/photo/2022/05/30/08/50/perilla-plant-7231730_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  6,
+  '유기농 상추',
+  '바로 수확한 유기농 상추',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 경북',
+  '유기농 상추은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  742,
+  'https://cdn.pixabay.com/photo/2015/09/14/19/53/nature-940032_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  7,
+  '고랭지 배추',
+  '자연 그대로의 고랭지 배추',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 전남',
+  '고랭지 배추은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  742,
+  'https://cdn.pixabay.com/photo/2017/09/26/13/40/cabbage-2785913_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  9,
+  '제주 감귤',
+  '자연 그대로의 제주 감귤',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 강원도',
+  '제주 감귤은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  109,
+  'https://cdn.pixabay.com/photo/2016/11/21/15/53/mandarins-1841137_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '강화 속노랑 고구마',
+  '바로 수확한 강화 속노랑 고구마',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '쿠팡로켓',
+  '대한민국 제주',
+  '강화 속노랑 고구마은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  141,
+  'https://cdn.pixabay.com/photo/2019/11/04/14/34/sweet-potatoes-4599912_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  4,
+  '완도 건미역',
+  '직접 재배한 완도 건미역',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 전남',
+  '완도 건미역은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  657,
+  'https://cdn.pixabay.com/photo/2018/04/14/18/09/seaweed-3318966_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  1,
+  '남해 멸치',
+  '건강한 밥상의 남해 멸치',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 강원도',
+  '남해 멸치은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  943,
+  'https://cdn.pixabay.com/photo/2020/09/29/13/13/fish-5612133_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  7,
+  '해남 쌀',
+  '자연 그대로의 해남 쌀',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 전남',
+  '해남 쌀은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  95,
+  'https://cdn.pixabay.com/photo/2020/03/01/10/30/rice-4892235_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  8,
+  '횡성 한우 1등급',
+  '직접 재배한 횡성 한우 1등급',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '쿠팡로켓',
+  '대한민국 경북',
+  '횡성 한우 1등급은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  792,
+  'https://cdn.pixabay.com/photo/2020/11/17/20/38/beef-5751432_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  9,
+  '정선 곤드레',
+  '직접 재배한 정선 곤드레',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 전남',
+  '정선 곤드레은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  679,
+  'https://cdn.pixabay.com/photo/2023/03/18/03/40/gondre-7859776_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  2,
+  '무농약 깻잎',
+  '자연 그대로의 무농약 깻잎',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 제주',
+  '무농약 깻잎은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  598,
+  'https://cdn.pixabay.com/photo/2022/05/30/08/50/perilla-plant-7231730_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '유기농 상추',
+  '직접 재배한 유기농 상추',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 충남',
+  '유기농 상추은/는 정성껏 키운 신선한 농산물입니다.',
+  8000,
+  249,
+  'https://cdn.pixabay.com/photo/2015/09/14/19/53/nature-940032_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  6,
+  '고랭지 배추',
+  '바로 수확한 고랭지 배추',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '쿠팡로켓',
+  '대한민국 경북',
+  '고랭지 배추은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  831,
+  'https://cdn.pixabay.com/photo/2017/09/26/13/40/cabbage-2785913_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  2,
+  '제주 감귤',
+  '신선하고 맛있는 제주 감귤',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '쿠팡로켓',
+  '대한민국 전남',
+  '제주 감귤은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  161,
+  'https://cdn.pixabay.com/photo/2016/11/21/15/53/mandarins-1841137_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '강화 속노랑 고구마',
+  '자연 그대로의 강화 속노랑 고구마',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 경북',
+  '강화 속노랑 고구마은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  715,
+  'https://cdn.pixabay.com/photo/2019/11/04/14/34/sweet-potatoes-4599912_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  10,
+  '완도 건미역',
+  '자연 그대로의 완도 건미역',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 경북',
+  '완도 건미역은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  777,
+  'https://cdn.pixabay.com/photo/2018/04/14/18/09/seaweed-3318966_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  2,
+  '남해 멸치',
+  '자연 그대로의 남해 멸치',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 경북',
+  '남해 멸치은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  698,
+  'https://cdn.pixabay.com/photo/2020/09/29/13/13/fish-5612133_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  4,
+  '해남 쌀',
+  '바로 수확한 해남 쌀',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 충남',
+  '해남 쌀은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  729,
+  'https://cdn.pixabay.com/photo/2020/03/01/10/30/rice-4892235_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '횡성 한우 1등급',
+  '직접 재배한 횡성 한우 1등급',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 충남',
+  '횡성 한우 1등급은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  390,
+  'https://cdn.pixabay.com/photo/2020/11/17/20/38/beef-5751432_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  2,
+  '정선 곤드레',
+  '직접 재배한 정선 곤드레',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 경북',
+  '정선 곤드레은/는 정성껏 키운 신선한 농산물입니다.',
+  8000,
+  938,
+  'https://cdn.pixabay.com/photo/2023/03/18/03/40/gondre-7859776_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  10,
+  '무농약 깻잎',
+  '자연 그대로의 무농약 깻잎',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 제주',
+  '무농약 깻잎은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  605,
+  'https://cdn.pixabay.com/photo/2022/05/30/08/50/perilla-plant-7231730_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  7,
+  '유기농 상추',
+  '직접 재배한 유기농 상추',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 경북',
+  '유기농 상추은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  239,
+  'https://cdn.pixabay.com/photo/2015/09/14/19/53/nature-940032_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  6,
+  '고랭지 배추',
+  '직접 재배한 고랭지 배추',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 전남',
+  '고랭지 배추은/는 정성껏 키운 신선한 농산물입니다.',
+  8000,
+  917,
+  'https://cdn.pixabay.com/photo/2017/09/26/13/40/cabbage-2785913_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  9,
+  '제주 감귤',
+  '자연 그대로의 제주 감귤',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 제주',
+  '제주 감귤은/는 정성껏 키운 신선한 농산물입니다.',
+  8000,
+  354,
+  'https://cdn.pixabay.com/photo/2016/11/21/15/53/mandarins-1841137_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  10,
+  '강화 속노랑 고구마',
+  '바로 수확한 강화 속노랑 고구마',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  'CJ대한통운',
+  '대한민국 강원도',
+  '강화 속노랑 고구마은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  117,
+  'https://cdn.pixabay.com/photo/2019/11/04/14/34/sweet-potatoes-4599912_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '완도 건미역',
+  '신선하고 맛있는 완도 건미역',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 제주',
+  '완도 건미역은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  248,
+  'https://cdn.pixabay.com/photo/2018/04/14/18/09/seaweed-3318966_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '남해 멸치',
+  '신선하고 맛있는 남해 멸치',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 강원도',
+  '남해 멸치은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  774,
+  'https://cdn.pixabay.com/photo/2020/09/29/13/13/fish-5612133_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  1,
+  '해남 쌀',
+  '자연 그대로의 해남 쌀',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '쿠팡로켓',
+  '대한민국 경북',
+  '해남 쌀은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  665,
+  'https://cdn.pixabay.com/photo/2020/03/01/10/30/rice-4892235_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  5,
+  '횡성 한우 1등급',
+  '바로 수확한 횡성 한우 1등급',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 제주',
+  '횡성 한우 1등급은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  813,
+  'https://cdn.pixabay.com/photo/2020/11/17/20/38/beef-5751432_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  6,
+  '정선 곤드레',
+  '건강한 밥상의 정선 곤드레',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 전남',
+  '정선 곤드레은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  239,
+  'https://cdn.pixabay.com/photo/2023/03/18/03/40/gondre-7859776_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  4,
+  '무농약 깻잎',
+  '신선하고 맛있는 무농약 깻잎',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '쿠팡로켓',
+  '대한민국 충남',
+  '무농약 깻잎은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  42,
+  'https://cdn.pixabay.com/photo/2022/05/30/08/50/perilla-plant-7231730_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  1,
+  '유기농 상추',
+  '바로 수확한 유기농 상추',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 제주',
+  '유기농 상추은/는 정성껏 키운 신선한 농산물입니다.',
+  8000,
+  819,
+  'https://cdn.pixabay.com/photo/2015/09/14/19/53/nature-940032_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  4,
+  '고랭지 배추',
+  '건강한 밥상의 고랭지 배추',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 제주',
+  '고랭지 배추은/는 정성껏 키운 신선한 농산물입니다.',
+  15000,
+  410,
+  'https://cdn.pixabay.com/photo/2017/09/26/13/40/cabbage-2785913_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  5,
+  '제주 감귤',
+  '직접 재배한 제주 감귤',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 충남',
+  '제주 감귤은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  82,
+  'https://cdn.pixabay.com/photo/2016/11/21/15/53/mandarins-1841137_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  4,
+  '강화 속노랑 고구마',
+  '바로 수확한 강화 속노랑 고구마',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 제주',
+  '강화 속노랑 고구마은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  684,
+  'https://cdn.pixabay.com/photo/2019/11/04/14/34/sweet-potatoes-4599912_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  8,
+  '완도 건미역',
+  '신선하고 맛있는 완도 건미역',
+  3500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '쿠팡로켓',
+  '대한민국 강원도',
+  '완도 건미역은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  496,
+  'https://cdn.pixabay.com/photo/2018/04/14/18/09/seaweed-3318966_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  3,
+  '남해 멸치',
+  '자연 그대로의 남해 멸치',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 강원도',
+  '남해 멸치은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  899,
+  'https://cdn.pixabay.com/photo/2020/09/29/13/13/fish-5612133_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  10,
+  '해남 쌀',
+  '건강한 밥상의 해남 쌀',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 전남',
+  '해남 쌀은/는 정성껏 키운 신선한 농산물입니다.',
+  8000,
+  903,
+  'https://cdn.pixabay.com/photo/2020/03/01/10/30/rice-4892235_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  2,
+  '횡성 한우 1등급',
+  '건강한 밥상의 횡성 한우 1등급',
+  3000,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 충남',
+  '횡성 한우 1등급은/는 정성껏 키운 신선한 농산물입니다.',
+  5000,
+  489,
+  'https://cdn.pixabay.com/photo/2020/11/17/20/38/beef-5751432_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  10,
+  '정선 곤드레',
+  '건강한 밥상의 정선 곤드레',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '우체국택배',
+  '대한민국 전남',
+  '정선 곤드레은/는 정성껏 키운 신선한 농산물입니다.',
+  3000,
+  223,
+  'https://cdn.pixabay.com/photo/2023/03/18/03/40/gondre-7859776_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  4,
+  '무농약 깻잎',
+  '자연 그대로의 무농약 깻잎',
+  0,
+  '주문 후 2~3일 내 발송됩니다.',
+  '직접배송',
+  '대한민국 강원도',
+  '무농약 깻잎은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  120,
+  'https://cdn.pixabay.com/photo/2022/05/30/08/50/perilla-plant-7231730_1280.jpg'
+);
+
+INSERT INTO product (
+  seller_id, product_name, title, delivery_fee, delivery_information,
+  delivery_method, country_of_origin, content, price, quantity, thumbnail
+) VALUES (
+  6,
+  '유기농 상추',
+  '건강한 밥상의 유기농 상추',
+  2500,
+  '주문 후 2~3일 내 발송됩니다.',
+  '로젠택배',
+  '대한민국 제주',
+  '유기농 상추은/는 정성껏 키운 신선한 농산물입니다.',
+  12000,
+  317,
+  'https://cdn.pixabay.com/photo/2015/09/14/19/53/nature-940032_1280.jpg'
+);
+
+COMMIT;
+

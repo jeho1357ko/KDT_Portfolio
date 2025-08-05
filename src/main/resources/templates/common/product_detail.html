@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>상품 상세</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/common/product_detail.css}">
+</head>
+<body>
+<!-- 네비게이션 바 -->
+<header class="navbar-container">
+  <div class="navbar">
+    <a th:href="@{/home}" class="logo-container">
+      <img src="/images/free-icon-sprout-7101338.png" alt="로고" class="navbar-logo-img"/>
+      <span class="brand-name">planT</span>
+    </a>
+    <div class="navbar-buttons">
+      <!-- 비로그인 상태 -->
+      <th:block th:if="${session.loginBuyer == null and session.loginSeller == null}">
+        <a th:href="@{/common/select_login}" class="btn-outline">로그인</a>
+        <a th:href="@{/common/select_signup}" class="btn-filled">회원가입</a>
+      </th:block>
+      <!-- 로그인 상태 -->
+      <th:block th:if="${session.loginBuyer != null or session.loginSeller != null}">
+        <!-- 구매자 로그인 상태 -->
+        <th:block th:if="${session.loginBuyer != null}">
+          <a th:href="@{/buyer/info}" class="user-name" th:text="${session.loginBuyer.nickname}"></a>
+          <a th:href="@{/buyer/cart/{bid}(bid=${buyerId})}" class="btn-outline">장바구니</a>
+        </th:block>
+        <!-- 판매자 로그인 상태 -->
+        <th:block th:if="${session.loginSeller != null}">
+          <a th:if="${name != null}" th:href="@{/seller/myPage/{sid}(sid=${session.loginSeller.sellerId})}" class="user-name">
+            <span th:text="${name}"></span>
+          </a>
+          <a th:href="@{/seller/main/{sid}(sid=${session.loginSeller.sellerId})}" class="btn-outline">대시보드</a>
+          <a th:href="@{/seller/list/{sid}(sid=${session.loginSeller.sellerId})}" class="btn-outline">판매글 목록</a>
+        </th:block>
+        <!-- 로그아웃 -->
+        <th:block th:if="${session.loginBuyer != null}">
+          <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn-filled">로그아웃</button>
+          </form>
+        </th:block>
+        <th:block th:if="${session.loginSeller != null}">
+          <form th:action="@{/seller/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn-filled">로그아웃</button>
+          </form>
+        </th:block>
+      </th:block>
+    </div>
+  </div>
+</header>
+
+<!-- 메인 컨테이너 -->
+<div class="container">
+  <main class="product-main">
+    <!-- 상품 이미지 섹션 -->
+    <div class="product-image-section">
+      <img th:src="${product.thumbnail}" th:alt="${product.title}" id="productImage">
+    </div>
+
+    <!-- 상품 정보 섹션 -->
+    <div class="product-info-section">
+      <h1 th:text="${product.title}" id="productName"></h1>
+      <!-- 숨겨진 상품명 (공공데이터 비교용) -->
+      <div id="hiddenProductName" style="display: none;" th:text="${product.productName}"></div>
+      <p class="product-price">
+        <span th:text="${#numbers.formatInteger(product.price, 0, 'COMMA')}" id="productPrice"></span>
+        <span>원</span>
+      </p>
+
+      <!-- 가격 비교 표시 -->
+      <div id="priceComparison" class="price-comparison" style="display: none;">
+        <span id="priceChangeRate" class="price-change-rate"></span>
+      </div>
+
+      <!-- 저번달 평균 가격 표시 -->
+      <div id="lastMonthPrice" class="last-month-price" style="display: none;">
+        <span class="price-label">저번달 평균:</span>
+        <span id="lastMonthPriceValue"></span>
+        <span>원</span>
+        <button id="showSizePrices" class="btn-size-prices" style="display: none;" onclick="showSizePricesAtPosition(this)">크기별 가격 보기</button>
+        <div class="price-text">(가락도매시장 월 평균 가격입니다.)</div>
+      </div>
+
+      <!-- 상품 정보 테이블 -->
+      <div class="info-table">
+        <dl>
+          <dt>배송</dt>
+          <dd th:text="${product.deliveryMethod}"></dd>
+        </dl>
+        <dl>
+          <dt>판매자</dt>
+          <dd th:text="${seller.name}"></dd>
+        </dl>
+        <dl>
+          <dt>원산지</dt>
+          <dd th:text="${product.CountryOfOrigin}"></dd>
+        </dl>
+        <dl>
+          <dt>배송방법</dt>
+          <dd th:text="${product.deliveryMethod}"></dd>
+        </dl>
+        <dl>
+          <dt>배송비</dt>
+          <dd th:text="${#numbers.formatInteger(product.deliveryFee, 0, 'COMMA')} + '원 (4만원 이상 구매 시 무료배송)'"></dd>
+        </dl>
+        <dl>
+          <dt>배송안내</dt>
+          <dd th:text="${product.deliveryInformation}"></dd>
+        </dl>
+        <!-- 매진 상태 표시 -->
+        <dl th:if="${product.status == '재고소진'}" class="stock-out">
+          <dt>상품 상태</dt>
+          <dd>매진</dd>
+        </dl>
+        <!-- 비활성화 상태 표시 -->
+        <dl th:if="${product.status == '비활성화'}" class="stock-out">
+          <dt>상품 상태</dt>
+          <dd>판매 중단된 상품입니다.</dd>
+        </dl>
+      </div>
+
+      <!-- 수량 선택 -->
+      <dl>
+        <dt>수량</dt>
+        <dd>
+          <div class="quantity-selector">
+            <button class="minus-btn" type="button" aria-label="수량 감소">-</button>
+            <input type="number" value="1" min="1" id="quantity" th:data-price="${product.price ?: 0}" aria-label="상품 수량">
+            <button class="plus-btn" type="button" id="plusButton" aria-label="수량 증가">+</button>
+          </div>
+        </dd>
+      </dl>
+
+      <!-- 총 가격 -->
+      <div class="total-price">
+        총 상품금액: <strong id="totalPrice">15,000</strong>원
+      </div>
+
+      <!-- 액션 버튼 -->
+      <div class="action-buttons">
+        <!-- 비로그인 상태 -->
+        <th:block th:if="${session.loginBuyer == null and session.loginSeller == null}">
+          <button class="cart-btn" th:disabled="${product.status == '재고소진' or product.status == '비활성화'}"
+                  th:class="${product.status == '재고소진' or product.status == '비활성화' ? 'cart-btn disabled' : 'cart-btn'}"
+                  onclick="redirectToLogin()">장바구니</button>
+          <button class="buy-btn" th:disabled="${product.status == '재고소진' or product.status == '비활성화'}"
+                  th:class="${product.status == '재고소진' or product.status == '비활성화' ? 'buy-btn disabled' : 'buy-btn'}"
+                  onclick="redirectToLogin()">바로구매</button>
+        </th:block>
+        <!-- 구매자 로그인 상태 -->
+        <th:block th:if="${session.loginBuyer != null}">
+          <button class="cart-btn" th:disabled="${product.status == '재고소진' or product.status == '비활성화'}"
+                  th:class="${product.status == '재고소진' or product.status == '비활성화' ? 'cart-btn disabled' : 'cart-btn'}"
+                  onclick="addToCart()">장바구니</button>
+          <button class="buy-btn" th:disabled="${product.status == '재고소진' or product.status == '비활성화'}"
+                  th:class="${product.status == '재고소진' or product.status == '비활성화' ? 'buy-btn disabled' : 'buy-btn'}"
+                  onclick="buyNow()">바로구매</button>
+        </th:block>
+        <!-- 판매자 로그인 상태 -->
+        <th:block th:if="${session.loginSeller != null}">
+          <button class="cart-btn" th:onclick="'location.href=\'/seller/product/' + ${product.productId} + '/edit\''">상품 수정</button>
+          <button class="buy-btn" th:onclick="'location.href=\'/seller/list/' + ${session.loginSeller.sellerId} + '\''">상품 목록</button>
+        </th:block>
+      </div>
+    </div>
+  </main>
+
+  <!-- 상품 상세 설명 -->
+  <section class="product-details">
+    <h2>상품 상세 설명</h2>
+    <p th:text="${product.content}"></p>
+    <input type="hidden" id="buyerId" th:value="${buyerId}">
+  </section>
+
+  <!-- 다나와 스타일 팝업 -->
+  <div id="danawaPopup" class="danawa-popup" style="display: none;">
+    <div class="popup-content">
+      <div class="popup-header">
+        <span class="popup-title">크기별 가격 정보</span>
+        <button class="popup-close" onclick="closeDanawaPopup()">&times;</button>
+      </div>
+      <div class="popup-body">
+        <div id="popupContent" class="popup-content-body">
+          <div class="loading">가격 정보를 불러오는 중...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 장바구니 모달 -->
+<div id="cartModal" class="modal">
+  <div class="modal-content">
+    <p>장바구니에 추가되었습니다!</p>
+    <div class="modal-buttons">
+      <button onclick="closeModal()" style="background-color: var(--color-white); color: var(--color-primary); border: 1px solid var(--color-primary);">계속 쇼핑하기</button>
+      <button onclick="goToCart()" style="background-color: var(--color-primary); color: var(--color-white); border: none;">장바구니 보기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 로그인 필요 모달 -->
+<div id="loginModal" class="modal">
+  <div class="modal-content">
+    <p>로그인이 필요한 서비스입니다.</p>
+    <div class="modal-buttons">
+      <button onclick="closeLoginModal()" style="background-color: var(--color-white); color: var(--color-primary); border: 1px solid var(--color-primary);">취소</button>
+      <button onclick="goToLogin()" style="background-color: var(--color-primary); color: var(--color-white); border: none;">로그인하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript -->
+<script th:src="@{/js/common/product_detail.js}"></script>
+<script th:inline="javascript">
+  // Thymeleaf에서 전달받은 상품 데이터를 JavaScript 파일로 전달
+  const productDataFromServer = {
+    status: /*[[${product.status}]]*/ '',
+    productId: /*[[${product.productId}]]*/ 0,
+    title: /*[[${product.title}]]*/ '',
+    productName: /*[[${product.productName}]]*/ '',
+    price: /*[[${product.price}]]*/ 0,
+    thumbnail: /*[[${product.thumbnail}]]*/ '',
+    deliveryFee: /*[[${product.deliveryFee}]]*/ 0
+  };
+
+  // 페이지 로드 시 상품 데이터 설정
+  document.addEventListener('DOMContentLoaded', function() {
+    setProductData(productDataFromServer);
+  });
+</script>
+</body>
+</html> 

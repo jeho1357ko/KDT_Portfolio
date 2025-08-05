@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>구매자 회원가입</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/buyer/signup.css}">
+</head>
+<body>
+  <!-- Navbar -->
+  <header class="navbar-container">
+    <div class="navbar">
+      <a href="/home" class="logo-container">
+        <img src="/images/free-icon-sprout-7101338.png" alt="로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
+      </a>
+      <div class="navbar-buttons">
+        <a href="/common/select_login" class="btn-outline">로그인</a>
+        <a href="/common/select_signup" class="btn-filled">회원가입</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨테이너 -->
+  <div class="signup-container">
+    <form th:action="@{/buyer/signup}" th:object="${buyer}" method="post" id="signupForm">
+      <h2>구매자 회원가입</h2>
+
+      <!-- 서버 에러 메시지 -->
+      <div th:if="${error}" class="server-error" th:text="${error}"></div>
+
+      <!-- 이메일 -->
+      <div class="form-row">
+        <label for="email">이메일</label>
+        <div class="input-col">
+          <input type="email" id="email" th:field="*{email}" placeholder="example@email.com" required />
+          <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-msg show"></div>
+          <div id="error-email" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 비밀번호 -->
+      <div class="form-row">
+        <label for="password">비밀번호</label>
+        <div class="input-col">
+          <input type="password" id="password" th:field="*{password}" placeholder="비밀번호 입력" required />
+          <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-msg show"></div>
+          <div id="error-password" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 이름 -->
+      <div class="form-row">
+        <label for="name">이름</label>
+        <div class="input-col">
+          <input type="text" id="name" th:field="*{name}" placeholder="이름 입력" required />
+          <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-msg show"></div>
+          <div id="error-name" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 닉네임 -->
+      <div class="form-row">
+        <label for="nickname">닉네임</label>
+        <div class="input-col">
+          <input type="text" id="nickname" th:field="*{nickname}" placeholder="닉네임 입력" required />
+          <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="error-msg show"></div>
+          <div id="error-nickname" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 전화번호 -->
+      <div class="form-row">
+        <label for="tel">전화번호</label>
+        <div class="input-col">
+          <input type="text" id="tel" th:field="*{tel}" placeholder="010-1234-5678" required />
+          <div th:if="${#fields.hasErrors('tel')}" th:errors="*{tel}" class="error-msg show"></div>
+          <div id="error-tel" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 성별 -->
+      <div class="form-row">
+        <label for="gender">성별</label>
+        <div class="input-col">
+          <select id="gender" th:field="*{gender}" required>
+            <option value="">선택</option>
+            <option value="남성">남성</option>
+            <option value="여성">여성</option>
+          </select>
+          <div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="error-msg show"></div>
+          <div id="error-gender" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 생년월일 -->
+      <div class="form-row">
+        <label for="birth">생년월일</label>
+        <div class="input-col">
+          <div class="birth-selector">
+            <select id="birthYear" class="birth-select">
+              <option value="">년도</option>
+            </select>
+            <select id="birthMonth" class="birth-select">
+              <option value="">월</option>
+            </select>
+            <select id="birthDay" class="birth-select">
+              <option value="">일</option>
+            </select>
+          </div>
+          <input type="hidden" id="birth" th:field="*{birth}" />
+          <div th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}" class="error-msg show"></div>
+          <div id="error-birth" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 주소 -->
+      <div class="form-row">
+        <label for="postNumber">주소</label>
+        <div class="input-col">
+          <div class="postcode-group">
+            <input type="text" id="postNumber" th:field="*{postNumber}" placeholder="우편번호" readonly required>
+            <button type="button" id="searchPostcodeBtn">주소 검색</button>
+          </div>
+          <input type="text" id="shopAddress" placeholder="주소" readonly>
+          <input type="text" id="detailAddress" placeholder="상세주소를 입력해주세요">
+          <input type="hidden" th:field="*{address}" id="fullAddress">
+          <div id="error-address" class="error-msg hide"></div>
+        </div>
+      </div>
+
+      <!-- 회원가입 버튼 -->
+      <button type="submit" class="signup-btn">회원가입</button>
+    </form>
+  </div>
+
+  <!-- Daum Postcode API -->
+  <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+  
+  <script th:src="@{/js/buyer/signup.js}"></script>
+</body>
+</html>

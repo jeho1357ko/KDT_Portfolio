@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>계정 정보</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/buyer/info.css}">
+</head>
+<body>
+  <!-- 네비게이션 바 -->
+  <header class="navbar-container">
+    <div class="navbar">
+      <a th:href="@{/home}" class="logo-container" aria-label="홈으로 이동">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
+      </a>
+      <div class="navbar-buttons">
+        <th:block th:if="${session.loginBuyer != null}">
+          <a th:href="@{/buyer/info}" class="user-name" th:text="${session.loginBuyer.nickname}" aria-label="내 정보"></a>
+          <a th:href="@{/buyer/cart/{bid}(bid=${session.loginBuyer.buyerId})}" class="btn-outline">장바구니</a>
+        </th:block>
+        <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
+          <button type="submit" class="btn-filled">로그아웃</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨텐츠 -->
+  <main class="page-wrapper">
+    <!-- 사이드 패널 -->
+    <nav class="order-panel" role="navigation" aria-label="구매자 메뉴">
+      <button class="panel-button" th:onclick="|location.href='@{/buyer/info}'|" aria-label="마이페이지로 이동">마이페이지</button>
+      <button class="panel-button" th:onclick="|location.href='@{/buyer/orders}'|" aria-label="주문내역으로 이동">주문 내역</button>
+      <button class="panel-button" th:onclick="|location.href='@{/buyer/cart/{bid}(bid=${session.loginBuyer.buyerId})}'|" aria-label="장바구니로 이동">장바구니</button>
+    </nav>
+
+    <!-- 계정 정보 컨테이너 -->
+    <section class="account-container" role="main" aria-label="계정 정보">
+      <h1>마이페이지 - 계정 정보</h1>
+
+      <div id="account-info" class="account-info" role="region" aria-label="개인 정보">
+        <p><strong>이메일</strong><span class="colon">:</span><span th:text="${buyer?.email ?: '정보 없음'}">정보 없음</span></p>
+        <p><strong>이름</strong><span class="colon">:</span><span th:text="${buyer?.name ?: '정보 없음'}">정보 없음</span></p>
+        <p><strong>닉네임</strong><span class="colon">:</span><span th:text="${buyer?.nickname ?: '정보 없음'}">정보 없음</span></p>
+        <p><strong>전화번호</strong><span class="colon">:</span><span th:text="${buyer?.tel ?: '정보 없음'}">정보 없음</span></p>
+        <p><strong>성별</strong><span class="colon">:</span><span th:text="${buyer?.gender ?: '정보 없음'}">정보 없음</span></p>
+        <p><strong>생년월일</strong><span class="colon">:</span><span th:text="${birthFormatted ?: '정보 없음'}">정보 없음</span></p>
+        <p><strong>주소</strong><span class="colon">:</span>
+          <span th:if="${buyer?.postNumber != null and parsedAddress != null}">
+            (<span th:text="${buyer.postNumber}"></span>) <span th:text="${parsedAddress}"></span>
+            <span th:if="${parsedDetailAddress != null and !#strings.isEmpty(parsedDetailAddress)}" th:text="' ' + ${parsedDetailAddress}"></span>
+          </span>
+          <span th:unless="${buyer?.postNumber != null and parsedAddress != null}">정보 없음</span>
+        </p>
+      </div>
+
+      <div class="account-actions" role="group" aria-label="계정 관리">
+        <button id="editBtn" aria-label="정보 수정">정보 수정</button>
+        <button id="deleteBtn" type="button" aria-label="회원 탈퇴">회원 탈퇴</button>
+      </div>
+    </section>
+  </main>
+
+  <!-- 비밀번호 확인 모달 -->
+  <div id="passwordModal" class="modal" role="dialog" aria-labelledby="passwordModalTitle" aria-hidden="true">
+    <div class="modal-content">
+      <span class="close-button" aria-label="모달 닫기">&times;</span>
+      <div class="modal-icon security" aria-hidden="true">
+        🔒
+      </div>
+      <h2 id="passwordModalTitle">보안 인증</h2>
+      <p>개인정보 보호를 위해 현재 비밀번호를 다시 한 번 입력해주세요.</p>
+      <input type="password" 
+             id="passwordInput" 
+             placeholder="현재 비밀번호를 입력하세요" 
+             autocomplete="current-password"
+             aria-describedby="modalErrorMessage">
+      <div id="modalErrorMessage" class="error-msg" role="alert" aria-live="polite"></div>
+      <div class="modal-actions">
+        <button id="confirmPasswordBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 회원 탈퇴 경고 모달 -->
+  <div id="withdrawal-warning-modal" class="modal" role="dialog" aria-labelledby="withdrawalModalTitle" aria-hidden="true">
+    <div class="modal-content">
+      <span class="close-button" aria-label="모달 닫기">&times;</span>
+      <div class="modal-icon warning" aria-hidden="true">
+        ⚠️
+      </div>
+      <h2 id="withdrawalModalTitle" class="warning-title">회원 탈퇴 안내</h2>
+      <div class="warning-notice">
+        <strong>탈퇴 전 반드시 확인해주세요!</strong>
+        <p>회원 탈퇴 시 아래 사항들이 적용됩니다.</p>
+      </div>
+      <div class="warning-content">
+        <ul>
+          <li><strong>계정 정보 삭제:</strong> 모든 구매자 정보가 영구적으로 삭제됩니다.</li>
+          <li><strong>주문 내역 삭제:</strong> 과거 주문 내역 및 배송 정보가 삭제됩니다.</li>
+          <li><strong>장바구니 삭제:</strong> 저장된 장바구니 상품이 모두 삭제됩니다.</li>
+          <li><strong>복구 불가:</strong> 탈퇴 후에는 모든 정보 복구가 불가능합니다.</li>
+        </ul>
+      </div>
+      <p class="warning-text">정말로 탈퇴하시겠습니까?</p>
+      <div class="modal-actions">
+        <button type="button" class="modal-cancel-btn">취소</button>
+        <button type="button" class="modal-confirm-btn danger">탈퇴하기</button>
+      </div>
+    </div>
+  </div>
+<script th:src="@{/js/buyer/info.js}"></script>
+</body>
+</html>

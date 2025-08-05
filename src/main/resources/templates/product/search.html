@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>상품 검색 결과 - Parm UP</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="농산물 직거래 플랫폼 상품 검색 결과">
+  <!-- Google Fonts: Cabin, Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/common/home.css}">
+  <link rel="stylesheet" th:href="@{/css/product/search.css}">
+</head>
+<body>
+  <!-- 네비게이션 바 -->
+  <header class="navbar-container">
+    <div class="navbar">
+      <a th:href="@{/home}" class="logo-container">
+        <img src="/images/free-icon-sprout-7101338.png" alt="농산물 직거래 플랫폼 로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
+      </a>
+      <div class="navbar-buttons">
+        <!-- 구매자 로그인 상태 -->
+        <th:block th:if="${buyerId != null}">
+          <a th:href="@{/buyer/info}" class="btn-outline">
+            <span th:text="${nickname}" style="font-weight: bold;"></span>
+          </a>
+          <a th:href="@{/buyer/cart/{bid}(bid=${buyerId})}" class="btn-outline">장바구니</a>
+          <a href="#" onclick="logout('buyer')" class="btn-filled">로그아웃</a>
+        </th:block>
+        
+        <!-- 판매자 로그인 상태 -->
+        <th:block th:if="${sellerId != null}">
+          <a th:href="@{/seller/myPage/{sid}(sid=${sellerId})}" class="btn-outline">
+            <span th:text="${nickname}" style="font-weight: bold;"></span>
+          </a>
+          <a th:href="@{/seller/main/{sid}(sid=${sellerId})}" class="btn-outline">대시보드</a>
+          <a href="#" onclick="logout('seller')" class="btn-filled">로그아웃</a>
+        </th:block>
+
+        <!-- 비로그인 상태 -->
+        <th:block th:if="${buyerId == null and sellerId == null}">
+          <a th:href="@{/common/select_login}" class="btn-outline">로그인</a>
+          <a th:href="@{/common/select_signup}" class="btn-filled">회원가입</a>
+        </th:block>
+      </div>
+    </div>
+  </header>
+
+  <!-- 검색 헤더 섹션 -->
+  <section class="search-header-section">
+    <div class="products-container">
+      <div class="search-header-content">
+        <h1 class="search-header-title">
+          <i class="fas fa-search"></i> 상품 검색
+        </h1>
+        <div class="search-form-container">
+          <form action="/product/search" method="GET" class="search-form">
+            <div class="search-input-group">
+              <input type="text" name="keyword" class="search-input" 
+                     th:value="${param.keyword}" 
+                     placeholder="상품명을 입력하세요..." 
+                     autocomplete="off">
+              <button type="submit" class="search-button">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 검색 결과 섹션 -->
+  <section class="search-results-section">
+    <div class="products-container">
+      <!-- 검색 결과 헤더 -->
+      <div class="search-results-header">
+        <div class="search-results-info">
+          <h2 class="search-results-title">
+            <span th:if="${param.keyword}">
+              "<span th:text="${param.keyword}"></span>" 검색 결과
+            </span>
+            <span th:unless="${param.keyword}">전체 상품</span>
+          </h2>
+          <p class="search-results-count">
+            총 <span th:text="${products != null ? #lists.size(products) : 0}">0</span>
+          </p>
+        </div>
+        
+        <!-- 필터 및 정렬 옵션 -->
+        <div class="search-filters">
+          <div class="filter-group">
+            <label for="statusFilter">상태:</label>
+            <select id="statusFilter" class="filter-select">
+              <option value="">전체</option>
+              <option value="판매중">판매중</option>
+              <option value="품절">품절</option>
+              <option value="재고소진">재고소진</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="priceFilter">가격:</label>
+            <select id="priceFilter" class="filter-select">
+              <option value="">전체</option>
+              <option value="0-10000">1만원 이하</option>
+              <option value="10000-50000">1만원 - 5만원</option>
+              <option value="50000-100000">5만원 - 10만원</option>
+              <option value="100000-">10만원 이상</option>
+            </select>
+          </div>
+          
+          <div class="filter-group">
+            <label for="sortFilter">정렬:</label>
+            <select id="sortFilter" class="filter-select">
+              <option value="date-desc">최신순</option>
+              <option value="date-asc">오래된순</option>
+              <option value="price-asc">가격 낮은순</option>
+              <option value="price-desc">가격 높은순</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- 검색 결과 그리드 -->
+      <div class="search-results-grid" id="searchResultsGrid">
+        <!-- 상품이 없을 때 -->
+        <div th:if="${#lists.isEmpty(products)}" class="no-results">
+          <i class="fas fa-search"></i>
+          <h3>검색 결과가 없습니다</h3>
+          <p>다른 검색어를 입력해보세요.</p>
+          <a th:href="@{/home}" class="btn-filled">홈으로 돌아가기</a>
+        </div>
+        
+        <!-- 상품 카드 -->
+        <a th:each="product : ${products}"
+           th:href="@{/seller/product/{pid}(pid=${product.productId})}"
+           class="product-card"
+           th:title="${product.title}">
+          <img th:src="${product.thumbnail}" 
+               th:alt="${product.title}"
+               class="product-image"
+               th:onerror="this.src='/images/default-product.jpg'">
+          
+          <!-- 재고소진 상품에 매진 표시 -->
+          <div th:if="${product.status == '재고소진'}" class="sold-out-overlay">
+            <span class="sold-out-text">매진</span>
+          </div>
+          
+          <div class="product-info">
+            <p class="product-title" th:text="${product.title}"></p>
+            <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
+            <p class="product-status" th:text="${product.status}"></p>
+          </div>
+        </a>
+      </div>
+
+      <!-- 페이지네이션 -->
+      <div th:if="${products != null and #lists.size(products) > 0}" class="pagination-container">
+        <div class="pagination">
+          <a href="#" class="pagination-btn" th:if="${currentPage > 1}">
+            <i class="fas fa-chevron-left"></i> 이전
+          </a>
+          <span class="pagination-info">
+            <span th:text="${currentPage}">1</span> / <span th:text="${totalPages}">1</span>
+          </span>
+          <a href="#" class="pagination-btn" th:if="${currentPage < totalPages}">
+            다음 <i class="fas fa-chevron-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <script th:src="@{/js/common/home.js}"></script>
+  <script th:src="@{/js/product/search.js}"></script>
+</body>
+</html>

@@ -1,0 +1,305 @@
+
+/* CSS 변수 */
+:root {
+  --color-primary: #658352;
+  --color-primary-hover: #94A687;
+  --color-white: #ffffff;
+  --color-background: #FBF9EF;
+  --color-text: #1E2203;
+  --color-border: #E9E7DE;
+  --color-secondary-background: #F5F4ED;
+  --layout-max-width: 1400px;
+}
+
+/* 기본 레이아웃 */
+body {
+  margin: 0;
+  font-family: 'Inter', 'Cabin', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  padding-top: 80px;
+}
+
+/* --- Navbar Styles --- */
+.navbar-container {
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    z-index: 1000;
+    position: fixed;
+    justify-content: center;
+    background: var(--color-white);
+    box-shadow: 0 2px 12px 0 rgba(0,0,0,0.06);
+}
+.navbar {
+    width: 100%;
+    display: flex;
+    max-width: var(--layout-max-width);
+    align-items: center;
+    padding: 16px 48px;
+    justify-content: space-between;
+}
+.navbar-logo-img {
+    height: 3rem;
+    border-radius: 8px;
+}
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition-default, all 0.3s ease);
+}
+
+.logo-container:hover {
+  transform: scale(1.02);
+}
+
+.brand-name {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  margin: 0;
+  line-height: 1;
+}
+
+.navbar-buttons {
+    gap: 16px;
+    display: flex;
+    align-items: center;
+}
+.btn-filled, .btn-outline {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+    padding: 10px 24px;
+    border-radius: 24px;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: background .2s, color .2s;
+    cursor: pointer;
+    border: 1px solid var(--color-primary);
+}
+.btn-filled {
+    color: var(--color-white);
+    background: var(--color-primary);
+}
+.btn-filled:hover { opacity: 0.9; }
+.btn-outline {
+    color: var(--color-primary);
+    background: transparent;
+}
+.btn-outline:hover { background: rgba(101, 131, 82, 0.1); }
+
+h2, h3 {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+}
+
+/* ===== 대시보드 컨테이너 ===== */
+.dashboard-container {
+  width: 100%;
+  max-width: 960px;
+  background-color: #fff;
+  padding: 32px 40px;
+  border-radius: 20px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  margin: 40px auto;
+  box-sizing: border-box;
+}
+/* ===== 헤더(타이틀+버튼) ===== */
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 20px;
+  margin-bottom: 30px;
+}
+.dashboard-header h2 {
+  margin: 0;
+  text-align: left;
+}
+.actions {
+  display: flex;
+  gap: 12px;
+}
+.actions button {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 12px;
+  border: 1px solid var(--color-primary);
+  background-color: var(--color-primary);
+  color: white;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.actions button:hover {
+  background-color: #4d683f;
+}
+
+/* ===== 카드형 그리드 ===== */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 24px;
+}
+.dashboard-card {
+  background: #f8f9fa;
+  padding: 24px;
+  border-radius: 16px;
+  border: 1px solid #eee;
+}
+.dashboard-card h3 {
+  margin-top: 0;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 12px;
+  margin-bottom: 20px;
+}
+
+/* ===== 판매 현황 카드 ===== */
+.sales-status .count {
+  font-size: 3rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--color-primary);
+}
+.sales-status .count-label {
+  text-align: center;
+  font-size: 1rem;
+  color: #555;
+  margin-top: 8px;
+}
+
+/* ===== 품목별 통계 ===== */
+.item-stats {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #ddd;
+}
+.item-stats h4 {
+  font-size: 1.1rem;
+  color: var(--color-primary);
+  margin-bottom: 12px;
+  text-align: center;
+}
+.item-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.item-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #eee;
+  font-size: 0.9rem;
+}
+.item-list li:last-child {
+  border-bottom: none;
+}
+.item-name {
+  font-weight: 600;
+  color: var(--color-text);
+}
+.item-value {
+  font-weight: bold;
+  color: var(--color-primary);
+}
+
+/* ===== 정산 그래프 카드 ===== */
+.settlement-graph {
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-end;
+  height: 150px;
+  border-bottom: 2px solid #ccc;
+  padding-bottom: 5px;
+}
+.graph-bar {
+  width: 10%;
+  background-color: var(--color-primary-hover);
+  text-align: center;
+  position: relative;
+  transition: background-color 0.2s;
+}
+.graph-bar:hover {
+  background-color: var(--color-primary);
+}
+.graph-bar .label {
+    position: absolute;
+    bottom: -25px;
+    width: 100%;
+    left: 0;
+    font-size: 0.8rem;
+}
+/* 금액 툴팁 스타일 */
+.graph-bar .amount-tooltip {
+    position: absolute;
+    bottom: 105%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--color-text);
+    color: white;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s, visibility 0.2s;
+    pointer-events: none;
+}
+.graph-bar .amount-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--color-text) transparent transparent transparent;
+}
+.graph-bar:hover .amount-tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* ===== 총 판매액 표시 ===== */
+.total-sales {
+  margin-top: 32px;
+  text-align: center;
+  padding: 20px;
+  background: var(--color-secondary-background);
+  border-radius: 12px;
+}
+.total-sales h4 {
+  margin: 0 0 10px 0;
+  color: var(--color-primary);
+  font-size: 1.2rem;
+}
+.total-sales .amount {
+  font-size: 2rem;
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+/* ===== 반응형 ===== */
+@media screen and (max-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+    .dashboard-header {
+        flex-direction: column;
+        gap: 20px;
+    }
+}

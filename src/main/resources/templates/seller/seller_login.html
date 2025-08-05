@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="판매자 로그인 페이지 - 안전하고 편리한 로그인 서비스" />
+  <title>판매자 로그인</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/seller/login.css}">
+</head>
+<body>
+
+<header class="navbar-container" role="banner">
+  <nav class="navbar" role="navigation" aria-label="메인 네비게이션">
+    <a th:href="@{/home}" class="logo-container" aria-label="홈으로 이동">
+      <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+      <span class="brand-name">planT</span>
+    </a>
+    <div class="navbar-buttons">
+      <a th:href="@{/common/select_login}" class="btn-outline" aria-label="로그인 페이지로 이동">로그인</a>
+      <a th:href="@{/common/select_signup}" class="btn-filled" aria-label="회원가입 페이지로 이동">회원가입</a>
+    </div>
+  </nav>
+</header>
+
+<main class="login-container" role="main">
+  <h1>판매자 로그인</h1>
+  <form th:action="@{/seller/login}" method="post" class="login-form" id="loginForm" novalidate>
+    <!-- 서버 에러 메시지 표시 영역 -->
+    <div th:if="${error}" class="server-error-message" id="server-error" role="alert">
+      <span th:text="${error}">이메일이나 비밀번호가 틀렸습니다</span>
+    </div>
+    
+    <div class="form-group">
+      <label for="email">이메일</label>
+      <input 
+        type="email" 
+        id="email" 
+        name="email"
+        placeholder="이메일 주소를 입력하세요" 
+        required 
+        autocomplete="email"
+        aria-describedby="email-error"
+        th:value="${loginForm != null ? loginForm.email : ''}"
+      >
+      <div id="email-error" class="error-message" role="alert"></div>
+    </div>
+    
+    <div class="form-group">
+      <label for="password">비밀번호</label>
+      <input 
+        type="password" 
+        id="password" 
+        name="password"
+        placeholder="비밀번호를 입력하세요" 
+        required 
+        autocomplete="current-password"
+        aria-describedby="password-error"
+      >
+      <div id="password-error" class="error-message" role="alert"></div>
+    </div>
+    
+    <button type="submit" class="login-button" id="loginButton">
+      <span class="button-text">로그인</span>
+    </button>
+  </form>
+</main>
+
+<script th:src="@{/js/seller/login.js}"></script>
+
+</body>
+</html>

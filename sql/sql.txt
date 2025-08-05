@@ -1,0 +1,256 @@
+-- =====================================================
+-- 쇼핑몰 데이터베이스 스키마 생성
+-- =====================================================
+-- 이 스크립트는 쇼핑몰 시스템의 모든 테이블과 시퀀스를 생성합니다.
+-- 실행 순서: 시퀀스 → 기본 테이블 → 외래키가 있는 테이블 순서로 진행됩니다.
+
+-- 1. 시퀀스 생성
+-- 각 테이블의 자동 증가 ID를 위한 시퀀스들을 생성합니다.
+CREATE SEQUENCE buyer_buyer_id START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
+CREATE SEQUENCE seller_seller_id START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
+CREATE SEQUENCE product_product_id START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
+CREATE SEQUENCE cart_cart_id_seq START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
+CREATE SEQUENCE buyer_order_buyer_order_id_seq START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
+CREATE SEQUENCE buyer_order_order_number_seq START WITH 10000 INCREMENT BY 1 MAXVALUE 99999;
+CREATE SEQUENCE order_item_order_item_id_seq START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
+CREATE SEQUENCE payment_payment_id_seq START WITH 1 INCREMENT BY 1 MAXVALUE 99999;
+
+-- 2. 구매자 테이블 생성
+-- 쇼핑몰을 이용하는 일반 회원들의 정보를 저장합니다.
+CREATE TABLE BUYER (
+   Buyer_id NUMBER(5) DEFAULT buyer_buyer_id.NEXTVAL PRIMARY KEY,        -- 구매자 고유 ID (자동 증가)
+   EMAIL VARCHAR2(50) NOT NULL UNIQUE,                                    -- 이메일 (로그인 ID로 사용)
+   password VARCHAR2(100) NOT NULL,                                       -- 비밀번호 (암호화 저장)
+   name VARCHAR2(45) NOT NULL,                                            -- 실명
+   nickname VARCHAR2(24) NOT NULL UNIQUE,                                 -- 닉네임 (중복 불가)
+   tel VARCHAR2(13) NOT NULL,                                             -- 전화번호
+   gender VARCHAR2(6),                                                    -- 성별 (남성/여성)
+   birth DATE,                                                            -- 생년월일
+   post_number NUMBER,                                                    -- 우편번호
+   address VARCHAR2(200) NOT NULL,                                        -- 주소
+   pic BLOB DEFAULT NULL,                                                 -- 프로필 사진
+   status VARCHAR2(30) DEFAULT '활성화' CHECK (status IN ('활성화','비활성화','정지','탈퇴')), -- 계정 상태
+   cdate TIMESTAMP DEFAULT SYSTIMESTAMP,                                  -- 계정 생성일
+   udate TIMESTAMP DEFAULT SYSTIMESTAMP,                                  -- 정보 수정일
+   withdrawn_at DATE DEFAULT NULL,                                        -- 탈퇴일
+   withdrawn_reason VARCHAR2(500) DEFAULT NULL,                           -- 탈퇴 사유
+   CONSTRAINT ck_gender CHECK (gender IN ('남성', '여성'))                -- 성별 제약조건
+);
+
+-- 3. 판매자 테이블 생성
+-- 상품을 판매하는 판매자들의 정보를 저장합니다.
+CREATE TABLE SELLER (
+   seller_id NUMBER(5) DEFAULT seller_seller_id.NEXTVAL PRIMARY KEY,     -- 판매자 고유 ID (자동 증가)
+   EMAIL VARCHAR2(50) NOT NULL UNIQUE,                                    -- 이메일 (로그인 ID로 사용)
+   password VARCHAR2(100) NOT NULL,                                       -- 비밀번호 (암호화 저장)
+   biz_reg_no VARCHAR2(30) NOT NULL,                                      -- 사업자 등록번호
+   shop_name VARCHAR2(100) NOT NULL,                                      -- 상점명
+   name VARCHAR2(30) NOT NULL,                                            -- 대표자명
+   shop_address VARCHAR2(200) NOT NULL,                                   -- 상점 주소
+   tel VARCHAR2(13) NOT NULL,                                             -- 상점 전화번호
+   pic BLOB DEFAULT NULL,                                                 -- 상점 로고/사진
+   post_number NUMBER,                                                    -- 우편번호
+   status VARCHAR2(30) DEFAULT '활성화' CHECK (status IN ('활성화','비활성화','정지','탈퇴')), -- 계정 상태
+   cdate TIMESTAMP DEFAULT SYSTIMESTAMP,                                  -- 계정 생성일
+   udate TIMESTAMP DEFAULT SYSTIMESTAMP,                                  -- 정보 수정일
+   withdrawn_at DATE DEFAULT NULL,                                        -- 탈퇴일
+   withdrawn_reason VARCHAR2(500) DEFAULT NULL,                           -- 탈퇴 사유
+   CONSTRAINT uq_seller UNIQUE (biz_reg_no, status)                      -- 사업자번호와 상태의 복합 유니크 제약
+);
+
+-- 4. 상품 테이블 생성
+-- 판매자가 등록하는 상품 정보를 저장합니다.
+CREATE TABLE PRODUCT (
+  product_id NUMBER(5) DEFAULT product_product_id.NEXTVAL PRIMARY KEY,   -- 상품 고유 ID (자동 증가)
+  seller_id NUMBER(5) NOT NULL,                                          -- 판매자 ID (외래키)
+  product_name VARCHAR2(200) NOT NULL,                                    -- 상품명
+  title VARCHAR2(200) NOT NULL,                                          -- 상품 제목
+  delivery_fee NUMBER(5) NOT NULL,                                       -- 배송비
+  delivery_information VARCHAR2(200) NOT NULL,                           -- 배송 안내사항
+  delivery_METHOD VARCHAR(30) NOT NULL,                                  -- 배송 방법
+  Country_of_origin VARCHAR2(60) NOT NULL,                               -- 원산지
+  content CLOB NOT NULL,                                                 -- 상품 상세 설명
+  price NUMBER(10) NOT NULL,                                             -- 상품 가격
+  quantity NUMBER(10) NOT NULL,                                          -- 재고 수량
+  thumbnail VARCHAR2(255) DEFAULT NULL,                                  -- 상품 썸네일 이미지 경로
+  status VARCHAR2(20) DEFAULT '판매중' CHECK (status IN ('판매중','재고소진','비활성화')), -- 판매 상태
+  cdate TIMESTAMP DEFAULT SYSTIMESTAMP,                                  -- 상품 등록일
+  udate TIMESTAMP DEFAULT SYSTIMESTAMP,                                  -- 상품 수정일
+  CONSTRAINT fk_post_seller FOREIGN KEY (seller_id) REFERENCES seller(seller_id) -- 판매자 외래키
+);
+
+-- 5. 장바구니 테이블 생성
+-- 구매자가 상품을 장바구니에 담아두는 정보를 저장합니다.
+CREATE TABLE CART (
+    cart_id NUMBER(5) DEFAULT cart_cart_id_seq.NEXTVAL PRIMARY KEY,      -- 장바구니 항목 고유 ID
+    buyer_id NUMBER(5) NOT NULL,                                         -- 구매자 ID (외래키)
+    product_id NUMBER(5) NOT NULL,                                       -- 상품 ID (외래키)
+    quantity NUMBER(5) NOT NULL,                                         -- 담은 수량
+    added_at TIMESTAMP DEFAULT SYSTIMESTAMP,                             -- 장바구니 담은 시간
+    is_checked CHAR(1) DEFAULT 'N' CHECK (is_checked IN ('Y', 'N')),     -- 주문 선택 여부 (Y: 선택, N: 미선택)
+    CONSTRAINT fk_cart_buyer FOREIGN KEY (buyer_id) REFERENCES buyer(buyer_id),     -- 구매자 외래키
+    CONSTRAINT fk_cart_product FOREIGN KEY (product_id) REFERENCES product(product_id), -- 상품 외래키
+    CONSTRAINT uq_cart UNIQUE (buyer_id, product_id)                     -- 동일 구매자의 동일 상품 중복 방지
+);
+
+-- 6. 주문 테이블 생성
+-- 구매자가 상품을 주문한 정보를 저장합니다.
+CREATE TABLE BUYER_ORDER (
+    order_id NUMBER(5) DEFAULT buyer_order_buyer_order_id_seq.NEXTVAL PRIMARY KEY, -- 주문 고유 ID (내부 관리용)
+    buyer_id NUMBER(5) NOT NULL,                                         -- 구매자 ID (외래키)
+    order_number NUMBER(5) DEFAULT buyer_order_order_number_seq.NEXTVAL NOT NULL UNIQUE, -- 주문번호 (고객에게 보여줄 번호)
+    name VARCHAR2(30) NOT NULL,                                          -- 수령자명
+    tel VARCHAR2(13) NOT NULL,                                           -- 수령자 전화번호
+    delivery_address VARCHAR2(200) NOT NULL,                             -- 배송지 주소
+    order_date DATE DEFAULT SYSTIMESTAMP NOT NULL,                       -- 주문일
+    order_status VARCHAR2(15) CHECK (order_status IN ('결제실패','결제완료','배송중','배송완료','주문취소')) NOT NULL, -- 주문 상태
+    CONSTRAINT fk_buyer_order_buyer FOREIGN KEY (buyer_id) REFERENCES buyer(buyer_id) -- 구매자 외래키
+);
+
+-- 7. 주문 상품 테이블 생성
+-- 주문에 포함된 개별 상품들의 정보를 저장합니다.
+CREATE TABLE ORDER_ITEM (
+   order_item_id NUMBER(5) DEFAULT order_item_order_item_id_seq.NEXTVAL PRIMARY KEY, -- 주문상품 고유 ID
+   order_id NUMBER(5) NOT NULL,                                          -- 주문 ID (외래키)
+   product_id NUMBER(5) NOT NULL,                                        -- 상품 ID (외래키)
+   quantity NUMBER(5) NOT NULL,                                          -- 주문 수량
+   UNIT_price NUMBER(10) NOT NULL,                                       -- 주문 당시 단가
+   total_price NUMBER(15) NOT NULL,                                      -- 해당 상품 총 금액 (단가 * 수량)
+   delivery_company VARCHAR2(45) DEFAULT NULL,                           -- 배송업체명
+   tracking_number VARCHAR2(50) DEFAULT NULL,                            -- 운송장 번호
+   CONSTRAINT fk_member_order_member_order_id FOREIGN KEY (order_id) REFERENCES buyer_order(order_id), -- 주문 외래키
+   CONSTRAINT fk_product_product_id FOREIGN KEY (product_id) REFERENCES product(product_id) -- 상품 외래키
+);
+
+-- 8. 결제 테이블 생성
+-- 주문에 대한 결제 정보를 저장합니다.
+CREATE TABLE PAYMENT (
+    payment_id NUMBER(5) DEFAULT payment_payment_id_seq.NEXTVAL PRIMARY KEY, -- 결제 고유 ID
+    order_id NUMBER(5) NOT NULL,                                         -- 주문 ID (외래키)
+    payment_status VARCHAR2(15) CHECK (payment_status IN ('성공', '실패')), -- 결제 상태
+    amount NUMBER(15) NOT NULL,                                          -- 결제 금액
+    paid_at DATE DEFAULT SYSTIMESTAMP,                                   -- 결제 완료일
+    CONSTRAINT fk_payment_member_order_id FOREIGN KEY (order_id) REFERENCES buyer_order(order_id) -- 주문 외래키
+);
+
+-- =====================================================
+-- 테이블 생성 완료
+-- =====================================================
+
+COMMIT;
+
+-- =====================================================
+-- 테스트 데이터 삽입
+-- =====================================================
+
+-- 판매자 테스트 데이터 (product 테이블에 필요한 seller_id를 위해)
+INSERT INTO SELLER (EMAIL, password, biz_reg_no, shop_name, name, shop_address, tel) 
+VALUES ('seller1@test.com', 'password123', '1234567890', '테스트상점1', '김판매', '서울시 강남구 테스트로 123', '02-1234-5678');
+
+INSERT INTO SELLER (EMAIL, password, biz_reg_no, shop_name, name, shop_address, tel) 
+VALUES ('seller2@test.com', 'password123', '2345678901', '테스트상점2', '이판매', '서울시 서초구 테스트로 456', '02-2345-6789');
+
+-- 상품 테스트 데이터 10개
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (1, '사과', '아침햇살 사과 2.5kg 4kg 가정용 기스과/부사품종', 2500, '주문 후 1-2일 내 배송', '택배', '경북', '농부의 정직함과 자연이 함께 키운 맛이 보이는 아침햇살 경북사과', 22890, 100, 'https://www.cyso.co.kr/data/item/1663861200/7JaR6rSR44WC44WC.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (1, '배', '과일꾼 산지직송 나주배, 가정용 5kg 12과내, 1개', 3000, '주문 후 2-3일 내 배송', '택배', '전남 나주', '과일꾼은 배를 다루는 배 전문 브랜드로 배, 배즙, 배도라지청 등 배 관련 상품은 과일꾼에서 바로 구매자에게 산지직송으로 배송됩니다.', 16810, 50, 'https://thumbnail8.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (2, '딸기', '맛가득 프리미엄 여름딸기 생딸기 설향딸기 장희딸기 금실딸기, 여름딸기500g, 1개', 2000, '주문 후 1일 내 배송', '택배', '논산', '풍부한 과즙 / 진하게 퍼지는 달콤함 맛가득 생딸기', 14520, 30, 'https://thumbnail9.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/5273/e4d8cbc9c954dc6f4a65cea7d6b14606c8a9125835d2f5ca97d337c8489a.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (2, '오렌지', '당도높은 오렌지 미국에서 왔어요 꿀 인가 오렌지 인가, 1박스, 중과2kg (10과내외)', 3500, '주문 후 3-4일 내 배송', '택배', '미국산', '아직도 어떤 오렌지를 드실지 고민중이라구요? 많은 과일중 어떤걸 선택해야할지 모르겠어요. 품질 / 맛(당도) / 영양소 이 세가지를 중요시 여기신다면 이 오렌지를 한번 드셔보세요!', 11880, 25, 'https://thumbnail7.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/51ac/e83f716b1bfcfad6b14f5e1161f8fddf018ae08a9f7e16151323c92b6976.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (1, '체리', '[특급 프리미엄] 미국산 특대과 고당도 생 체리 R9.5, 1개, 1kg', 2500, '주문 후 1-2일 내 배송', '택배', '미국산', 'Premium 한입에 퍼지는 고급의 맛, 프리미엄 체리 (특대과 R9.5) 고급 선물부터 내 입까지, 매일이 리치한 하루가 됩니다.', 27900, 40, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/efd0/1e58befefe427feaa2fdd92cdc1425635d49240f38d99544c81c66f2c476.png', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (2, '레몬', '맛통령 프리미엄 레몬, 1박스, 레몬 2kg 20개내외', 4000, '주문 후 2-3일 내 배송', '택배', '수입산', '신선하고 상큼한 과즙이 듬뿍 담긴 레몬 비타민 가득담긴 신선하고 상큼한 레몬, 맛통령과 함께 상큼하고 청량한 레몬을 맛통령에서 만나보세요!', 11960, 15, 'https://thumbnail8.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/ee1a/8524a3f7c9c15eafc4708c682f6ef73dd2f9853e8c238c6e3df0a0e34c71.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (1, '황금향', '[제주의맛] 맛있는 최고급 황금향 산지직송, 황금향 가정용 대과 3kg(11~14과), 1개', 1500, '주문 후 1일 내 배송', '택배', '제주도 서귀포', '싱싱함과 맛을 동시에 잡은 제주의 맛, 후기로 간접 시식해 보세요 "자신 있습니다"', 34010, 80, 'https://thumbnail8.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/98f0/44133627ec9de5770918084f5f2ca2c6812c1868bd84e155833375d7c1f7.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (2, '참외', '성주 당도선별 꼬마참외 10~16입, 2kg(10~16입), 1개', 3000, '주문 후 2일 내 배송', '택배', '성주군', '당도선별 꼬마참외달콤한 맛이 진한 꼬마참외예요. 껍질을 벗기기 전부터 달달한 향을 느낄 수 있는데요. 황금빛 껍질 속 단단한 과육을 품고 있지요. 크기는 작아도 아삭아삭한 식감은 그대로랍니다. 깨끗하게 씻어 신선한 생과 그대로 즐겨보세요.', 11760, 35, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/rs_quotation_api/floyi07x/f01de370966f4d428d11d02c4b875894.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (1, '복숭아', '1년에딱한번 초고당도 망고복숭아, 1박스, 1kg(소과)', 2500, '주문 후 1-2일 내 배송', '택배', '국내산', '까다로운 당도 선별을 통한 맛있는 초고당도 망고 복숭아를 취급', 12910, 60, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/ed24/45604df943efd039ee5e3d3cd1b64c6cd6a47360dc09f532cbfbdd27996b.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (2, '샤인머스켓', '고당도 과즙폭발 샤인머스켓 특품 산지직송, 1박스, 특품 1kg내외(2과수)', 2000, '주문 후 1일 내 배송', '택배', '김천,경북,영동', '비타민C와 구연산이 풍부해 젖산을 분해하여 피로회복에 탁원한 효과가 있습니다. 피부의 노폐물을 없애주고, 피부톤을 밝게 해 주고, 피부 노화를 예방해 줍니다. 기관지의 점막을 튼튼하게 해주고, 항산화 작용을 하여 면역력을 높여줍니다.', 14900, 45, 'https://thumbnail9.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/0906/999db41c8ac8f3efcfc504e3ebca79318c674074a0e4252764bff13b4fba.png', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (1, '상추', '신선한 양상추 1kg, 1개', 2000, '주문 후 1일 내 배송', '택배', '국내산', '신선하고 아삭한 양상추입니다. 샐러드나 샌드위치에 최적입니다.', 8000, 100, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (2, '청상추', '아삭한 청상추 500g, 1개', 1500, '주문 후 1일 내 배송', '택배', '국내산', '아삭하고 신선한 청상추입니다. 샐러드나 쌈채소로 활용하세요.', 4500, 80, 'https://thumbnail8.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (1, '깻잎', '신선한 깻잎 100g, 1개', 1000, '주문 후 1일 내 배송', '택배', '국내산', '신선하고 향긋한 깻잎입니다. 쌈채소나 요리용으로 활용하세요.', 3500, 60, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (2, '사과', '아침햇살 사과 2.5kg 4kg 가정용 기스과/부사품종', 2500, '주문 후 1-2일 내 배송', '택배', '경북', '농부의 정직함과 자연이 함께 키운 맛이 보이는 아침햇살 경북사과', 22890, 100, 'https://www.cyso.co.kr/data/item/1663861200/7JaR6rSR44WC44WC.jpg', '판매중');
+
+INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
+VALUES (1, '당근', '신선한 당근 1kg, 1개', 1500, '주문 후 1일 내 배송', '택배', '국내산', '신선하고 달콤한 당근입니다. 샐러드나 요리용으로 활용하세요.', 5000, 80, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
+
+-- 구매자 테스트 데이터 5개
+INSERT INTO BUYER (EMAIL, password, name, nickname, tel, gender, birth, post_number, address, status) 
+VALUES ('buyer1@test.com', 'password123', '김구매', '구매자1', '010-1234-5678', '남성', TO_DATE('1990-01-15', 'YYYY-MM-DD'), 12345, '서울시 강남구 테스트로 123', '활성화');
+
+INSERT INTO BUYER (EMAIL, password, name, nickname, tel, gender, birth, post_number, address, status) 
+VALUES ('buyer2@test.com', 'password123', '이구매', '구매자2', '010-2345-6789', '여성', TO_DATE('1992-03-20', 'YYYY-MM-DD'), 23456, '서울시 서초구 테스트로 456', '활성화');
+
+INSERT INTO BUYER (EMAIL, password, name, nickname, tel, gender, birth, post_number, address, status) 
+VALUES ('buyer3@test.com', 'password123', '박구매', '구매자3', '010-3456-7890', '남성', TO_DATE('1988-07-10', 'YYYY-MM-DD'), 34567, '서울시 마포구 테스트로 789', '활성화');
+
+INSERT INTO BUYER (EMAIL, password, name, nickname, tel, gender, birth, post_number, address, status) 
+VALUES ('buyer4@test.com', 'password123', '최구매', '구매자4', '010-4567-8901', '여성', TO_DATE('1995-11-25', 'YYYY-MM-DD'), 45678, '서울시 송파구 테스트로 101', '활성화');
+
+INSERT INTO BUYER (EMAIL, password, name, nickname, tel, gender, birth, post_number, address, status) 
+VALUES ('buyer5@test.com', 'password123', '정구매', '구매자5', '010-5678-9012', '남성', TO_DATE('1993-09-05', 'YYYY-MM-DD'), 56789, '서울시 영등포구 테스트로 202', '활성화');
+
+COMMIT;
+
+-- =====================================================
+-- 테이블 삭제 스크립트 (필요시 사용)
+-- =====================================================
+-- 주의: 외래키 제약조건으로 인해 삭제 순서를 지켜야 합니다.
+-- 실행 순서: PAYMENT → ORDER_ITEM → BUYER_ORDER → CART → PRODUCT → SELLER → BUYER
+
+/*
+-- 결제 테이블 삭제
+DROP TABLE PAYMENT CASCADE CONSTRAINTS;
+
+-- 주문 상품 테이블 삭제
+DROP TABLE ORDER_ITEM CASCADE CONSTRAINTS;
+
+-- 주문 테이블 삭제
+DROP TABLE BUYER_ORDER CASCADE CONSTRAINTS;
+
+-- 장바구니 테이블 삭제
+DROP TABLE CART CASCADE CONSTRAINTS;
+
+-- 상품 테이블 삭제
+DROP TABLE PRODUCT CASCADE CONSTRAINTS;
+
+-- 판매자 테이블 삭제
+DROP TABLE SELLER CASCADE CONSTRAINTS;
+
+-- 구매자 테이블 삭제
+DROP TABLE BUYER CASCADE CONSTRAINTS;
+
+-- 시퀀스 삭제
+DROP SEQUENCE buyer_buyer_id;
+DROP SEQUENCE seller_seller_id;
+DROP SEQUENCE product_product_id;
+DROP SEQUENCE cart_cart_id_seq;
+DROP SEQUENCE buyer_order_buyer_order_id_seq;
+DROP SEQUENCE buyer_order_order_number_seq;
+DROP SEQUENCE order_item_order_item_id_seq;
+DROP SEQUENCE payment_payment_id_seq;
+
+COMMIT;
+*/

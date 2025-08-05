@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>판매자 정보</title>
+  <link rel="stylesheet" th:href="@{/css/seller/info.css}">
+</head>
+<body>
+  <!-- 네비게이션 바 -->
+  <header class="navbar-container">
+    <div class="navbar">
+          <a th:href="@{/home}" class="logo-container">
+      <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+      <span class="brand-name">planT</span>
+    </a>
+      <div class="navbar-buttons">
+        <a th:if="${name != null}" th:href="@{/seller/myPage/{sid}(sid=${sellerId})}" style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
+          <span th:text="${name}"></span>
+        </a>
+        <a th:href="@{/seller/main/{sid}(sid=${sellerId})}" class="btn-outline">대시보드</a>
+        <a th:href="@{/seller/list/{sid}(sid=${sellerId})}" class="btn-outline">판매 목록</a>
+        <form th:action="@{/seller/logout}" method="post" style="display:inline;">
+          <button type="submit" class="btn-filled">로그아웃</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <!-- 판매자 정보 조회 -->
+  <div class="info-container" th:object="${myInfo}">
+    <h2>판매자 정보</h2>
+
+    <div class="info-row">
+      <span class="info-label">이메일</span>
+      <span class="info-value" th:text="*{email}"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">비밀번호</span>
+      <span class="info-value">****</span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">전화번호</span>
+      <span class="info-value" th:text="*{tel}"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">사업자등록번호</span>
+      <span class="info-value" th:text="*{bizRegNo}"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">상호명</span>
+      <span class="info-value" th:text="*{shopName}"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">대표자 이름</span>
+      <span class="info-value" th:text="*{name}"></span>
+    </div>
+    <div class="info-row">
+      <span class="info-label">가게 주소</span>
+      <div class="info-value address">
+        <span th:if="*{postNumber != null}" th:text="'(' + *{postNumber} + ') ' + *{shopAddress}"></span>
+        <span th:unless="*{postNumber != null}" th:text="*{shopAddress}"></span>
+      </div>
+    </div>
+
+    <div class="info-actions">
+      <button type="button" id="back-btn" th:onclick="|location.href='@{/seller/main/{sid}(sid=${sellerId})}'|">목록으로</button>
+      <button type="button" id="edit-btn">수정하기</button>
+      <button type="button" id="withdraw-btn">회원탈퇴</button>
+    </div>
+  </div>
+
+  <!-- 비밀번호 확인 모달 -->
+  <div id="passwordModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-icon security">🔒</div>
+      <h2>보안 인증</h2>
+      <p>개인정보 보호를 위해 현재 비밀번호를 다시 한 번 입력해주세요.</p>
+      <input type="password" id="passwordInput" placeholder="현재 비밀번호를 입력하세요" autocomplete="current-password">
+      <div id="modalErrorMessage" class="error-msg"></div>
+      <div class="modal-actions">
+        <button id="confirmPasswordBtn">확인</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 탈퇴 경고 모달 -->
+  <div id="withdrawal-warning-modal" class="modal">
+    <div class="modal-content">
+      <h3>회원 탈퇴 주의사항</h3>
+      <div class="warning-content">
+        <p><strong>탈퇴 전 반드시 확인해주세요!</strong></p>
+        <ul>
+          <li>탈퇴 시 모든 판매자 정보가 영구적으로 삭제됩니다.</li>
+          <li>등록된 상품 정보와 판매 기록이 모두 삭제됩니다.</li>
+          <li>탈퇴 후에는 복구가 불가능합니다.</li>
+        </ul>
+        <p><strong>정말로 탈퇴하시겠습니까?</strong></p>
+      </div>
+      <div class="withdrawal-modal-actions">
+        <button type="button" class="modal-cancel-btn">취소</button>
+        <button type="button" class="modal-confirm-btn">탈퇴하기</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 실제 탈퇴 요청용 폼 -->
+  <form id="withdraw-form" th:action="@{/seller/{sid}/delete(sid=${sellerId})}" method="post" style="display:none;">
+    <!-- CSRF 토큰은 Spring Security에서 자동으로 처리됩니다 -->
+  </form>
+
+  <!-- sellerId를 JavaScript로 전달하기 위한 숨겨진 요소 -->
+  <div data-seller-id th:attr="data-seller-id=${sellerId}" style="display: none;"></div>
+
+  <!-- JavaScript -->
+  <script th:src="@{/js/seller/info.js}"></script>
+</body>
+</html>

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>가격 비교 결과</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .result-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+        .comparison-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .price-difference {
+            font-size: 1.5em;
+            font-weight: bold;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .price-higher {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .price-lower {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .price-equal {
+            background-color: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        .trend-chart {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-top: 20px;
+        }
+        .price-item {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        .recommendation {
+            background: #e7f3ff;
+            border-left: 4px solid #007bff;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <div class="row">
+            <div class="col-12">
+                <!-- 결과 헤더 -->
+                <div class="result-header">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <h2><i class="fas fa-balance-scale"></i> 가격 비교 결과</h2>
+                            <h4 th:text="${productName}">상품명</h4>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <a href="/price/compare" class="btn btn-light">
+                                <i class="fas fa-arrow-left"></i> 다른 상품 비교
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 오류 메시지 -->
+                <div th:if="${error}" class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span th:text="${error}">오류 메시지</span>
+                </div>
+
+                <!-- 가격 비교 결과 -->
+                <div th:if="${result}" class="row">
+                    <!-- 공공데이터 가격 -->
+                    <div class="col-md-6">
+                        <div class="comparison-card">
+                            <h4><i class="fas fa-store"></i> 공공데이터 가격</h4>
+                            <div th:if="${result.publicDataPrices and #lists.isEmpty(result.publicDataPrices)}" 
+                                 class="text-muted">공공데이터 가격 정보가 없습니다.</div>
+                            <div th:each="price : ${result.publicDataPrices}" class="price-item">
+                                <h6 th:text="${price.productName + ' (' + price.grade + ')'}">상품명 (등급)</h6>
+                                <p>
+                                    <strong>가격:</strong> 
+                                    <span th:text="${#numbers.formatDecimal(price.currentPrice, 1, 'COMMA', 0, 'POINT')}">0</span>원<br>
+                                    <strong>단위:</strong> <span th:text="${price.unit}">단위</span><br>
+                                    <strong>날짜:</strong> <span th:text="${price.priceDate}">날짜</span>
+                                </p>
+                                <div th:if="${price.priceChangeRate != null}">
+                                    <small class="text-muted">
+                                        전월 대비: 
+                                        <span th:text="${#numbers.formatDecimal(price.priceChangeRate, 1, 'COMMA', 2, 'POINT')}">0</span>%
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 홈쇼핑 가격 -->
+                    <div class="col-md-6">
+                        <div class="comparison-card">
+                            <h4><i class="fas fa-shopping-cart"></i> 홈쇼핑 가격</h4>
+                            <div th:if="${result.homeShoppingPrices and #lists.isEmpty(result.homeShoppingPrices)}" 
+                                 class="text-muted">홈쇼핑 가격 정보가 없습니다.</div>
+                            <div th:each="price : ${result.homeShoppingPrices}" class="price-item">
+                                <h6 th:text="${price.productName + ' (' + price.grade + ')'}">상품명 (등급)</h6>
+                                <p>
+                                    <strong>가격:</strong> 
+                                    <span th:text="${#numbers.formatDecimal(price.currentPrice, 1, 'COMMA', 0, 'POINT')}">0</span>원<br>
+                                    <strong>단위:</strong> <span th:text="${price.unit}">단위</span><br>
+                                    <strong>날짜:</strong> <span th:text="${price.priceDate}">날짜</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 가격 차이 분석 -->
+                <div th:if="${result and result.priceDifference}" class="row mt-4">
+                    <div class="col-12">
+                        <div class="comparison-card">
+                            <h4><i class="fas fa-calculator"></i> 가격 차이 분석</h4>
+                            
+                            <div th:with="diff=${result.priceDifference}" class="price-difference"
+                                 th:classappend="${diff.isExpensive ? 'price-higher' : 'price-lower'}">
+                                <i th:class="${diff.isExpensive ? 'fas fa-arrow-up' : 'fas fa-arrow-down'}"></i>
+                                가격 차이: 
+                                <span th:text="${#numbers.formatDecimal(diff.priceDifference, 1, 'COMMA', 0, 'POINT')}">0</span>원
+                                (<span th:text="${#numbers.formatDecimal(diff.priceDifferenceRate, 1, 'COMMA', 2, 'POINT')}">0</span>%)
+                            </div>
+                            
+                            <div class="recommendation mt-3">
+                                <h5><i class="fas fa-lightbulb"></i> 구매 추천</h5>
+                                <p th:if="${diff.isExpensive}">
+                                    홈쇼핑 가격이 공공데이터 기준 가격보다 
+                                    <strong th:text="${#numbers.formatDecimal(diff.priceDifferenceRate, 1, 'COMMA', 2, 'POINT')}">0</strong>% 높습니다.
+                                    <br>공공데이터 기준 가격을 참고하여 구매를 고려해보세요.
+                                </p>
+                                <p th:unless="${diff.isExpensive}">
+                                    홈쇼핑 가격이 공공데이터 기준 가격보다 
+                                    <strong th:text="${#numbers.formatDecimal(Math.abs(diff.priceDifferenceRate), 1, 'COMMA', 2, 'POINT')}">0</strong>% 낮습니다.
+                                    <br>현재 홈쇼핑 가격이 유리한 상황입니다.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 가격 변동 추이 -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="trend-chart">
+                            <h4><i class="fas fa-chart-area"></i> 가격 변동 추이</h4>
+                            <canvas id="trendChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 추가 정보 -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="comparison-card">
+                            <h4><i class="fas fa-info-circle"></i> 추가 정보</h4>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>공공데이터 정보</h6>
+                                    <ul>
+                                        <li>출처: 가락시장 공공데이터</li>
+                                        <li>업데이트: 매일</li>
+                                        <li>기준: 도매가격</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>홈쇼핑 정보</h6>
+                                    <ul>
+                                        <li>출처: 홈쇼핑몰</li>
+                                        <li>업데이트: 실시간</li>
+                                        <li>기준: 소비자가격</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:inline="javascript">
+        // 가격 변동 추이 차트 로드
+        document.addEventListener('DOMContentLoaded', function() {
+            const productName = [[${productName}]];
+            if (productName) {
+                loadPriceTrend(productName);
+            }
+        });
+
+        function loadPriceTrend(productName) {
+            fetch(`/price/api/trend/${encodeURIComponent(productName)}?months=6`)
+                .then(response => response.json())
+                .then(data => {
+                    displayPriceTrend(data);
+                })
+                .catch(error => {
+                    console.error('가격 변동 추이 로드 실패:', error);
+                });
+        }
+
+        function displayPriceTrend(data) {
+            if (data.monthlyAverages && Object.keys(data.monthlyAverages).length > 0) {
+                const ctx = document.getElementById('trendChart').getContext('2d');
+                
+                const labels = Object.keys(data.monthlyAverages).sort();
+                const values = labels.map(label => data.monthlyAverages[label]);
+
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: '평균 가격',
+                            data: values,
+                            borderColor: 'rgb(75, 192, 192)',
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            tension: 0.1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            title: {
+                                display: true,
+                                text: `${data.productName} 가격 변동 추이`
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    callback: function(value) {
+                                        return value.toLocaleString() + '원';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    </script>
+</body>
+</html> 
