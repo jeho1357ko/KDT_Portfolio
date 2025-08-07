@@ -55,12 +55,13 @@
           <i class="fas fa-search"></i> 상품 검색
         </h1>
         <div class="search-form-container">
-          <form action="/product/search" method="GET" class="search-form">
+          <form action="/api/products/search" method="GET" class="search-form" id="searchForm">
             <div class="search-input-group">
               <input type="text" name="keyword" class="search-input" 
                      th:value="${param.keyword}" 
                      placeholder="상품명을 입력하세요..." 
-                     autocomplete="off">
+                     autocomplete="off"
+                     id="searchKeyword">
               <button type="submit" class="search-button">
                 <i class="fas fa-search"></i>
               </button>
@@ -77,15 +78,12 @@
       <!-- 검색 결과 헤더 -->
       <div class="search-results-header">
         <div class="search-results-info">
-          <h2 class="search-results-title">
+          <h2 class="search-results-title" id="searchResultsTitle">
             <span th:if="${param.keyword}">
               "<span th:text="${param.keyword}"></span>" 검색 결과
             </span>
             <span th:unless="${param.keyword}">전체 상품</span>
           </h2>
-          <p class="search-results-count">
-            총 <span th:text="${products != null ? #lists.size(products) : 0}">0</span>
-          </p>
         </div>
         
         <!-- 필터 및 정렬 옵션 -->
@@ -125,53 +123,77 @@
 
       <!-- 검색 결과 그리드 -->
       <div class="search-results-grid" id="searchResultsGrid">
-        <!-- 상품이 없을 때 -->
-        <div th:if="${#lists.isEmpty(products)}" class="no-results">
+        <!-- 초기 로딩 상태 -->
+        <div class="loading-container" style="text-align: center; padding: 40px;">
+          <div class="loading-spinner" style="
+            width: 40px; 
+            height: 40px; 
+            border: 4px solid #f3f3f3; 
+            border-top: 4px solid #4CAF50; 
+            border-radius: 50%; 
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 16px;">
+          </div>
+          <p style="color: #666;">검색 결과를 불러오는 중...</p>
+        </div>
+        
+        <!-- 서버에서 렌더링된 초기 상품들 (JavaScript가 로드되기 전까지 표시) -->
+        <div th:if="${products != null and !#lists.isEmpty(products)}" class="server-rendered-products" style="display: none;">
+          <a th:each="product : ${products}"
+             th:href="@{/seller/product/{pid}(pid=${product.productId})}"
+             class="product-card"
+             th:title="${product.title}">
+            <img th:src="${product.thumbnail}" 
+                 th:alt="${product.title}"
+                 class="product-image"
+                 th:onerror="this.src='/images/default-product.jpg'">
+            
+            <!-- 재고소진 상품에 매진 표시 -->
+            <div th:if="${product.status == '재고소진'}" class="sold-out-overlay">
+              <span class="sold-out-text">매진</span>
+            </div>
+            
+            <div class="product-info">
+              <p class="product-title" th:text="${product.title}"></p>
+              <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
+              <p class="product-status" th:text="${product.status}"></p>
+            </div>
+          </a>
+        </div>
+        
+        <!-- 검색 결과가 없을 때 (서버 렌더링) -->
+        <div th:if="${products != null and #lists.isEmpty(products)}" class="no-results" style="display: none;">
           <i class="fas fa-search"></i>
           <h3>검색 결과가 없습니다</h3>
           <p>다른 검색어를 입력해보세요.</p>
           <a th:href="@{/home}" class="btn-filled">홈으로 돌아가기</a>
         </div>
-        
-        <!-- 상품 카드 -->
-        <a th:each="product : ${products}"
-           th:href="@{/seller/product/{pid}(pid=${product.productId})}"
-           class="product-card"
-           th:title="${product.title}">
-          <img th:src="${product.thumbnail}" 
-               th:alt="${product.title}"
-               class="product-image"
-               th:onerror="this.src='/images/default-product.jpg'">
-          
-          <!-- 재고소진 상품에 매진 표시 -->
-          <div th:if="${product.status == '재고소진'}" class="sold-out-overlay">
-            <span class="sold-out-text">매진</span>
-          </div>
-          
-          <div class="product-info">
-            <p class="product-title" th:text="${product.title}"></p>
-            <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
-            <p class="product-status" th:text="${product.status}"></p>
-          </div>
-        </a>
       </div>
 
       <!-- 페이지네이션 -->
-      <div th:if="${products != null and #lists.size(products) > 0}" class="pagination-container">
+      <div th:if="${products != null and #lists.size(products) > 0}" class="pagination-container" id="paginationContainer" style="display: none;">
         <div class="pagination">
-          <a href="#" class="pagination-btn" th:if="${currentPage > 1}">
+          <a href="#" class="pagination-btn" id="prevPageBtn">
             <i class="fas fa-chevron-left"></i> 이전
           </a>
           <span class="pagination-info">
-            <span th:text="${currentPage}">1</span> / <span th:text="${totalPages}">1</span>
+            <span id="currentPage">1</span> / <span id="totalPages">1</span>
           </span>
-          <a href="#" class="pagination-btn" th:if="${currentPage < totalPages}">
+          <a href="#" class="pagination-btn" id="nextPageBtn">
             다음 <i class="fas fa-chevron-right"></i>
           </a>
         </div>
       </div>
     </div>
   </section>
+
+  <!-- 스핀 애니메이션 CSS -->
+  <style>
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
 
   <script th:src="@{/js/common/home.js}"></script>
   <script th:src="@{/js/product/search.js}"></script>

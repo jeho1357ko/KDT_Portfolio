@@ -1,6 +1,128 @@
 // ===== 검색 결과 페이지 JavaScript =====
 
 /**
+ * URL에서 쿼리 파라미터 읽기
+ * @param {string} param - 파라미터 이름
+ * @returns {string|null} 파라미터 값
+ */
+function getQueryParam(param) {
+  const params = new URLSearchParams(window.location.search);
+  return params.get(param);
+}
+
+/**
+ * 상품 검색 함수
+ * @param {boolean} firstSearch - 첫 검색 여부
+ */
+async function searchProducts(firstSearch = true) {
+  const keyword = document.getElementById('searchKeyword').value.trim();
+  
+  if (!keyword) {
+    alert("검색어를 입력해주세요.");
+    return;
+  }
+
+  // 검색 파라미터 구성
+  const params = new URLSearchParams();
+  params.append('keyword', keyword);
+  
+  const status = document.getElementById('statusFilter')?.value || '';
+  const priceFilter = document.getElementById('priceFilter')?.value || '';
+  const sortFilter = document.getElementById('sortFilter')?.value || '';
+
+  if (status) params.append('status', status);
+  if (priceFilter) {
+    const [minPrice, maxPrice] = priceFilter.split('-');
+    if (minPrice) params.append('minPrice', minPrice);
+    if (maxPrice) params.append('maxPrice', maxPrice);
+  }
+  if (sortFilter) {
+    if (sortFilter.includes('date')) {
+      params.append('sortDate', sortFilter.includes('desc') ? 'DESC' : 'ASC');
+    } else if (sortFilter.includes('price')) {
+      params.append('sortScore', sortFilter.includes('desc') ? 'DESC' : 'ASC');
+    }
+  }
+
+  const searchUrl = `/api/products/search?${params.toString()}`;
+  console.log('검색 URL:', searchUrl);
+
+  try {
+    const response = await fetch(searchUrl);
+    console.log('API 응답 상태:', response.status);
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const result = await response.json();
+    console.log('API 응답 데이터:', result);
+
+    // 응답 구조 확인 및 결과 표시
+    let products = [];
+    if (result.body) {
+      products = result.body;
+    } else if (Array.isArray(result)) {
+      products = result;
+    } else if (result.data) {
+      products = result.data;
+    }
+
+    console.log('처리된 상품 목록:', products);
+    displayResults(products);
+  } catch (error) {
+    console.error("검색 오류:", error);
+    alert("검색 중 오류가 발생했습니다: " + error.message);
+  }
+}
+
+/**
+ * 검색 결과 표시
+ * @param {Array} products - 상품 목록
+ */
+function displayResults(products) {
+  const grid = document.getElementById('searchResultsGrid');
+  
+  if (!products || products.length === 0) {
+    grid.innerHTML = `
+      <div class="no-results" style="text-align: center; padding: 40px;">
+        <i class="fas fa-search"></i>
+        <h3>검색 결과가 없습니다</h3>
+        <p>다른 검색어를 입력해보세요.</p>
+        <a href="/home" class="btn-filled">홈으로 돌아가기</a>
+      </div>
+    `;
+  } else {
+    let html = '';
+    products.forEach(item => {
+      const price = item.price ? item.price.toLocaleString() : 'N/A';
+      const status = item.status || 'N/A';
+      const title = item.title || item.productName || 'N/A';
+      const thumbnail = item.thumbnail || '/images/default-product.jpg';
+      
+      html += `
+        <a href="/seller/product/${item.productId}" class="product-card" title="${title}">
+          <img src="${thumbnail}" alt="${title}" class="product-image" onerror="handleImageError(this)">
+          
+          ${status === '재고소진' ? `
+            <div class="sold-out-overlay">
+              <span class="sold-out-text">매진</span>
+            </div>
+          ` : ''}
+          
+          <div class="product-info">
+            <p class="product-title">${title}</p>
+            <p class="product-price">${price}원</p>
+            <p class="product-status">${status}</p>
+          </div>
+        </a>
+      `;
+    });
+    grid.innerHTML = html;
+  }
+}
+
+/**
  * 이미지 로드 실패 처리 함수
  * @param {HTMLImageElement} img - 이미지 요소
  */
@@ -59,22 +181,359 @@ function handleImageError(img) {
   }
 }
 
+/**
+ * API 호출을 통한 검색 결과 가져오기
+ * @param {Object} searchParams - 검색 파라미터
+ * @returns {Promise<Object>} 검색 결과
+ */
+async function fetchSearchResults(searchParams) {
+  try {
+    const queryParams = new URLSearchParams();
+    
+    // 필수 파라미터
+    if (searchParams.keyword) {
+      queryParams.append('keyword', searchParams.keyword);
+    }
+    
+    // 선택적 파라미터들
+    if (searchParams.status) {
+      queryParams.append('status', searchParams.status);
+    }
+    if (searchParams.minPrice) {
+      queryParams.append('minPrice', searchParams.minPrice);
+    }
+    if (searchParams.maxPrice) {
+      queryParams.append('maxPrice', searchParams.maxPrice);
+    }
+    if (searchParams.from) {
+      queryParams.append('from', searchParams.from);
+    }
+    if (searchParams.size) {
+      queryParams.append('size', searchParams.size);
+    }
+    if (searchParams.sortScore) {
+      queryParams.append('sortScore', searchParams.sortScore);
+    }
+    if (searchParams.sortDate) {
+      queryParams.append('sortDate', searchParams.sortDate);
+    }
+    
+    const response = await fetch(`/api/products/search?${queryParams.toString()}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('검색 API 호출 중 오류 발생:', error);
+    throw error;
+  }
+}
+
+/**
+ * 검색 결과를 화면에 렌더링
+ * @param {Array} products - 상품 목록
+ * @param {string} keyword - 검색 키워드
+ */
+function renderSearchResults(products, keyword = '') {
+  const searchResultsGrid = document.getElementById('searchResultsGrid');
+  
+  if (!products || products.length === 0) {
+    searchResultsGrid.innerHTML = `
+      <div class="no-results">
+        <i class="fas fa-search"></i>
+        <h3>검색 결과가 없습니다</h3>
+        <p>다른 검색어를 입력해보세요.</p>
+        <a href="/home" class="btn-filled">홈으로 돌아가기</a>
+      </div>
+    `;
+    return;
+  }
+  
+  const productsHTML = products.map(product => {
+    const priceFormatted = new Intl.NumberFormat('ko-KR').format(product.price);
+    const soldOutOverlay = product.status === '재고소진' ? 
+      '<div class="sold-out-overlay"><span class="sold-out-text">매진</span></div>' : '';
+    
+    return `
+      <a href="/seller/product/${product.productId}" 
+         class="product-card" 
+         title="${product.title}">
+        <img src="${product.thumbnail || '/images/default-product.jpg'}" 
+             alt="${product.title}"
+             class="product-image"
+             onerror="handleImageError(this)">
+        
+        ${soldOutOverlay}
+        
+        <div class="product-info">
+          <p class="product-title">${product.title}</p>
+          <p class="product-price">${priceFormatted}원</p>
+          <p class="product-status">${product.status}</p>
+        </div>
+      </a>
+    `;
+  }).join('');
+  
+  searchResultsGrid.innerHTML = productsHTML;
+  
+  // 이미지 에러 이벤트 리스너 다시 등록
+  const images = searchResultsGrid.querySelectorAll('.product-image');
+  images.forEach(img => {
+    img.addEventListener('error', function() {
+      handleImageError(this);
+    });
+  });
+  
+  // 검색어 하이라이트
+  if (keyword) {
+    highlightSearchTerm(keyword);
+  }
+  
+  // 애니메이션 실행
+  animateSearchResults();
+}
+
+/**
+ * 검색어 하이라이트 기능
+ * @param {string} keyword - 검색 키워드
+ */
+function highlightSearchTerm(keyword) {
+  if (!keyword) return;
+  
+  const productTitles = document.querySelectorAll('.product-title');
+  productTitles.forEach(title => {
+    const text = title.textContent;
+    const highlightedText = text.replace(
+      new RegExp(keyword, 'gi'),
+      match => `<mark style="background-color: #fff3cd; padding: 2px 4px; border-radius: 3px;">${match}</mark>`
+    );
+    title.innerHTML = highlightedText;
+  });
+}
+
+/**
+ * 검색 결과 카운트 업데이트
+ * @param {number} count - 검색 결과 개수
+ */
+function updateSearchCount(count) {
+  const countElement = document.getElementById('searchResultsCount');
+  if (countElement) {
+    countElement.textContent = count;
+    animateCount();
+  }
+}
+
+/**
+ * 검색 결과 개수 애니메이션
+ */
+function animateCount() {
+  const countElement = document.getElementById('searchResultsCount');
+  if (countElement) {
+    const finalCount = parseInt(countElement.textContent);
+    let currentCount = 0;
+    
+    const interval = setInterval(() => {
+      currentCount += Math.ceil(finalCount / 20);
+      if (currentCount >= finalCount) {
+        currentCount = finalCount;
+        clearInterval(interval);
+      }
+      countElement.textContent = currentCount;
+    }, 50);
+  }
+}
+
+/**
+ * 검색 파라미터 파싱
+ * @returns {Object} 검색 파라미터 객체
+ */
+function parseSearchParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const keyword = urlParams.get('keyword') || '';
+  const status = urlParams.get('status') || '';
+  const price = urlParams.get('price') || '';
+  const sort = urlParams.get('sort') || '';
+  const page = parseInt(urlParams.get('page') || '1');
+  const size = 12; // 페이지당 상품 개수
+  
+  // 가격 범위 파싱
+  let minPrice = null;
+  let maxPrice = null;
+  if (price) {
+    const [min, max] = price.split('-');
+    minPrice = min ? parseInt(min) : null;
+    maxPrice = max ? parseInt(max) : null;
+  }
+  
+  // 정렬 파라미터 파싱
+  let sortScore = null;
+  let sortDate = null;
+  if (sort) {
+    if (sort.includes('price')) {
+      sortScore = sort.includes('desc') ? 'desc' : 'asc';
+    } else if (sort.includes('date')) {
+      sortDate = sort.includes('desc') ? 'desc' : 'asc';
+    }
+  }
+  
+  return {
+    keyword,
+    status,
+    minPrice,
+    maxPrice,
+    sortScore,
+    sortDate,
+    from: (page - 1) * size,
+    size
+  };
+}
+
+/**
+ * 검색 실행
+ */
+async function performSearch() {
+  try {
+    showLoading();
+    
+    const searchParams = parseSearchParams();
+    const response = await fetchSearchResults(searchParams);
+    
+    if (response.header.rtcd === '00') {
+      renderSearchResults(response.body, searchParams.keyword);
+      updateSearchCount(response.body.length);
+      updateSearchTitle(searchParams.keyword);
+    } else {
+      throw new Error(response.header.rtmsg || '검색 중 오류가 발생했습니다.');
+    }
+  } catch (error) {
+    console.error('검색 실패:', error);
+    showErrorMessage('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
+  }
+}
+
+/**
+ * 검색 결과 제목 업데이트
+ * @param {string} keyword - 검색 키워드
+ */
+function updateSearchTitle(keyword) {
+  const titleElement = document.getElementById('searchResultsTitle');
+  if (titleElement) {
+    if (keyword) {
+      titleElement.innerHTML = `"<span>${keyword}</span>" 검색 결과`;
+    } else {
+      titleElement.innerHTML = '전체 상품';
+    }
+  }
+}
+
+/**
+ * 에러 메시지 표시
+ * @param {string} message - 에러 메시지
+ */
+function showErrorMessage(message) {
+  const searchResultsGrid = document.getElementById('searchResultsGrid');
+  searchResultsGrid.innerHTML = `
+    <div class="error-message" style="text-align: center; padding: 40px; color: #dc3545;">
+      <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px;"></i>
+      <h3>오류가 발생했습니다</h3>
+      <p>${message}</p>
+      <button onclick="performSearch()" class="btn-filled" style="margin-top: 16px;">
+        다시 시도
+      </button>
+    </div>
+  `;
+}
+
+/**
+ * 로딩 상태 표시
+ */
+function showLoading() {
+  const loadingHtml = `
+    <div class="loading-container" style="text-align: center; padding: 40px;">
+      <div class="loading-spinner" style="
+        width: 40px; 
+        height: 40px; 
+        border: 4px solid #f3f3f3; 
+        border-top: 4px solid #4CAF50; 
+        border-radius: 50%; 
+        animation: spin 1s linear infinite; 
+        margin: 0 auto 16px;">
+      </div>
+      <p style="color: #666;">검색 결과를 불러오는 중...</p>
+    </div>
+  `;
+  
+  const searchResultsGrid = document.getElementById('searchResultsGrid');
+  if (searchResultsGrid) {
+    searchResultsGrid.innerHTML = loadingHtml;
+  }
+}
+
+/**
+ * Elasticsearch 검색 (향후 구현용)
+ * @param {string} keyword - 검색 키워드
+ */
+function searchElasticsearch(keyword) {
+  fetch(`/elasticsearch/search?query=${encodeURIComponent(keyword)}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log('Elasticsearch 검색 결과:', data);
+      // TODO: Elasticsearch 검색 결과 렌더링 구현
+    })
+    .catch(error => {
+      console.error('Elasticsearch 검색 오류:', error);
+    });
+}
+
+/**
+ * 페이지 로드 시 초기화
+ */
+function initializeSearchPage() {
+  const keyword = getQueryParam('keyword') || '';
+  const searchKeyword = document.getElementById('searchKeyword');
+  if (searchKeyword) {
+    searchKeyword.value = keyword;
+  }
+
+  if (keyword) {
+    console.log('페이지 로드 시 검색어:', keyword);
+    // 페이지 로드 시 자동 검색 실행
+    searchProducts(true);
+  }
+}
+
+/**
+ * Enter 키로 검색 실행
+ */
+function setupEnterKeySearch() {
+  const searchKeyword = document.getElementById('searchKeyword');
+  if (searchKeyword) {
+    searchKeyword.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        searchProducts(true);
+      }
+    });
+  }
+}
+
+// DOM 로드 완료 시 실행
 document.addEventListener('DOMContentLoaded', function() {
   // 필터 요소들
   const statusFilter = document.getElementById('statusFilter');
   const priceFilter = document.getElementById('priceFilter');
   const sortFilter = document.getElementById('sortFilter');
-  
-  // 필터 변경 이벤트 리스너
-  if (statusFilter) {
-    statusFilter.addEventListener('change', applyFilters);
-  }
-  if (priceFilter) {
-    priceFilter.addEventListener('change', applyFilters);
-  }
-  if (sortFilter) {
-    sortFilter.addEventListener('change', applyFilters);
-  }
+  const searchForm = document.getElementById('searchForm');
+  const searchKeyword = document.getElementById('searchKeyword');
   
   // 검색 결과 그리드
   const searchResultsGrid = document.getElementById('searchResultsGrid');
@@ -86,6 +545,31 @@ document.addEventListener('DOMContentLoaded', function() {
       handleImageError(this);
     });
   });
+  
+  // 검색 폼 제출 처리
+  if (searchForm) {
+    searchForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const keyword = searchKeyword.value.trim();
+      if (!keyword) {
+        alert('검색어를 입력해주세요.');
+        searchKeyword.focus();
+        return;
+      }
+      
+      // URL 업데이트
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('keyword', keyword);
+      urlParams.delete('page'); // 페이지 초기화
+      
+      const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+      window.history.pushState({}, '', newUrl);
+      
+      // 검색 실행
+      performSearch();
+    });
+  }
   
   // 필터 적용 함수
   function applyFilters() {
@@ -104,9 +588,23 @@ document.addEventListener('DOMContentLoaded', function() {
     if (price) newParams.append('price', price);
     if (sort) newParams.append('sort', sort);
     
-    // 페이지 새로고침으로 필터 적용
+    // URL 업데이트
     const newUrl = `${window.location.pathname}?${newParams.toString()}`;
-    window.location.href = newUrl;
+    window.history.pushState({}, '', newUrl);
+    
+    // 검색 실행
+    performSearch();
+  }
+  
+  // 필터 변경 이벤트 리스너
+  if (statusFilter) {
+    statusFilter.addEventListener('change', applyFilters);
+  }
+  if (priceFilter) {
+    priceFilter.addEventListener('change', applyFilters);
+  }
+  if (sortFilter) {
+    sortFilter.addEventListener('change', applyFilters);
   }
   
   // 검색 결과 애니메이션
@@ -125,45 +623,16 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // 페이지 로드 시 애니메이션 실행
-  if (searchResultsGrid) {
-    animateSearchResults();
-  }
-  
   // 검색 입력 필드 포커스 효과
-  const searchInput = document.querySelector('.search-input');
-  if (searchInput) {
-    searchInput.addEventListener('focus', function() {
+  if (searchKeyword) {
+    searchKeyword.addEventListener('focus', function() {
       this.parentElement.style.boxShadow = '0 6px 25px rgba(0, 0, 0, 0.15)';
     });
     
-    searchInput.addEventListener('blur', function() {
+    searchKeyword.addEventListener('blur', function() {
       this.parentElement.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.1)';
     });
   }
-  
-  // 검색 결과 카운트 애니메이션
-  function animateCount() {
-    const countElement = document.querySelector('.search-results-count span');
-    if (countElement) {
-      const finalCount = parseInt(countElement.textContent);
-      let currentCount = 0;
-      
-      const interval = setInterval(() => {
-        currentCount += Math.ceil(finalCount / 20);
-        if (currentCount >= finalCount) {
-          currentCount = finalCount;
-          clearInterval(interval);
-        }
-        countElement.textContent = currentCount;
-      }, 50);
-    }
-  }
-  
-  // 페이지 로드 시 카운트 애니메이션 실행
-  animateCount();
-  
-
   
   // 필터 선택 상태 복원
   function restoreFilterState() {
@@ -182,19 +651,6 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // 페이지 로드 시 필터 상태 복원
   restoreFilterState();
-  
-  // 검색 결과 없음 메시지 애니메이션
-  const noResults = document.querySelector('.no-results');
-  if (noResults) {
-    noResults.style.opacity = '0';
-    noResults.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-      noResults.style.transition = 'opacity 0.8s ease, transform 0.8s ease';
-      noResults.style.opacity = '1';
-      noResults.style.transform = 'translateY(0)';
-    }, 300);
-  }
   
   // 페이지네이션 버튼 이벤트
   const paginationBtns = document.querySelectorAll('.pagination-btn');
@@ -217,72 +673,22 @@ document.addEventListener('DOMContentLoaded', function() {
       // 새 URL 생성
       urlParams.set('page', newPage.toString());
       const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-      window.location.href = newUrl;
+      window.history.pushState({}, '', newUrl);
+      
+      // 검색 실행
+      performSearch();
     });
   });
   
-  // 검색어 하이라이트 기능
-  function highlightSearchTerm() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const keyword = urlParams.get('keyword');
-    
-    if (keyword) {
-      const productTitles = document.querySelectorAll('.product-title');
-      productTitles.forEach(title => {
-        const text = title.textContent;
-        const highlightedText = text.replace(
-          new RegExp(keyword, 'gi'),
-          match => `<mark style="background-color: #fff3cd; padding: 2px 4px; border-radius: 3px;">${match}</mark>`
-        );
-        title.innerHTML = highlightedText;
-      });
-    }
+  // 페이지 로드 시 API 검색 실행
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('keyword') || urlParams.get('status') || urlParams.get('price') || urlParams.get('sort')) {
+    performSearch();
   }
   
-  // 페이지 로드 시 검색어 하이라이트
-  highlightSearchTerm();
-  
-  // 로딩 상태 표시
-  function showLoading() {
-    const loadingHtml = `
-      <div class="loading-container" style="text-align: center; padding: 40px;">
-        <div class="loading-spinner" style="
-          width: 40px; 
-          height: 40px; 
-          border: 4px solid #f3f3f3; 
-          border-top: 4px solid var(--color-primary); 
-          border-radius: 50%; 
-          animation: spin 1s linear infinite; 
-          margin: 0 auto 16px;">
-        </div>
-        <p style="color: var(--color-secondary-text);">검색 결과를 불러오는 중...</p>
-      </div>
-    `;
-    
-    if (searchResultsGrid) {
-      searchResultsGrid.innerHTML = loadingHtml;
-    }
-  }
-  
-  // 필터 적용 시 로딩 표시
-  function applyFiltersWithLoading() {
-    showLoading();
-    applyFilters();
-  }
-  
-  // 필터 이벤트 리스너 업데이트
-  if (statusFilter) {
-    statusFilter.removeEventListener('change', applyFilters);
-    statusFilter.addEventListener('change', applyFiltersWithLoading);
-  }
-  if (priceFilter) {
-    priceFilter.removeEventListener('change', applyFilters);
-    priceFilter.addEventListener('change', applyFiltersWithLoading);
-  }
-  if (sortFilter) {
-    sortFilter.removeEventListener('change', applyFilters);
-    sortFilter.addEventListener('change', applyFiltersWithLoading);
-  }
+  // 초기화 함수들 실행
+  initializeSearchPage();
+  setupEnterKeySearch();
 });
 
 // 스핀 애니메이션 CSS
