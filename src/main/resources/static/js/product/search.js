@@ -10,71 +10,31 @@ function getQueryParam(param) {
   return params.get(param);
 }
 
-/**
- * 상품 검색 함수
- * @param {boolean} firstSearch - 첫 검색 여부
- */
-async function searchProducts(firstSearch = true) {
-  const keyword = document.getElementById('searchKeyword').value.trim();
-  
-  if (!keyword) {
-    alert("검색어를 입력해주세요.");
-    return;
-  }
 
-  // 검색 파라미터 구성
-  const params = new URLSearchParams();
-  params.append('keyword', keyword);
-  
-  const status = document.getElementById('statusFilter')?.value || '';
-  const priceFilter = document.getElementById('priceFilter')?.value || '';
-  const sortFilter = document.getElementById('sortFilter')?.value || '';
+document.getElementById("syncForm").addEventListener("submit", function(e) {
+  e.preventDefault();
 
-  if (status) params.append('status', status);
-  if (priceFilter) {
-    const [minPrice, maxPrice] = priceFilter.split('-');
-    if (minPrice) params.append('minPrice', minPrice);
-    if (maxPrice) params.append('maxPrice', maxPrice);
-  }
-  if (sortFilter) {
-    if (sortFilter.includes('date')) {
-      params.append('sortDate', sortFilter.includes('desc') ? 'DESC' : 'ASC');
-    } else if (sortFilter.includes('price')) {
-      params.append('sortScore', sortFilter.includes('desc') ? 'DESC' : 'ASC');
-    }
-  }
+  const logBox = document.getElementById("syncLog");
+  const logPre = logBox.querySelector("pre");
+  const button = document.getElementById("syncButton");
 
-  const searchUrl = `/api/products/search?${params.toString()}`;
-  console.log('검색 URL:', searchUrl);
+  logBox.style.display = "block";
+  logPre.textContent = "🔄 동기화 시작...\n";
+  button.disabled = true;
 
-  try {
-    const response = await fetch(searchUrl);
-    console.log('API 응답 상태:', response.status);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const result = await response.json();
-    console.log('API 응답 데이터:', result);
-
-    // 응답 구조 확인 및 결과 표시
-    let products = [];
-    if (result.body) {
-      products = result.body;
-    } else if (Array.isArray(result)) {
-      products = result;
-    } else if (result.data) {
-      products = result.data;
-    }
-
-    console.log('처리된 상품 목록:', products);
-    displayResults(products);
-  } catch (error) {
-    console.error("검색 오류:", error);
-    alert("검색 중 오류가 발생했습니다: " + error.message);
-  }
-}
+  fetch("/test/copy/db", { method: "POST" })
+    .then(res => res.text())
+    .then(text => {
+      logPre.textContent += text + "\n";
+    })
+    .catch(err => {
+      logPre.textContent += "❌ 오류 발생: " + err + "\n";
+    })
+    .finally(() => {
+      button.disabled = false;
+      logPre.textContent += "✅ 작업 완료";
+    });
+});
 
 /**
  * 검색 결과 표시
@@ -407,7 +367,7 @@ async function performSearch() {
     const searchParams = parseSearchParams();
     const response = await fetchSearchResults(searchParams);
     
-    if (response.header.rtcd === '00') {
+    if (response.header.rtcd === 'S00' || Array.isArray(response)) {
       renderSearchResults(response.body, searchParams.keyword);
       updateSearchCount(response.body.length);
       updateSearchTitle(searchParams.keyword);
@@ -495,6 +455,24 @@ function searchElasticsearch(keyword) {
 }
 
 /**
+ * 검색 결과 애니메이션
+ */
+function animateSearchResults() {
+  const productCards = document.querySelectorAll('.product-card');
+  
+  productCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, index * 100);
+  });
+}
+
+/**
  * 페이지 로드 시 초기화
  */
 function initializeSearchPage() {
@@ -506,8 +484,7 @@ function initializeSearchPage() {
 
   if (keyword) {
     console.log('페이지 로드 시 검색어:', keyword);
-    // 페이지 로드 시 자동 검색 실행
-    searchProducts(true);
+    performSearch();
   }
 }
 
@@ -520,7 +497,7 @@ function setupEnterKeySearch() {
     searchKeyword.addEventListener('keypress', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        searchProducts(true);
+        performSearch();
       }
     });
   }
@@ -607,21 +584,7 @@ document.addEventListener('DOMContentLoaded', function() {
     sortFilter.addEventListener('change', applyFilters);
   }
   
-  // 검색 결과 애니메이션
-  function animateSearchResults() {
-    const productCards = document.querySelectorAll('.product-card');
-    
-    productCards.forEach((card, index) => {
-      card.style.opacity = '0';
-      card.style.transform = 'translateY(20px)';
-      
-      setTimeout(() => {
-        card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        card.style.opacity = '1';
-        card.style.transform = 'translateY(0)';
-      }, index * 100);
-    });
-  }
+
   
   // 검색 입력 필드 포커스 효과
   if (searchKeyword) {

@@ -1,0 +1,35 @@
+# 1. 기존 인덱스 삭제
+curl -X DELETE "http://localhost:9200/product"
+
+# 2. 인덱스 생성 + my_custom_analyzer 등록
+curl -X PUT "http://localhost:9200/product" -H "Content-Type: application/json" -d '
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "my_custom_analyzer": {
+        "type": "custom",
+        "tokenizer": "nori_tokenizer",
+        "filter": [
+          "lowercase",
+          "nori_readingform",
+          "nori_part_of_speech"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "properties": {
+      "productId":     { "type": "long" },
+      "sellerId":      { "type": "long" },
+      "title":         { "type": "text", "analyzer": "my_custom_analyzer" },
+      "productName":   { "type": "text", "analyzer": "my_custom_analyzer" },
+      "price":         { "type": "long" },
+      "deliveryMethod":{ "type": "keyword" },
+      "countryOfOrigin": { "type": "keyword" },
+      "status":        { "type": "keyword" },
+      "cdate":         { "type": "date" }
+    }
+  }
+}'
