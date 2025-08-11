@@ -1,7 +1,10 @@
 package com.kh.project.web;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.project.domain.elasticsearch.ProductSearchSVC;
@@ -303,6 +307,45 @@ public class ProductController {
     } catch (Exception e) {
       log.error("일괄 상품 상태 업데이트 중 오류 발생: {}", e.getMessage(), e);
       return ApiResponse.of(ApiResponseCode.INTERNAL_SERVER_ERROR, "일괄 상품 상태 업데이트 중 오류가 발생했습니다.");
+    }
+  }
+
+  // 자동 동기화 상태 확인 API
+  @GetMapping("/api/sync/status")
+  @ResponseBody
+  public ApiResponse<Map<String, Object>> getSyncStatus() {
+    try {
+      Map<String, Object> status = new HashMap<>();
+      
+      // 현재 시간
+      LocalDateTime now = LocalDateTime.now();
+      status.put("currentTime", now.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+      
+      // 다음 동기화 시간들
+      LocalDateTime nextHourlySync = now.withMinute(0).withSecond(0).withNano(0).plusHours(1);
+      LocalDateTime nextDailySync = now.withHour(3).withMinute(0).withSecond(0).withNano(0);
+      if (nextDailySync.isBefore(now)) {
+        nextDailySync = nextDailySync.plusDays(1);
+      }
+      
+      status.put("nextHourlySync", nextHourlySync.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+      status.put("nextDailySync", nextDailySync.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+      
+      // 동기화 스케줄 정보
+      Map<String, String> schedules = new HashMap<>();
+      schedules.put("hourly", "매시간 정각 (00분)");
+      schedules.put("daily", "매일 새벽 3시");
+      schedules.put("priceData", "매일 새벽 2시");
+      schedules.put("cleanup", "매주 일요일 새벽 4시");
+      
+      status.put("schedules", schedules);
+      
+      return ApiResponse.of(ApiResponseCode.SUCCESS, status);
+    } catch (Exception e) {
+      log.error("동기화 상태 조회 중 오류: {}", e.getMessage(), e);
+      Map<String, Object> errorStatus = new HashMap<>();
+      errorStatus.put("error", "동기화 상태 조회 중 오류가 발생했습니다.");
+      return ApiResponse.of(ApiResponseCode.INTERNAL_SERVER_ERROR, errorStatus);
     }
   }
 

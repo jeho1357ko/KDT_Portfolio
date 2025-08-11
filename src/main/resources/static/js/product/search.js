@@ -359,12 +359,19 @@ function parseSearchParams() {
 
 /**
  * 검색 실행
+ * @param {string} customKeyword - 직접 입력된 검색어 (선택사항)
  */
-async function performSearch() {
+async function performSearch(customKeyword = null) {
   try {
     showLoading();
     
-    const searchParams = parseSearchParams();
+    let searchParams = parseSearchParams();
+    
+    // 직접 입력된 검색어가 있으면 사용
+    if (customKeyword !== null) {
+      searchParams.keyword = customKeyword;
+    }
+    
     const response = await fetchSearchResults(searchParams);
     
     if (response.header.rtcd === 'S00' || Array.isArray(response)) {
@@ -494,10 +501,27 @@ function initializeSearchPage() {
 function setupEnterKeySearch() {
   const searchKeyword = document.getElementById('searchKeyword');
   if (searchKeyword) {
-    searchKeyword.addEventListener('keypress', function(e) {
+    searchKeyword.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
         e.preventDefault();
-        performSearch();
+        e.stopPropagation();
+        const keyword = this.value.trim();
+        if (!keyword) {
+          alert('검색어를 입력해주세요.');
+          this.focus();
+          return;
+        }
+        
+        // URL 업데이트
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('keyword', keyword);
+        urlParams.delete('page'); // 페이지 초기화
+        
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        
+        // 검색 실행
+        performSearch(keyword);
       }
     });
   }
@@ -527,6 +551,7 @@ document.addEventListener('DOMContentLoaded', function() {
   if (searchForm) {
     searchForm.addEventListener('submit', function(e) {
       e.preventDefault();
+      e.stopPropagation();
       
       const keyword = searchKeyword.value.trim();
       if (!keyword) {
@@ -544,7 +569,34 @@ document.addEventListener('DOMContentLoaded', function() {
       window.history.pushState({}, '', newUrl);
       
       // 검색 실행
-      performSearch();
+      performSearch(keyword);
+    });
+  }
+  
+  // 검색 버튼 클릭 처리
+  const searchButton = document.querySelector('.search-button');
+  if (searchButton) {
+    searchButton.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      const keyword = searchKeyword.value.trim();
+      if (!keyword) {
+        alert('검색어를 입력해주세요.');
+        searchKeyword.focus();
+        return;
+      }
+      
+      // URL 업데이트
+      const urlParams = new URLSearchParams(window.location.search);
+      urlParams.set('keyword', keyword);
+      urlParams.delete('page'); // 페이지 초기화
+      
+      const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+      window.history.pushState({}, '', newUrl);
+      
+      // 검색 실행
+      performSearch(keyword);
     });
   }
   

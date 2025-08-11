@@ -1,6 +1,7 @@
 package com.kh.project.config;
 
 import com.kh.project.domain.svc.PriceComparisonService;
+import com.kh.project.test.ProductCopy;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,6 +16,9 @@ public class PriceDataScheduler {
     
     @Autowired
     private PriceComparisonService priceComparisonService;
+    
+    @Autowired
+    private ProductCopy productCopy;
     
     // 매일 새벽 2시에 가격 데이터 동기화
     @Scheduled(cron = "0 0 2 * * ?")
@@ -46,8 +50,36 @@ public class PriceDataScheduler {
         }
     }
     
-    // 매주 일요일 새벽 3시에 전체 데이터 정리 및 백업
-    @Scheduled(cron = "0 0 3 ? * SUN")
+    // 매시간 정각에 상품 데이터 동기화 (Elasticsearch)
+    @Scheduled(cron = "0 0 * * * ?")
+    public void syncProductDataHourly() {
+        try {
+            log.info("🔄 매시간 상품 데이터 동기화 시작");
+            
+            String result = productCopy.copyAndReindex();
+            log.info("✅ 매시간 상품 데이터 동기화 완료: {}", result);
+            
+        } catch (Exception e) {
+            log.error("❌ 매시간 상품 데이터 동기화 중 오류: {}", e.getMessage(), e);
+        }
+    }
+    
+    // 매일 새벽 3시에 전체 상품 데이터 동기화 (더 안정적인 시간대)
+    @Scheduled(cron = "0 0 3 * * ?")
+    public void syncProductDataDaily() {
+        try {
+            log.info("🔄 일일 전체 상품 데이터 동기화 시작");
+            
+            String result = productCopy.copyAndReindex();
+            log.info("✅ 일일 전체 상품 데이터 동기화 완료: {}", result);
+            
+        } catch (Exception e) {
+            log.error("❌ 일일 전체 상품 데이터 동기화 중 오류: {}", e.getMessage(), e);
+        }
+    }
+    
+    // 매주 일요일 새벽 4시에 전체 데이터 정리 및 백업
+    @Scheduled(cron = "0 0 4 ? * SUN")
     public void cleanupPriceDataWeekly() {
         try {
             log.info("주간 가격 데이터 정리 시작");
