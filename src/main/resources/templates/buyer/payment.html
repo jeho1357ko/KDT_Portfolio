@@ -3,20 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>주문/결제</title>
+    <title>주문/결제 - planT</title>
+    <meta name="description" content="농산물 직거래 플랫폼 planT의 안전한 주문/결제 페이지입니다.">
+    
     <!-- Daum Postcode API -->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    
+    <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
     <link rel="stylesheet" th:href="@{/css/buyer/payment.css}">
 </head>
 <body>
     <!-- 네비게이션 바 -->
-    <header class="navbar-container">
-        <div class="navbar">
-                    <a th:href="@{/home}" class="logo-container" aria-label="홈으로 이동">
-          <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
-          <span class="brand-name">planT</span>
-        </a>
+    <header class="navbar-container" role="banner">
+        <nav class="navbar" role="navigation" aria-label="메인 네비게이션">
+            <a th:href="@{/home}" class="logo-container" aria-label="홈으로 이동">
+                <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="planT 로고" class="navbar-logo-img"/>
+                <span class="brand-name">planT</span>
+            </a>
             <div class="navbar-buttons">
                 <th:block th:if="${session.loginBuyer != null}">
                     <a th:href="@{/buyer/info}" class="user-name" th:text="${session.loginBuyer.nickname}" aria-label="내 정보"></a>
@@ -26,69 +32,83 @@
                     <button type="submit" class="btn-filled">로그아웃</button>
                 </form>
             </div>
-        </div>
+        </nav>
     </header>
 
-    <!-- 구매자 ID 숨겨진 input 추가 -->
+    <!-- 구매자 ID 숨겨진 input -->
     <input type="hidden" id="buyerId" th:value="${session.loginBuyer?.buyerId}">
     
+    <!-- Thymeleaf JavaScript 변수 설정 -->
     <script th:inline="javascript">
-        // Thymeleaf에서 buyerId를 JavaScript 변수로 설정
         var currentBuyerId = /*[[${session.loginBuyer?.buyerId}]]*/ null;
         console.log('Thymeleaf에서 설정된 buyerId:', currentBuyerId);
     </script>
 
-    <main class="payment-container">
+    <main class="payment-container" role="main">
         <h1>주문/결제</h1>
         
         <form id="paymentForm" method="post" novalidate>
             <div class="payment-layout">
                 <div class="main-content">
                     <!-- 주문 상품 정보 섹션 -->
-                    <section class="section-box">
-                        <h2>주문 상품 정보</h2>
+                    <section class="section-box" aria-labelledby="orderItemsTitle">
+                        <h2 id="orderItemsTitle">주문 상품 정보</h2>
                         <div id="orderItemsList" aria-label="주문 상품 목록">
                             <!-- JavaScript로 동적 렌더링 -->
                         </div>
                     </section>
 
                     <!-- 배송지 정보 섹션 -->
-                    <section class="section-box">
-                        <h2>배송지 정보</h2>
+                    <section class="section-box" aria-labelledby="deliveryInfoTitle">
+                        <h2 id="deliveryInfoTitle">배송지 정보</h2>
                         <div class="form-group">
-                            <label for="recipientName" class="required">받는 분</label>
+                            <label for="recipientName" class="required">받는 분 <span class="required-mark">*</span></label>
                             <input type="text" id="recipientName" name="recipientName" required 
-                                   placeholder="받는 분 이름을 입력하세요">
+                                   placeholder="받는 분 이름을 입력하세요 (최소 2자 이상)"
+                                   aria-describedby="recipientNameHelp recipientNameError">
+                            <small id="recipientNameHelp" class="help-text">받는 분 이름은 최소 2자 이상 입력해주세요.</small>
+                            <div id="recipientNameError" class="error-message" role="alert" aria-live="polite"></div>
                         </div>
                         <div class="form-group">
-                            <label for="recipientPhone" class="required">연락처</label>
+                            <label for="recipientPhone" class="required">연락처 <span class="required-mark">*</span></label>
                             <input type="tel" id="recipientPhone" name="recipientPhone" 
-                                   placeholder="'-' 없이 숫자만 입력" required>
+                                   placeholder="'-' 없이 숫자만 입력 (예: 01012345678)" required
+                                   aria-describedby="recipientPhoneHelp recipientPhoneError">
+                            <small id="recipientPhoneHelp" class="help-text">휴대폰 번호를 입력하면 자동으로 형식이 변환됩니다.</small>
+                            <div id="recipientPhoneError" class="error-message" role="alert" aria-live="polite"></div>
                         </div>
                         <div class="form-group">
-                            <label for="postcode" class="required">우편번호</label>
+                            <label for="postcode" class="required">우편번호 <span class="required-mark">*</span></label>
                             <div class="postcode-group">
                                 <input type="text" id="postcode" name="postcode" readonly 
-                                       placeholder="주소 검색 버튼을 클릭하세요">
+                                       placeholder="주소 검색 버튼을 클릭하세요"
+                                       aria-describedby="postcodeHelp postcodeError">
                                 <button type="button" id="searchPostcodeBtn" aria-label="주소 검색">주소 검색</button>
                             </div>
+                            <small id="postcodeHelp" class="help-text">주소 검색 버튼을 클릭하여 주소를 선택해주세요.</small>
+                            <div id="postcodeError" class="error-message" role="alert" aria-live="polite"></div>
                         </div>
                         <div class="form-group">
-                            <label for="address" class="required">주소</label>
+                            <label for="address" class="required">주소 <span class="required-mark">*</span></label>
                             <input type="text" id="address" name="address" readonly 
-                                   placeholder="주소 검색 후 자동 입력됩니다">
+                                   placeholder="주소 검색 후 자동 입력됩니다"
+                                   aria-describedby="addressError">
+                            <div id="addressError" class="error-message" role="alert" aria-live="polite"></div>
                         </div>
                         <div class="form-group">
-                            <label for="detailAddress">상세주소</label>
+                            <label for="detailAddress" class="required">상세주소 <span class="required-mark">*</span></label>
                             <input type="text" id="detailAddress" name="detailAddress" 
-                                   placeholder="상세주소를 입력하세요">
+                                   placeholder="상세주소를 입력하세요" required
+                                   aria-describedby="detailAddressError">
+                            <div id="detailAddressError" class="error-message" role="alert" aria-live="polite"></div>
                         </div>
                     </section>
 
                     <!-- 결제 수단 섹션 -->
-                    <section class="section-box">
-                        <h2>결제 수단</h2>
-                        <div class="payment-options">
+                    <section class="section-box" aria-labelledby="paymentMethodTitle">
+                        <h2 id="paymentMethodTitle">결제 수단</h2>
+                        <fieldset class="payment-options">
+                            <legend class="sr-only">결제 수단 선택</legend>
                             <label>
                                 <input type="radio" name="paymentMethod" value="bank" checked>
                                 <span>무통장 입금</span>
@@ -97,65 +117,69 @@
                                 <input type="radio" name="paymentMethod" value="card">
                                 <span>카드 결제</span>
                             </label>
-                        </div>
+                        </fieldset>
                         
                         <!-- 무통장 입금 정보 -->
-                        <div id="bankPaymentInfo" class="payment-details">
-                            <h3>입금 계좌 정보</h3>
-                            <p><strong>농협은행:</strong> 123-456789-01-234 (예금주: 농산물직거래플랫폼)</p>
-                            <p><strong>신한은행:</strong> 110-123-456789 (예금주: 농산물직거래플랫폼)</p>
-                            <p><strong>국민은행:</strong> 123456-01-234567 (예금주: 농산물직거래플랫폼)</p>
-                            <p style="color: var(--color-error); font-weight: bold; margin-top: 15px;">
+                        <div id="bankPaymentInfo" class="payment-details" role="region" aria-labelledby="bankInfoTitle">
+                            <h3 id="bankInfoTitle">입금 계좌 정보</h3>
+                            <div class="account-info">
+                                <p><strong>농협은행:</strong> 123-456789-01-234 (예금주: 농산물직거래플랫폼)</p>
+                                <p><strong>신한은행:</strong> 110-123-456789 (예금주: 농산물직거래플랫폼)</p>
+                                <p><strong>국민은행:</strong> 123456-01-234567 (예금주: 농산물직거래플랫폼)</p>
+                            </div>
+                            <p class="important-notice">
                                 ※ 입금자명을 주문자명과 동일하게 입력해주세요.
                             </p>
                         </div>
                         
                         <!-- 카드 결제 정보 -->
-                        <div id="cardPaymentInfo" class="payment-details" style="display: none;">
-                            <h3>카드 정보 입력</h3>
+                        <div id="cardPaymentInfo" class="payment-details" style="display: none;" role="region" aria-labelledby="cardInfoTitle">
+                            <h3 id="cardInfoTitle">카드 정보 입력</h3>
                             <div class="form-group">
-                                <label for="cardNumber" class="required">카드번호</label>
-                                <div class="card-number-group">
+                                <label for="cardNumber1" class="required">카드번호 <span class="required-mark">*</span></label>
+                                <div class="card-number-group" role="group" aria-labelledby="cardNumberLabel">
+                                    <span id="cardNumberLabel" class="sr-only">카드번호 16자리</span>
                                     <input type="text" id="cardNumber1" maxlength="4" placeholder="0000" 
                                            class="card-input" aria-label="카드번호 첫 번째 자리">
-                                    <span>-</span>
+                                    <span aria-hidden="true">-</span>
                                     <input type="text" id="cardNumber2" maxlength="4" placeholder="0000" 
                                            class="card-input" aria-label="카드번호 두 번째 자리">
-                                    <span>-</span>
+                                    <span aria-hidden="true">-</span>
                                     <input type="text" id="cardNumber3" maxlength="4" placeholder="0000" 
                                            class="card-input" aria-label="카드번호 세 번째 자리">
-                                    <span>-</span>
+                                    <span aria-hidden="true">-</span>
                                     <input type="text" id="cardNumber4" maxlength="4" placeholder="0000" 
                                            class="card-input" aria-label="카드번호 네 번째 자리">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="cardExpiry" class="required">유효기간</label>
-                                <div style="display: flex; gap: 10px; align-items: center;">
+                                <label for="cardExpiryMonth" class="required">유효기간 <span class="required-mark">*</span></label>
+                                <div class="expiry-group" role="group" aria-labelledby="expiryLabel">
+                                    <span id="expiryLabel" class="sr-only">카드 유효기간</span>
                                     <input type="text" id="cardExpiryMonth" maxlength="2" placeholder="MM" 
-                                           style="width: 60px;" class="card-input" aria-label="월">
-                                    <span>/</span>
+                                           class="card-input expiry-input" aria-label="월">
+                                    <span aria-hidden="true">/</span>
                                     <input type="text" id="cardExpiryYear" maxlength="2" placeholder="YY" 
-                                           style="width: 60px;" class="card-input" aria-label="년">
+                                           class="card-input expiry-input" aria-label="년">
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="cardCVC" class="required">CVC</label>
+                                <label for="cardCVC" class="required">CVC <span class="required-mark">*</span></label>
                                 <input type="text" id="cardCVC" maxlength="3" placeholder="123" 
-                                       style="width: 100px;" class="card-input">
+                                       class="card-input cvc-input">
                             </div>
                             <div class="form-group">
-                                <label for="cardPassword" class="required">카드 비밀번호</label>
+                                <label for="cardPassword" class="required">카드 비밀번호 <span class="required-mark">*</span></label>
                                 <input type="password" id="cardPassword" maxlength="4" placeholder="****" 
-                                       style="width: 100px;" class="card-input">
+                                       class="card-input password-input">
                             </div>
                         </div>
                     </section>
                 </div>
 
                 <!-- 결제 요약 사이드바 -->
-                <aside class="summary-box">
-                    <h2>최종 결제 금액</h2>
+                <aside class="summary-box" role="complementary" aria-labelledby="summaryTitle">
+                    <h2 id="summaryTitle">최종 결제 금액</h2>
                     <div class="summary-row">
                         <span>총 상품 금액</span>
                         <span id="summarySubtotal">0원</span>
@@ -178,17 +202,17 @@
     <!-- 주문 완료 모달 -->
     <div id="orderCompleteModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
         <div class="modal-content">
-            <h3 id="modalTitle" class="sr-only">주문 완료</h3>
+            <h3 id="modalTitle">주문 완료</h3>
             <p>주문이 완료되었습니다!</p>
             <div class="modal-buttons">
-                <button onclick="goToPaymentComplete()" 
-                        style="background-color: var(--color-primary); color: #fff; border: none;">
+                <button onclick="goToPaymentComplete()" class="btn-primary">
                     주문 완료 페이지로
                 </button>
             </div>
         </div>
     </div>
     
+    <!-- Scripts -->
     <script th:src="@{/js/buyer/payment.js}"></script>
 </body>
 </html> 

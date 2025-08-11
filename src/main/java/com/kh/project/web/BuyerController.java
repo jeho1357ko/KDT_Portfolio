@@ -78,19 +78,9 @@ public class BuyerController {
 
 
 
-    // 생년월일 유효성 검사 (만 14세 이상)
+    // 생년월일 형식 검증
     try {
-      LocalDate birthDate = LocalDate.parse(form.getBirth());
-      LocalDate today = LocalDate.now();
-      int age = today.getYear() - birthDate.getYear();
-      if (birthDate.plusYears(age).isAfter(today)) {
-        age--;
-      }
-      
-      if (age < 14) {
-        bindingResult.rejectValue("birth", "birth.invalid", "만 14세 이상만 가입 가능합니다.");
-        return "buyer/buyer_signup";
-      }
+      LocalDate.parse(form.getBirth());
     } catch (Exception e) {
       bindingResult.rejectValue("birth", "birth.invalid", "생년월일 형식이 잘못되었습니다.");
       return "buyer/buyer_signup";

@@ -80,7 +80,7 @@
       if (monthDiff < 0 || (monthDiff === 0 && dayDiff < 0)) {
         age--;
       }
-      return age >= 14 && age <= 100;
+      return age >= 0 && age <= 100;
     }
 
     function validateAddress() {
@@ -410,7 +410,7 @@
         showError('error-birth', '생년월일을 입력해주세요.');
         isValid = false;
       } else if (!validateBirth(birth)) {
-        showError('error-birth', '만 14세 이상 100세 이하만 가입 가능합니다.');
+        showError('error-birth', '올바른 생년월일을 입력해주세요.');
         isValid = false;
       } else {
         hideError('error-birth');

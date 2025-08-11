@@ -97,7 +97,7 @@
   gap: 12px;
   text-decoration: none;
   color: var(--color-text);
-  transition: var(--transition-default, all 0.3s ease);
+  transition: var(--transition-normal);
 }
 
 .logo-container:hover {
@@ -105,7 +105,7 @@
 }
 
 .brand-name {
-  font-family: 'Cabin', sans-serif;
+  font-family: var(--font-family-heading);
   font-weight: 700;
   font-size: 1.5rem;
   color: var(--color-primary);
@@ -279,7 +279,7 @@
 
   /* ===== 폼 스타일 ===== */
   .form-group {
-      margin-bottom: var(--spacing-sm);
+      margin-bottom: var(--spacing-lg);
   }
   
   .form-group label {
@@ -313,17 +313,61 @@
   .form-group input:hover {
       border-color: var(--color-primary-hover);
   }
-  
+
+  /* ===== 필수 입력 표시 ===== */
+  .required-mark {
+      color: var(--color-error);
+      font-weight: bold;
+  }
+
+  .help-text {
+    display: block;
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-small);
+    color: var(--color-text-light);
+    line-height: 1.4;
+}
+
+.error-message {
+    display: none;
+    margin-top: var(--spacing-xs);
+    font-size: var(--font-size-small);
+    color: var(--color-error);
+    line-height: 1.4;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background-color: rgba(231, 76, 60, 0.1);
+    border-radius: var(--border-radius);
+    border-left: 3px solid var(--color-error);
+    font-weight: 500;
+}
+
+.error-message.show {
+    display: block;
+    animation: slideDown 0.3s ease;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+  /* ===== 우편번호 그룹 ===== */
   .postcode-group {
       display: flex;
       gap: var(--spacing-sm);
       align-items: center;
   }
-  
+
   .postcode-group input {
       flex-grow: 1;
   }
-  
+
   .postcode-group button {
       padding: var(--spacing-sm) var(--spacing-lg);
       border: 2px solid var(--color-primary);
@@ -349,6 +393,8 @@
       gap: var(--spacing-lg);
       align-items: center;
       margin-bottom: var(--spacing-lg);
+      border: none;
+      padding: 0;
   }
   
   .payment-options label {
@@ -396,14 +442,29 @@
   .payment-details p:last-child {
       margin-bottom: 0;
   }
-  
-  .payment-details .card-number-group {
+
+  .account-info {
+      margin-bottom: var(--spacing-md);
+  }
+
+  .important-notice {
+      color: var(--color-error);
+      font-weight: bold;
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-sm);
+      background-color: rgba(231, 76, 60, 0.1);
+      border-radius: var(--border-radius);
+      border-left: 4px solid var(--color-error);
+  }
+
+  /* ===== 카드 정보 스타일 ===== */
+  .card-number-group {
       display: flex;
       gap: var(--spacing-sm);
       align-items: center;
   }
   
-  .payment-details .card-number-group input {
+  .card-number-group input {
       flex-grow: 1;
       text-align: center;
       padding: var(--spacing-sm);
@@ -415,17 +476,44 @@
       transition: all var(--transition-fast);
   }
   
-  .payment-details .card-number-group input:focus {
+  .card-number-group input:focus {
       border-color: var(--color-primary);
       box-shadow: 0 0 0 3px var(--color-primary-light);
   }
   
-  .payment-details .card-number-group span {
+  .card-number-group span {
       font-size: var(--font-size-large);
       font-weight: bold;
       color: var(--color-text);
   }
-  
+
+  .expiry-group {
+      display: flex;
+      gap: var(--spacing-sm);
+      align-items: center;
+  }
+
+  .expiry-group span {
+      font-size: var(--font-size-large);
+      font-weight: bold;
+      color: var(--color-text);
+  }
+
+  .expiry-input {
+      width: 60px;
+      text-align: center;
+  }
+
+  .cvc-input {
+      width: 100px;
+      text-align: center;
+  }
+
+  .password-input {
+      width: 100px;
+      text-align: center;
+  }
+
   .card-input {
       padding: var(--spacing-sm);
       border: 2px solid var(--color-border);
@@ -503,7 +591,13 @@
   #payBtn:active {
       transform: translateY(0);
   }
-  
+
+  #payBtn.loading {
+      background-color: var(--color-text-light);
+      cursor: not-allowed;
+      transform: none;
+  }
+
   /* ===== 모달 스타일 ===== */
   .modal {
       display: none;
@@ -543,7 +637,15 @@
       from { transform: translateY(20px); opacity: 0; }
       to { transform: translateY(0); opacity: 1; }
   }
-  
+
+  .modal-content h3 {
+      margin-top: 0;
+      margin-bottom: var(--spacing-lg);
+      color: var(--color-primary);
+      font-family: var(--font-family-heading);
+      font-size: var(--font-size-2xl);
+  }
+
   .modal-content p {
       font-size: var(--font-size-xl);
       font-weight: 600;
@@ -567,6 +669,18 @@
       transition: all var(--transition-fast);
       border: none;
       font-family: var(--font-family-primary);
+  }
+
+  .btn-primary {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+      border: none;
+  }
+
+  .btn-primary:hover {
+      background-color: var(--color-primary-hover);
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-medium);
   }
 
   /* ===== 반응형 디자인 ===== */
@@ -624,6 +738,15 @@
           margin-right: 0;
           margin-bottom: var(--spacing-sm);
       }
+      
+      .card-number-group {
+          flex-wrap: wrap;
+      }
+      
+      .card-number-group input {
+          flex: 1 1 calc(50% - var(--spacing-sm));
+          min-width: 80px;
+      }
   }
   
   @media screen and (max-width: 480px) {
@@ -649,6 +772,30 @@
       .postcode-group button {
           width: 100%;
       }
+      
+      .card-number-group {
+          flex-direction: column;
+          gap: var(--spacing-sm);
+      }
+      
+      .card-number-group input {
+          flex: 1;
+          width: 100%;
+      }
+      
+      .expiry-group {
+          flex-direction: column;
+          gap: var(--spacing-sm);
+      }
+      
+      .expiry-input {
+          width: 100%;
+      }
+      
+      .cvc-input,
+      .password-input {
+          width: 100%;
+      }
   }
 
   /* ===== 접근성 개선 ===== */
@@ -671,4 +818,25 @@
   textarea:focus {
       outline: 2px solid var(--color-primary);
       outline-offset: 2px;
+  }
+
+  /* 스크린 리더 지원 */
+  @media (prefers-reduced-motion: reduce) {
+      * {
+          animation-duration: 0.01ms !important;
+          animation-iteration-count: 1 !important;
+          transition-duration: 0.01ms !important;
+      }
+  }
+
+  /* 고대비 모드 지원 */
+  @media (prefers-contrast: high) {
+      :root {
+          --color-border: #000000;
+          --color-text-light: #000000;
+      }
+      
+      .form-group input {
+          border-width: 3px;
+      }
   }
