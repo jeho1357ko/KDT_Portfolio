@@ -54,103 +54,112 @@
     </div>
   </div>
 
-  <!-- 히어로 섹션 -->
-  <section class="hero-section">
-    <div class="hero-container">
-      <div class="hero-content">
-        <h1 class="hero-title">소비자에게 신뢰할 수 있는 고품질 농산물을 제공하는 직거래 온라인 플랫폼</h1>
-        <p class="hero-subtitle">농사를 즐겁게, 소비를 이롭게</p>
+  <!-- 메인 컨텐츠 영역 -->
+  <main class="main-content">
+    <!-- 히어로 섹션 -->
+    <section class="hero-section">
+      <div class="hero-container">
+        <div class="hero-content">
+          <h1 class="hero-title">소비자에게 신뢰할 수 있는 고품질 농산물을 제공하는 직거래 온라인 플랫폼</h1>
+          <p class="hero-subtitle">농사를 즐겁게, 소비를 이롭게</p>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <!-- 검색 섹션 -->
-  <section class="search-section">
-    <div class="products-container">
-      <div class="search-content">
-        <h2 class="search-title">
-          <i class="fas fa-search"></i> 상품 검색
-        </h2>
-        <div class="search-form-container">
-          <!-- <form action="/product/search" method="GET" class="search-form"> -->
-            <div class="search-input-group">
-              <input type="text" name="keyword" id="searchKeyword" class="search-input"
-                     placeholder="상품명을 입력하세요..."
-                     autocomplete="off">
-              <button type="submit" class="search-button" onclick="goSearch()">
-                <i class="fas fa-search"></i>
-              </button>
+    <!-- 검색 섹션 -->
+    <section class="search-section">
+      <div class="products-container">
+        <div class="search-content">
+          <h2 class="search-title">
+            <i class="fas fa-search"></i> 상품 검색
+          </h2>
+          <div class="search-form-container">
+            <!-- <form action="/product/search" method="GET" class="search-form"> -->
+              <div class="search-input-group">
+                <input type="text" name="keyword" id="searchKeyword" class="search-input"
+                       placeholder="상품명을 입력하세요..."
+                       autocomplete="off">
+                <button type="submit" class="search-button" onclick="goSearch()">
+                  <i class="fas fa-search"></i>
+                </button>
+              </div>
+            <!-- </form> -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- <input type="text" id="searchKeyword" placeholder="검색어 입력">
+    <button onclick="goSearch()">검색</button> -->
+
+    <!-- 상품 그리드 섹션 -->
+    <section class="products-section">
+      <div class="products-container">
+        <h2 class="products-title">최신 상품</h2>
+        <div class="products-grid" id="productsGrid">
+          <!-- 상품이 없을 때 -->
+          <div th:if="${#lists.isEmpty(products)}" class="loading">
+            등록된 상품이 없습니다.
+          </div>
+          
+          <!-- 상품 카드 -->
+          <a th:each="product : ${products}"
+             th:href="@{/seller/product/{pid}(pid=${product.productId})}"
+             class="product-card"
+             th:title="${product.title}"
+             th:onclick="addToRecentProducts(${product.productId}, '${product.title}', '${product.thumbnail}', ${product.price}); return true;">
+            <img th:src="${product.thumbnail}" 
+                 th:alt="${product.title}"
+                 class="product-image"
+                 th:onerror="handleImageError(this)">
+            
+            <!-- 재고소진 상품에 매진 표시 -->
+            <div th:if="${product.status == '재고소진'}" class="sold-out-overlay">
+              <span class="sold-out-text">매진</span>
             </div>
-          <!-- </form> -->
+            
+            <div class="product-info">
+              <p class="product-title" th:text="${product.title}"></p>
+              <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
+            </div>
+          </a>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 
-  <!-- <input type="text" id="searchKeyword" placeholder="검색어 입력">
-  <button onclick="goSearch()">검색</button> -->
-
-  <!-- 상품 그리드 섹션 -->
-  <section class="products-section">
-    <div class="products-container">
-      <h2 class="products-title">최신 상품</h2>
-      <div class="products-grid" id="productsGrid">
-        <!-- 상품이 없을 때 -->
-        <div th:if="${#lists.isEmpty(products)}" class="loading">
-          등록된 상품이 없습니다.
+  <!-- 사이드바 전용 섹션 -->
+  <section class="sidebar-section">
+    <div class="sidebar-container">
+      <!-- 최근 본 상품 사이드바 -->
+      <aside class="recent-products-sidebar" id="recentProductsSidebar">
+        <div class="recent-products-header">
+          <h3 class="recent-products-title">
+            <i class="fas fa-clock"></i> 최근 본 상품
+          </h3>
+          <button class="clear-recent-btn" onclick="clearRecentProducts()" title="최근 본 상품 모두 삭제">
+            <i class="fas fa-trash"></i>
+          </button>
         </div>
-        
-        <!-- 상품 카드 -->
-        <a th:each="product : ${products}"
-           th:href="@{/seller/product/{pid}(pid=${product.productId})}"
-           class="product-card"
-           th:title="${product.title}">
-          <img th:src="${product.thumbnail}" 
-               th:alt="${product.title}"
-               class="product-image"
-               th:onerror="this.src='/images/default-product.jpg'">
-          
-          <!-- 재고소진 상품에 매진 표시 -->
-          <div th:if="${product.status == '재고소진'}" class="sold-out-overlay">
-            <span class="sold-out-text">매진</span>
+        <div class="recent-products-list" id="recentProductsList">
+          <!-- 최근 본 상품이 없을 때 -->
+          <div class="no-recent-products">
+            <i class="fas fa-eye-slash"></i>
+            <p>최근 본 상품이 없습니다</p>
           </div>
-          
-          <div class="product-info">
-            <p class="product-title" th:text="${product.title}"></p>
-            <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
-          </div>
-        </a>
-      </div>
+        </div>
+      </aside>
     </div>
   </section>
+      </div>
+    </section>
+  </main>
+
 <!--  <form action="test/copy/db" method="post">-->
 <!--    <button type="submit">연동</button>-->
 <!--  </form>-->
 
-  <script th:src="@{/js/common/home.js}"></script>
-  <script>
-    function goSearch() {
-      const keyword = document.getElementById('searchKeyword').value.trim();
-      if (keyword) {
-        // 검색 결과 페이지로 키워드를 쿼리 스트링으로 넘김
-        window.location.href = `/search?keyword=${encodeURIComponent(keyword)}`;
-      } else {
-        alert('검색어를 입력하세요.');
-      }
-    }
-
-    // Enter 키 이벤트 추가
-    document.addEventListener('DOMContentLoaded', function() {
-      const searchInput = document.getElementById('searchKeyword');
-      if (searchInput) {
-        searchInput.addEventListener('keypress', function(e) {
-          if (e.key === 'Enter') {
-            e.preventDefault();
-            goSearch();
-          }
-        });
-      }
-    });
-  </script>
+      <script th:src="@{/js/common/recent-products.js}"></script>
+    <script th:src="@{/js/common/home.js}"></script>
 </body>
 </html>

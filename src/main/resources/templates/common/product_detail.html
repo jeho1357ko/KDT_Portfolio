@@ -55,10 +55,10 @@
 <!-- 메인 컨테이너 -->
 <div class="container">
   <main class="product-main">
-    <!-- 상품 이미지 섹션 -->
-    <div class="product-image-section">
-      <img th:src="${product.thumbnail}" th:alt="${product.title}" id="productImage">
-    </div>
+         <!-- 상품 이미지 섹션 -->
+     <div class="product-image-section">
+       <img th:src="${product.thumbnail}" th:alt="${product.title}" id="productImage" th:onerror="handleImageError(this)">
+     </div>
 
     <!-- 상품 정보 섹션 -->
     <div class="product-info-section">
@@ -214,6 +214,7 @@
 </div>
 
 <!-- JavaScript -->
+<script th:src="@{/js/common/recent-products.js}"></script>
 <script th:src="@{/js/common/product_detail.js}"></script>
 <script th:inline="javascript">
   // Thymeleaf에서 전달받은 상품 데이터를 JavaScript 파일로 전달
@@ -227,9 +228,21 @@
     deliveryFee: /*[[${product.deliveryFee}]]*/ 0
   };
 
-  // 페이지 로드 시 상품 데이터 설정
+
+
+  // 페이지 로드 시 상품 데이터 설정 및 최근 본 상품에 추가
   document.addEventListener('DOMContentLoaded', function() {
     setProductData(productDataFromServer);
+    
+    // 현재 상품을 최근 본 상품에 추가
+    if (productDataFromServer.productId && productDataFromServer.title) {
+      addToRecentProducts(
+        productDataFromServer.productId,
+        productDataFromServer.title,
+        productDataFromServer.thumbnail,
+        productDataFromServer.price
+      );
+    }
   });
 </script>
 </body>
