@@ -17,6 +17,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -109,11 +110,16 @@ public class ReviewDAOImpl implements ReviewDAO{
   // 전체 조회
   @Override
   public List<Review> findAll(Long productId) {
+    if (productId == null) {
+      log.warn("productId가 null입니다. 빈 리스트를 반환합니다.");
+      return new ArrayList<>();
+    }
+    
     String sql = "select review_id, buyer_id, order_id, order_item_id, product_id, title, content, pic,score, cdate, udate " +
         "from review where product_id = :productId " +
         "order by review_id desc";
-    SqlParameterSource param = new MapSqlParameterSource().addValue("productId",productId);
-    return template.query(sql,param,reviewRowMapper);
+    SqlParameterSource param = new MapSqlParameterSource().addValue("productId", productId);
+    return template.query(sql, param, reviewRowMapper);
   }
 
   // 수정 (title, content, pic 만 수정 예시. 필요시 다른 필드 추가)

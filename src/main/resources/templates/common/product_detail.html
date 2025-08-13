@@ -244,9 +244,6 @@
 
 <!-- JavaScript -->
 <script th:src="@{/js/common/recent-products.js}"></script>
-<script th:src="@{/js/common/product_detail.js}"></script>
-
-<!-- 캐시 무효화 파라미터 유지 -->
 <script th:src="@{/js/common/product_detail.js(v=${#dates.format(#dates.createNow(),'yyyyMMddHHmmss')})}"></script>
 <script th:inline="javascript">
   // Thymeleaf에서 전달받은 상품 데이터를 JavaScript 파일로 전달
@@ -276,12 +273,9 @@
         productDataFromServer.price
       );
     }
-
-  // 페이지 로드 시 상품 데이터 + 리뷰 데이터 설정
-  document.addEventListener('DOMContentLoaded', function() {
-    setProductData(productDataFromServer);
+    
+    // 리뷰 데이터 로드
     loadReviews(productDataFromServer.productId);
-
   });
 </script>
 </body>

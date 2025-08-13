@@ -1,15 +1,7 @@
 // =========================== 상품 기본 로직 ===========================
 
-// 상품 정보 변수
-let productData = {
-  status: '',
-  productId: 0,
-  title: '',
-  productName: '',
-  price: 0,
-  thumbnail: '',
-  deliveryFee: 0
-};
+// 상품 정보 변수 (HTML에서 전달받은 데이터로 초기화됨)
+let productData = null;
 
 // DOM 요소들
 let quantityInput, minusBtn, plusBtn, totalPriceEl;
@@ -101,6 +93,10 @@ function setupEventListeners() {
 
 // 장바구니 추가 함수
 async function addToCart() {
+  if (!productData) {
+    console.error('상품 데이터가 설정되지 않았습니다.');
+    return alert('상품 정보를 불러올 수 없습니다.');
+  }
   if (productData.status === '재고소진') return alert('매진된 상품입니다.');
   if (productData.status === '비활성화') return alert('비활성화된 상품입니다.');
 
@@ -137,6 +133,10 @@ async function addToCart() {
 
 // 바로구매 함수
 function buyNow() {
+  if (!productData) {
+    console.error('상품 데이터가 설정되지 않았습니다.');
+    return alert('상품 정보를 불러올 수 없습니다.');
+  }
   if (productData.status === '재고소진') return alert('매진된 상품입니다.');
   if (productData.status === '비활성화') return alert('비활성화된 상품입니다.');
 
@@ -163,6 +163,10 @@ function buyNow() {
 
 // 로그인 리다이렉트 함수
 function redirectToLogin() {
+  if (!productData) {
+    console.error('상품 데이터가 설정되지 않았습니다.');
+    return alert('상품 정보를 불러올 수 없습니다.');
+  }
   if (productData.status === '재고소진') return alert('매진된 상품입니다.');
   if (productData.status === '비활성화') return alert('비활성화된 상품입니다.');
   showModal('loginModal');
@@ -184,10 +188,18 @@ function goToCart() {
 function goToLogin() { window.location.href = '/buyer/login'; }
 
 // Thymeleaf에서 전달받은 상품 데이터 설정
-function setProductData(data) { productData = data; }
+function setProductData(data) { 
+  productData = data; 
+  console.log('상품 데이터 설정됨:', productData);
+}
 
 // 가격 비교 관련 함수들 (생략된 기존 로직 유지)
 async function loadPriceComparisonData() {
+  if (!productData) {
+    console.error('상품 데이터가 설정되지 않았습니다.');
+    return;
+  }
+  
   const hiddenProductNameEl = document.getElementById('hiddenProductName');
   let productName = hiddenProductNameEl ? hiddenProductNameEl.textContent.trim() : null;
   if (!productName) {

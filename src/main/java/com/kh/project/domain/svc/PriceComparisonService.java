@@ -264,6 +264,13 @@ public class PriceComparisonService {
         Map<String, Object> result = new HashMap<>();
         
         try {
+            if (productName == null || productName.trim().isEmpty()) {
+                log.warn("상품명이 null이거나 비어있습니다.");
+                result.put("hasData", false);
+                result.put("error", "상품명이 필요합니다.");
+                return result;
+            }
+            
             log.info("상품 상세 가격 정보 조회 시작: {}", productName);
             
             // 상품명에서 핵심 키워드 추출 (쉼표, 공백 등으로 분리)
@@ -444,6 +451,13 @@ public class PriceComparisonService {
         Map<String, Object> result = new HashMap<>();
         
         try {
+            if (productName == null || productName.trim().isEmpty()) {
+                log.warn("상품명이 null이거나 비어있습니다.");
+                result.put("hasData", false);
+                result.put("error", "상품명이 필요합니다.");
+                return result;
+            }
+            
             log.info("상품 상세 가격 정보 조회 시작: {} (현재 상품 가격: {})", productName, currentProductPrice);
             
             // 상품명에서 핵심 키워드 추출
@@ -531,6 +545,13 @@ public class PriceComparisonService {
         Map<String, Object> result = new HashMap<>();
         
         try {
+            if (productName == null || productName.trim().isEmpty()) {
+                log.warn("상품명이 null이거나 비어있습니다.");
+                result.put("hasData", false);
+                result.put("error", "상품명이 필요합니다.");
+                return result;
+            }
+            
             // 최근 3개월 데이터 조회
             LocalDate now = LocalDate.now();
             LocalDate threeMonthsAgo = now.minusMonths(3);
