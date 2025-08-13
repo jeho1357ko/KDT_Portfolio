@@ -243,13 +243,11 @@
 </div>
 
 <!-- JavaScript -->
-<<<<<<< HEAD
 <script th:src="@{/js/common/recent-products.js}"></script>
 <script th:src="@{/js/common/product_detail.js}"></script>
-=======
+
 <!-- 캐시 무효화 파라미터 유지 -->
 <script th:src="@{/js/common/product_detail.js(v=${#dates.format(#dates.createNow(),'yyyyMMddHHmmss')})}"></script>
->>>>>>> 41c4edd (review)
 <script th:inline="javascript">
   // Thymeleaf에서 전달받은 상품 데이터를 JavaScript 파일로 전달
   const productDataFromServer = {
