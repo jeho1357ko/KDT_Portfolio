@@ -16,4 +16,6 @@ public class TestSearchPageController {
     model.addAttribute("keyword", keyword);
     return "product/search";
   }
+  @GetMapping("review")
+  public String review() {return "product/review";}
 } 

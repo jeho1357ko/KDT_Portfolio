@@ -48,10 +48,13 @@ public class ProductSearchDAO {
       Query matchQuery = null;
 
       if (hasKeyword) {
+        String key = keyword.trim();
+        String fuzz = (key.length() <= 2) ? "1" : "AUTO";
+        
         matchQuery = Query.of(q -> q
             .match(m -> m
                 .field("title")
-                .query(keyword.trim()).analyzer("my_custom_analyzer")
+                .query(key).analyzer("my_custom_analyzer").fuzziness(fuzz)
             )
         );
         log.info("매치쿼리 : {}",matchQuery);
