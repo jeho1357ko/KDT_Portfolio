@@ -171,52 +171,6 @@ VALUES ('seller1@test.com', 'password123', '1234567890', '테스트상점1', '�
 INSERT INTO SELLER (EMAIL, password, biz_reg_no, shop_name, name, shop_address, tel) 
 VALUES ('seller2@test.com', 'password123', '2345678901', '테스트상점2', '이판매', '서울시 서초구 테스트로 456', '02-2345-6789');
 
--- 상품 테스트 데이터 10개
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '사과', '아침햇살 사과 2.5kg 4kg 가정용 기스과/부사품종', 2500, '주문 후 1-2일 내 배송', '택배', '경북', '농부의 정직함과 자연이 함께 키운 맛이 보이는 아침햇살 경북사과', 22890, 100, 'https://www.cyso.co.kr/data/item/1663861200/7JaR6rSR44WC44WC.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '배', '과일꾼 산지직송 나주배, 가정용 5kg 12과내, 1개', 3000, '주문 후 2-3일 내 배송', '택배', '전남 나주', '과일꾼은 배를 다루는 배 전문 브랜드로 배, 배즙, 배도라지청 등 배 관련 상품은 과일꾼에서 바로 구매자에게 산지직송으로 배송됩니다.', 16810, 50, 'https://thumbnail8.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (2, '딸기', '맛가득 프리미엄 여름딸기 생딸기 설향딸기 장희딸기 금실딸기, 여름딸기500g, 1개', 2000, '주문 후 1일 내 배송', '택배', '논산', '풍부한 과즙 / 진하게 퍼지는 달콤함 맛가득 생딸기', 14520, 30, 'https://thumbnail9.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/5273/e4d8cbc9c954dc6f4a65cea7d6b14606c8a9125835d2f5ca97d337c8489a.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (2, '오렌지', '당도높은 오렌지 미국에서 왔어요 꿀 인가 오렌지 인가, 1박스, 중과2kg (10과내외)', 3500, '주문 후 3-4일 내 배송', '택배', '미국산', '아직도 어떤 오렌지를 드실지 고민중이라구요? 많은 과일중 어떤걸 선택해야할지 모르겠어요. 품질 / 맛(당도) / 영양소 이 세가지를 중요시 여기신다면 이 오렌지를 한번 드셔보세요!', 11880, 25, 'https://thumbnail7.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/51ac/e83f716b1bfcfad6b14f5e1161f8fddf018ae08a9f7e16151323c92b6976.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '체리', '[특급 프리미엄] 미국산 특대과 고당도 생 체리 R9.5, 1개, 1kg', 2500, '주문 후 1-2일 내 배송', '택배', '미국산', 'Premium 한입에 퍼지는 고급의 맛, 프리미엄 체리 (특대과 R9.5) 고급 선물부터 내 입까지, 매일이 리치한 하루가 됩니다.', 27900, 40, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/efd0/1e58befefe427feaa2fdd92cdc1425635d49240f38d99544c81c66f2c476.png', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (2, '레몬', '맛통령 프리미엄 레몬, 1박스, 레몬 2kg 20개내외', 4000, '주문 후 2-3일 내 배송', '택배', '수입산', '신선하고 상큼한 과즙이 듬뿍 담긴 레몬 비타민 가득담긴 신선하고 상큼한 레몬, 맛통령과 함께 상큼하고 청량한 레몬을 맛통령에서 만나보세요!', 11960, 15, 'https://thumbnail8.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/ee1a/8524a3f7c9c15eafc4708c682f6ef73dd2f9853e8c238c6e3df0a0e34c71.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '황금향', '[제주의맛] 맛있는 최고급 황금향 산지직송, 황금향 가정용 대과 3kg(11~14과), 1개', 1500, '주문 후 1일 내 배송', '택배', '제주도 서귀포', '싱싱함과 맛을 동시에 잡은 제주의 맛, 후기로 간접 시식해 보세요 "자신 있습니다"', 34010, 80, 'https://thumbnail8.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/98f0/44133627ec9de5770918084f5f2ca2c6812c1868bd84e155833375d7c1f7.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (2, '참외', '성주 당도선별 꼬마참외 10~16입, 2kg(10~16입), 1개', 3000, '주문 후 2일 내 배송', '택배', '성주군', '당도선별 꼬마참외달콤한 맛이 진한 꼬마참외예요. 껍질을 벗기기 전부터 달달한 향을 느낄 수 있는데요. 황금빛 껍질 속 단단한 과육을 품고 있지요. 크기는 작아도 아삭아삭한 식감은 그대로랍니다. 깨끗하게 씻어 신선한 생과 그대로 즐겨보세요.', 11760, 35, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/rs_quotation_api/floyi07x/f01de370966f4d428d11d02c4b875894.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '복숭아', '1년에딱한번 초고당도 망고복숭아, 1박스, 1kg(소과)', 2500, '주문 후 1-2일 내 배송', '택배', '국내산', '까다로운 당도 선별을 통한 맛있는 초고당도 망고 복숭아를 취급', 12910, 60, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/ed24/45604df943efd039ee5e3d3cd1b64c6cd6a47360dc09f532cbfbdd27996b.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (2, '샤인머스켓', '고당도 과즙폭발 샤인머스켓 특품 산지직송, 1박스, 특품 1kg내외(2과수)', 2000, '주문 후 1일 내 배송', '택배', '김천,경북,영동', '비타민C와 구연산이 풍부해 젖산을 분해하여 피로회복에 탁원한 효과가 있습니다. 피부의 노폐물을 없애주고, 피부톤을 밝게 해 주고, 피부 노화를 예방해 줍니다. 기관지의 점막을 튼튼하게 해주고, 항산화 작용을 하여 면역력을 높여줍니다.', 14900, 45, 'https://thumbnail9.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/0906/999db41c8ac8f3efcfc504e3ebca79318c674074a0e4252764bff13b4fba.png', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '상추', '신선한 양상추 1kg, 1개', 2000, '주문 후 1일 내 배송', '택배', '국내산', '신선하고 아삭한 양상추입니다. 샐러드나 샌드위치에 최적입니다.', 8000, 100, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (2, '청상추', '아삭한 청상추 500g, 1개', 1500, '주문 후 1일 내 배송', '택배', '국내산', '아삭하고 신선한 청상추입니다. 샐러드나 쌈채소로 활용하세요.', 4500, 80, 'https://thumbnail8.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '깻잎', '신선한 깻잎 100g, 1개', 1000, '주문 후 1일 내 배송', '택배', '국내산', '신선하고 향긋한 깻잎입니다. 쌈채소나 요리용으로 활용하세요.', 3500, 60, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (2, '사과', '아침햇살 사과 2.5kg 4kg 가정용 기스과/부사품종', 2500, '주문 후 1-2일 내 배송', '택배', '경북', '농부의 정직함과 자연이 함께 키운 맛이 보이는 아침햇살 경북사과', 22890, 100, 'https://www.cyso.co.kr/data/item/1663861200/7JaR6rSR44WC44WC.jpg', '판매중');
-
-INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '당근', '신선한 당근 1kg, 1개', 1500, '주문 후 1일 내 배송', '택배', '국내산', '신선하고 달콤한 당근입니다. 샐러드나 요리용으로 활용하세요.', 5000, 80, 'https://thumbnail10.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/8b75/14a61b3cc9e07dab77d45d5e3c1b8c8431beb12c601ba48b286d3dda01c1.jpg', '판매중');
-
 -- 구매자 테스트 데이터 5개
 INSERT INTO BUYER (EMAIL, password, name, nickname, tel, gender, birth, post_number, address, status) 
 VALUES ('buyer1@test.com', 'password123', '김구매', '구매자1', '010-1234-5678', '남성', TO_DATE('1990-01-15', 'YYYY-MM-DD'), 12345, '서울시 강남구 테스트로 123', '활성화');
