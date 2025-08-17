@@ -364,27 +364,51 @@ function parseSearchParams() {
 async function performSearch(customKeyword = null) {
   try {
     showLoading();
-    
+
     let searchParams = parseSearchParams();
-    
-    // 직접 입력된 검색어가 있으면 사용
     if (customKeyword !== null) {
       searchParams.keyword = customKeyword;
     }
-    
+
     const response = await fetchSearchResults(searchParams);
-    
-    if (response.header.rtcd === 'S00' || Array.isArray(response)) {
-      renderSearchResults(response.body, searchParams.keyword);
-      updateSearchCount(response.body.length);
-      updateSearchTitle(searchParams.keyword);
-    } else {
+
+    // ✅ SearchDTO에서 products만 안전하게 꺼내기
+    const products = getProductsFromApiResponse(response);
+
+    // 성공 코드 체크(있을 때만)
+    if (response?.header && response.header.rtcd !== 'S00') {
       throw new Error(response.header.rtmsg || '검색 중 오류가 발생했습니다.');
     }
+
+    renderSearchResults(products, searchParams.keyword);
+    updateSearchCount(products.length);
+    updateSearchTitle(searchParams.keyword);
+
   } catch (error) {
     console.error('검색 실패:', error);
     showErrorMessage('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
   }
+}
+
+function getProductsFromApiResponse(res) {
+  if (!res) return [];
+  // 레거시: 응답이 그냥 배열
+  if (Array.isArray(res)) return res;
+
+  // 표준: ApiResponse<SearchDTO>
+  if (res.body) {
+    if (Array.isArray(res.body)) return res.body;                 // (구버전) body가 곧 배열
+    if (Array.isArray(res.body.products)) return res.body.products; // ✅ 현재 케이스
+  }
+  // 혹시 data로 내려오는 변형 대응
+  if (res.data) {
+    if (Array.isArray(res.data)) return res.data;
+    if (Array.isArray(res.data.products)) return res.data.products;
+  }
+  // 아주 드물게 평평한 형태
+  if (Array.isArray(res.products)) return res.products;
+
+  return [];
 }
 
 /**
