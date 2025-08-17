@@ -78,4 +78,89 @@ document.addEventListener('DOMContentLoaded', function() {
       handleImageError(this);
     });
   });
+
+  // 인기상품 슬라이더 초기화
+  initPopularSlider();
 });
+
+// ===== 인기상품 슬라이더 관련 함수 =====
+
+// 슬라이더 이동 (이전/다음) - 전역 함수로 정의
+function movePopularSlider(direction) {
+  const currentPage = window.currentPopularPage || 0;
+  goToPopularPage(currentPage + direction);
+}
+
+// 특정 페이지로 이동
+function goToPopularPage(pageIndex) {
+  const slider = document.getElementById('popularSlider');
+  if (!slider) return;
+  
+  const pages = slider.querySelectorAll('.popular-page');
+  const pageCount = pages.length;
+  
+  // 페이지 인덱스 범위 조정
+  if (pageIndex < 0) {
+    pageIndex = pageCount - 1; // 마지막 페이지로
+  } else if (pageIndex >= pageCount) {
+    pageIndex = 0; // 첫 페이지로
+  }
+  
+  window.currentPopularPage = pageIndex;
+  updateSliderPosition();
+  updateDots();
+}
+
+// 슬라이더 위치 업데이트
+function updateSliderPosition() {
+  const slider = document.getElementById('popularSlider');
+  if (!slider) return;
+  
+  const track = slider.querySelector('.popular-track');
+  const currentPage = window.currentPopularPage || 0;
+  
+  track.style.transform = `translateX(-${currentPage * 100}%)`;
+}
+
+// 점 상태 업데이트
+function updateDots() {
+  const dots = document.querySelectorAll('.popular-dot');
+  const currentPage = window.currentPopularPage || 0;
+  
+  dots.forEach((dot, index) => {
+    dot.classList.toggle('active', index === currentPage);
+  });
+}
+
+// 슬라이더 점 생성
+function createDots(pageCount, container) {
+  container.innerHTML = '';
+  for (let i = 0; i < pageCount; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'popular-dot';
+    dot.onclick = () => goToPopularPage(i);
+    container.appendChild(dot);
+  }
+}
+
+// 인기상품 슬라이더 초기화
+function initPopularSlider() {
+  const slider = document.getElementById('popularSlider');
+  if (!slider) return;
+
+  const track = slider.querySelector('.popular-track');
+  const pages = slider.querySelectorAll('.popular-page');
+  const dotsContainer = slider.querySelector('.popular-dots');
+  
+  if (!track || pages.length === 0) return;
+
+  // 점 생성
+  createDots(pages.length, dotsContainer);
+  
+  // 현재 페이지 인덱스 (전역 변수)
+  window.currentPopularPage = 0;
+  
+  // 초기 상태 설정
+  updateSliderPosition();
+  updateDots();
+}

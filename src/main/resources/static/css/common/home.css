@@ -468,6 +468,94 @@ body {
   color: var(--color-text);
 }
 
+/* ===== 인기상품 슬라이더 ===== */
+.popular-slider {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+/* 왼쪽 버튼 레이어 */
+.popular-nav-layer {
+  position: relative;
+  width: 80px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-background);
+  z-index: 20;
+}
+
+.popular-nav-layer.prev {
+  order: 1;
+}
+
+.popular-nav-layer.next {
+  order: 3;
+}
+
+/* 가운데 인기상품 레이어 */
+.popular-content-layer {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  order: 2;
+}
+
+.popular-track {
+  display: flex;
+  transition: transform 0.4s ease;
+}
+
+.popular-page {
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.popular-nav {
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  border: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 20px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-default);
+  z-index: 10;
+}
+
+.popular-nav:hover {
+  background: rgba(0,0,0,0.7);
+}
+
+.popular-dots {
+  position: relative;
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-top: 24px;
+}
+
+.popular-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #666;
+  cursor: pointer;
+  transition: var(--transition-default);
+}
+
+.popular-dot.active {
+  background: var(--color-primary);
+}
+
 .products-grid {
   width: 100%;
   display: grid;

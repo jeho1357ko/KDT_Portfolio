@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.kh.project.domain.entity.Product;
 import com.kh.project.domain.product.svc.ProductSVC;
+import com.kh.project.domain.popular.svc.PopularSVC;
 import com.kh.project.web.buyer.LoginForm;
 import com.kh.project.web.seller.LoginSeller;
 
@@ -22,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class HomeController {
 
   final private ProductSVC productSVC;
+  final private PopularSVC popularSVC;
 
   // 로그인 선택 페이지
   @GetMapping("/common/select_login")
@@ -40,6 +42,10 @@ public class HomeController {
   public String homePage(HttpServletRequest request, Model model) {
     List<Product> products = productSVC.allProduct();
     model.addAttribute("products", products);
+
+    // 인기상품 상위 20개 (5페이지 * 4개)
+    List<Product> popularProducts = popularSVC.getTopPopularProducts(20);
+    model.addAttribute("popularProducts", popularProducts);
 
     HttpSession session = request.getSession(false);
     if (session != null) {

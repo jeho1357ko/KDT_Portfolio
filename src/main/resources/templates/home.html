@@ -92,6 +92,59 @@
     <!-- <input type="text" id="searchKeyword" placeholder="검색어 입력">
     <button onclick="goSearch()">검색</button> -->
 
+    <!-- 인기상품 슬라이더 섹션 -->
+    <section class="products-section" th:if="${not #lists.isEmpty(popularProducts)}">
+      <div class="products-container">
+        <h2 class="products-title">인기 상품</h2>
+        <div class="popular-slider" id="popularSlider">
+          <!-- 왼쪽 버튼 레이어 -->
+          <div class="popular-nav-layer prev">
+            <button class="popular-nav" onclick="movePopularSlider(-1)">
+              <i class="fas fa-chevron-left"></i>
+            </button>
+          </div>
+          
+          <!-- 가운데 인기상품 레이어 -->
+          <div class="popular-content-layer">
+            <div class="popular-track">
+              <div class="popular-page" th:each="chunk,stat : ${#numbers.sequence(0, (popularProducts.size()-1)/4)}">
+                <a th:each="product,iter : ${popularProducts.subList(stat.index*4, T(java.lang.Math).min((stat.index+1)*4, popularProducts.size()))}"
+                   th:href="@{/seller/product/{pid}(pid=${product.productId})}"
+                   class="product-card"
+                   th:title="${product.title}"
+                   th:onclick="addToRecentProducts(${product.productId}, '${product.title}', '${product.thumbnail}', ${product.price}); return true;">
+                  <img th:src="${product.thumbnail}" 
+                       th:alt="${product.title}"
+                       class="product-image"
+                       th:onerror="handleImageError(this)">
+                  
+                  <!-- 재고소진 상품에 매진 표시 -->
+                  <div th:if="${product.status == '재고소진'}" class="sold-out-overlay">
+                    <span class="sold-out-text">매진</span>
+                  </div>
+                  
+                  <div class="product-info">
+                    <p class="product-title" th:text="${product.title}"></p>
+                    <p class="product-price" th:text="${#numbers.formatInteger(product.price, 3, 'COMMA')} + '원'"></p>
+                  </div>
+                </a>
+              </div>
+            </div>
+            
+            <!-- 슬라이더 점 표시 -->
+            <div class="popular-dots" id="popularDots"></div>
+          </div>
+          
+          <!-- 오른쪽 버튼 레이어 -->
+          <div class="popular-nav-layer next">
+            <button class="popular-nav" onclick="movePopularSlider(1)">
+              <i class="fas fa-chevron-right"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- 상품 그리드 섹션 -->
     <section class="products-section">
       <div class="products-container">
