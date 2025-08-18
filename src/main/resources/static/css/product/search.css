@@ -108,10 +108,7 @@
 
 /* 검색 결과 그리드 */
 .search-results-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 24px;
-  margin-bottom: 40px;
+  /* 그리드 레이아웃 제거 - 이제 줄 단위로 처리 */
 }
 
 /* 검색 결과 없음 */
@@ -152,13 +149,16 @@
   border-radius: var(--layout-radius-card);
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: var(--transition-default);
+  /* transition 제거 - 속도 개선 */
+  /* transition: var(--transition-default); */
   text-decoration: none;
   color: inherit;
+  height: 320px; /* 고정 높이 설정 */
 }
 
 .product-card:hover {
-  transform: translateY(-4px);
+  /* 호버 애니메이션 제거 - 속도 개선 */
+  /* transform: translateY(-4px); */
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
@@ -166,11 +166,13 @@
   width: 100%;
   height: 200px;
   object-fit: cover;
-  transition: var(--transition-default);
+  /* transition 제거 - 속도 개선 */
+  /* transition: var(--transition-default); */
 }
 
 .product-card:hover .product-image {
-  transform: scale(1.05);
+  /* 호버 애니메이션 제거 - 속도 개선 */
+  /* transform: scale(1.05); */
 }
 
 .product-info {
@@ -326,6 +328,176 @@
   margin: 0 16px;
 }
 
+/* YouTube 영상 섹션 */
+.youtube-section {
+  margin-top: 40px;
+  padding: 20px 0;
+  border-top: 1px solid var(--color-border);
+}
+
+.youtube-header {
+  margin-bottom: 24px;
+}
+
+.youtube-title {
+  color: var(--color-text);
+  font-size: 1.3rem;
+  font-weight: 600;
+  font-family: 'Cabin', sans-serif;
+  margin: 0;
+}
+
+.youtube-title i {
+  margin-right: 8px;
+}
+
+.youtube-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr); /* 4개씩 가로로 배치 */
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+.youtube-card {
+  background: var(--color-white);
+  border-radius: var(--layout-radius-card);
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  /* transition 제거 - 속도 개선 */
+  /* transition: var(--transition-default); */
+  text-decoration: none;
+  color: inherit;
+  height: 320px; /* 고정 높이 설정 */
+}
+
+.youtube-card:hover {
+  /* 호버 애니메이션 제거 - 속도 개선 */
+  /* transform: translateY(-4px); */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* 줄 단위 스타일 */
+.product-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+}
+
+.product-row .product-card {
+  flex: 0 0 calc(25% - 15px);
+  max-width: calc(25% - 15px);
+  height: auto;
+}
+
+.youtube-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  margin-bottom: 30px;
+  background: linear-gradient(135deg, #ffebee 0%, #fff5f5 100%);
+  padding: 20px;
+  border-radius: 12px;
+  border: 2px solid #ffcdd2;
+  position: relative;
+}
+
+.youtube-row::before {
+  content: "🎥 고르는법 & 세척법";
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: #d32f2f;
+  color: white;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+
+.youtube-row .youtube-card {
+  flex: 0 0 calc(25% - 15px);
+  max-width: calc(25% - 15px);
+  height: auto;
+}
+
+/* 섞인 YouTube 카드 스타일 */
+.youtube-card.mixed {
+  border: 2px solid #FF0000;
+  position: relative;
+}
+
+.youtube-card.mixed::before {
+  content: "🎥";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: rgba(255, 0, 0, 0.9);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  z-index: 1;
+}
+
+.youtube-thumbnail {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  position: relative;
+}
+
+.youtube-play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 0, 0, 0.9);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 24px;
+  opacity: 1; /* 항상 보이도록 변경 */
+  /* transition 제거 - 속도 개선 */
+  /* transition: var(--transition-default); */
+}
+
+.youtube-card:hover .youtube-play-button {
+  /* 호버 애니메이션 제거 - 속도 개선 */
+  /* opacity: 1; */
+}
+
+.youtube-info {
+  padding: 16px;
+}
+
+.youtube-video-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  line-height: 1.4;
+  color: var(--color-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.youtube-channel {
+  color: var(--color-secondary-text);
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.youtube-upload-date {
+  color: var(--color-secondary-text);
+  font-size: 0.8rem;
+}
+
 /* 반응형 디자인 */
 @media(max-width: 991px) {
   .search-results-header {
@@ -344,6 +516,16 @@
 }
 
 @media(max-width: 767px) {
+  .product-row .product-card,
+  .youtube-row .youtube-card {
+    flex: 0 0 calc(50% - 10px);
+    max-width: calc(50% - 10px);
+  }
+  
+  .youtube-row {
+    padding: 15px;
+  }
+  
   .search-header-title {
     font-size: 1.8rem;
   }
@@ -382,6 +564,11 @@
     height: 32px;
     font-size: 0.8rem;
   }
+  
+  /* YouTube 영상 반응형 */
+  .youtube-grid {
+    grid-template-columns: repeat(2, 1fr); /* 태블릿에서는 2개씩 */
+  }
 }
 
 @media(max-width: 479px) {
@@ -389,8 +576,23 @@
     grid-template-columns: 1fr;
   }
   
+  .product-row .product-card,
+  .youtube-row .youtube-card {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+  
+  .youtube-row {
+    padding: 10px;
+  }
+  
   .product-image {
     height: 180px;
+  }
+  
+  /* 모바일에서는 YouTube 영상 1개씩 */
+  .youtube-grid {
+    grid-template-columns: 1fr;
   }
   
   .no-results {

@@ -75,7 +75,7 @@ public class ProductSearchDAO {
         matchQuery = Query.of(q -> q
             .match(m -> m
                 .field("title")
-                .query(key).analyzer("my_custom_analyzer").fuzziness(fuzz)
+                .query(key).analyzer("my_custom_analyzer")
             )
         );
         log.info("매치쿼리 : {}",matchQuery);

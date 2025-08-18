@@ -1,5 +1,6 @@
 package com.kh.project.web;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,6 +13,7 @@ import com.kh.project.domain.elasticsearch.ProductSearchSVC;
 import com.kh.project.domain.elasticsearch.YoutubeSearchSVC;
 import com.kh.project.domain.entity.Product;
 import com.kh.project.domain.entity.Youtube;
+import com.kh.project.domain.svc.YoutubeApiService;
 import com.kh.project.web.api.ApiResponse;
 import com.kh.project.web.api.ApiResponseCode;
 import com.kh.project.web.api.SearchDTO;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SearchController {
   final private ProductSearchSVC productSearchSVC;
   final private YoutubeSearchSVC youtubeSearchSVC;
+  final private YoutubeApiService youtubeApiService;
 
   @GetMapping("/search")
   public ApiResponse<SearchDTO> search(
@@ -43,7 +46,22 @@ public class SearchController {
     List<Product> products = searchResult.getProducts();
     long totalCount = searchResult.getTotalCount();
     
-    List<Youtube> youtubeList = youtubeSearchSVC.search(keyword, from, size);
+    // YouTube API를 통한 자동 검색
+    List<Youtube> youtubeList = new ArrayList<>();
+    try {
+      // 키워드에서 핵심 검색어 추출
+      String searchKeyword = youtubeApiService.extractSearchKeyword(keyword);
+      if (!searchKeyword.isEmpty()) {
+        log.info("YouTube 검색 시작 - 키워드: {}", searchKeyword);
+        youtubeList = youtubeApiService.searchYoutubeVideos(searchKeyword);
+        log.info("YouTube 검색 완료: {}개 영상", youtubeList.size());
+      }
+    } catch (Exception e) {
+      log.error("YouTube 검색 중 오류: {}", e.getMessage(), e);
+      // YouTube 검색 실패 시 기존 방식 사용
+      youtubeList = youtubeSearchSVC.search(keyword, from, size);
+    }
+    
     SearchDTO searchDTO = new SearchDTO();
     searchDTO.setProducts(products);
     searchDTO.setYoutubeList(youtubeList);

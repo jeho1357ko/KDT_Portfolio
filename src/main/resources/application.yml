@@ -23,8 +23,16 @@ server:
 logging:
   level:
     root: info
+    com.kh.project.domain.svc.YoutubeApiService: debug
 
 elasticsearch:
   host: ${ES_HOST:localhost}
   port: ${ES_PORT:9200}
   scheme: ${ES_SCHEME:http}
+
+# YouTube API 설정
+youtube:
+  api:
+    key: ${YOUTUBE_API_KEY:AIzaSyAA6v8dm6osdoaR4AnZhZqjy_iGw9R5LxU}  # 환경변수에서 가져오거나 직접 입력
+    max-results: 30  # 검색 결과 개수 더 증가 (고르는법 + 세척법)
+    region-code: KR  # 지역 코드

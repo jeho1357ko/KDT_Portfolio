@@ -202,8 +202,9 @@ async function fetchSearchResults(searchParams) {
  * 검색 결과를 화면에 렌더링
  * @param {Array} products - 상품 목록
  * @param {string} keyword - 검색 키워드
+ * @param {Array} youtubeList - YouTube 영상 목록 (선택사항)
  */
-function renderSearchResults(products, keyword = '') {
+function renderSearchResults(products, keyword, youtubeList = []) {
   const searchResultsGrid = document.getElementById('searchResultsGrid');
   
   if (!products || products.length === 0) {
@@ -215,6 +216,9 @@ function renderSearchResults(products, keyword = '') {
         <a href="/home" class="btn-filled">홈으로 돌아가기</a>
       </div>
     `;
+    
+    // YouTube 섹션 숨기기
+    hideYoutubeSection();
     return;
   }
   
@@ -258,8 +262,197 @@ function renderSearchResults(products, keyword = '') {
     highlightSearchTerm(keyword);
   }
   
-  // 애니메이션 실행
-  animateSearchResults();
+  // 애니메이션 제거 - 속도 개선
+  // animateSearchResults();
+  
+  // 상품과 YouTube 영상을 섞어서 표시
+  console.log('상품과 YouTube 영상 섞어서 렌더링 시작:', { products: products.length, youtube: youtubeList.length });
+  if (youtubeList && youtubeList.length > 0) {
+    const mixedResults = mixProductsAndVideos(products, youtubeList);
+    renderMixedResults(mixedResults, keyword);
+  } else {
+    console.log('YouTube 영상 없음 - 상품만 표시');
+    // 기존 YouTube 섹션 숨기기
+    hideYoutubeSection();
+  }
+}
+
+/**
+ * 상품과 YouTube 영상을 줄 단위로 그룹화
+ * @param {Array} products - 상품 목록
+ * @param {Array} youtubeList - YouTube 영상 목록
+ * @returns {Array} 줄 단위 그룹 배열
+ */
+function mixProductsAndVideos(products, youtubeList) {
+  const rows = [];
+  const itemsPerRow = 4; // 한 줄에 4개씩
+  
+  // 상품을 4개씩 묶어서 처리
+  for (let i = 0; i < products.length; i += itemsPerRow) {
+    // 상품 줄 추가
+    const productRow = {
+      type: 'product-row',
+      items: products.slice(i, i + itemsPerRow)
+    };
+    rows.push(productRow);
+    
+    // YouTube 영상이 있으면 영상 줄 추가
+    if (youtubeList.length > 0) {
+      const videoRow = {
+        type: 'video-row',
+        items: youtubeList.splice(0, itemsPerRow)
+      };
+      rows.push(videoRow);
+    }
+  }
+  
+  console.log('줄 단위 그룹 결과:', { 
+    rows: rows.length, 
+    products: products.length, 
+    videos: youtubeList.length 
+  });
+  return rows;
+}
+
+/**
+ * 줄 단위 그룹을 화면에 렌더링
+ * @param {Array} rowGroups - 줄 단위 그룹 배열
+ * @param {string} keyword - 검색 키워드
+ */
+function renderMixedResults(rowGroups, keyword) {
+  const searchResultsGrid = document.getElementById('searchResultsGrid');
+  
+  const rowsHTML = rowGroups.map(row => {
+    if (row.type === 'product-row') {
+      // 상품 줄 렌더링
+      const productsHTML = row.items.map(product => {
+        const priceFormatted = new Intl.NumberFormat('ko-KR').format(product.price);
+        const soldOutOverlay = product.status === '재고소진' ? 
+          '<div class="sold-out-overlay"><span class="sold-out-text">매진</span></div>' : '';
+        
+        return `
+          <a href="/seller/product/${product.productId}" 
+             class="product-card" 
+             title="${product.title}">
+            <img src="${product.thumbnail || '/images/default-product.jpg'}" 
+                 alt="${product.title}"
+                 class="product-image"
+                 onerror="handleImageError(this)">
+            
+            ${soldOutOverlay}
+            
+            <div class="product-info">
+              <p class="product-title">${product.title}</p>
+              <p class="product-price">${priceFormatted}원</p>
+              <p class="product-status">${product.status}</p>
+            </div>
+          </a>
+        `;
+      }).join('');
+      
+      return `<div class="product-row">${productsHTML}</div>`;
+      
+    } else if (row.type === 'video-row') {
+      // YouTube 영상 줄 렌더링
+      const videosHTML = row.items.map(video => {
+        const uploadDate = video.uploadDate ? new Date(video.uploadDate).toLocaleDateString('ko-KR') : '';
+        
+        return `
+          <a href="${video.url}" target="_blank" class="youtube-card mixed" title="${video.title}">
+            <div class="youtube-thumbnail-container">
+              <img src="${video.thumbnail || '/images/default-youtube.jpg'}" 
+                   alt="${video.title}"
+                   class="youtube-thumbnail"
+                   onerror="this.src='/images/default-youtube.jpg'">
+              <div class="youtube-play-button">
+                <i class="fab fa-youtube"></i>
+              </div>
+            </div>
+            <div class="youtube-info">
+              <p class="youtube-video-title">${video.title}</p>
+              <p class="youtube-channel">${video.channelName || '알 수 없음'}</p>
+              ${uploadDate ? `<p class="youtube-upload-date">${uploadDate}</p>` : ''}
+            </div>
+          </a>
+        `;
+      }).join('');
+      
+      return `<div class="youtube-row">${videosHTML}</div>`;
+    }
+  }).join('');
+  
+  searchResultsGrid.innerHTML = rowsHTML;
+  
+  // 이미지 에러 이벤트 리스너 다시 등록
+  const images = searchResultsGrid.querySelectorAll('.product-image');
+  images.forEach(img => {
+    img.addEventListener('error', function() {
+      handleImageError(this);
+    });
+  });
+  
+  // 검색어 하이라이트
+  if (keyword) {
+    highlightSearchTerm(keyword);
+  }
+  
+  // 애니메이션 제거 - 속도 개선
+  // animateSearchResults();
+  
+  // 기존 YouTube 섹션 숨기기 (이제 섞어서 표시하므로)
+  hideYoutubeSection();
+}
+
+/**
+ * YouTube 영상 렌더링
+ * @param {Array} youtubeList - YouTube 영상 목록
+ */
+function renderYoutubeVideos(youtubeList) {
+  const youtubeSection = document.getElementById('youtubeSection');
+  const youtubeGrid = document.getElementById('youtubeGrid');
+  
+  if (!youtubeSection || !youtubeGrid) {
+    console.error('YouTube 섹션을 찾을 수 없습니다.');
+    return;
+  }
+  
+  const youtubeHTML = youtubeList.map(video => {
+    const uploadDate = video.uploadDate ? new Date(video.uploadDate).toLocaleDateString('ko-KR') : '';
+    
+    return `
+      <a href="${video.url}" target="_blank" class="youtube-card" title="${video.title}">
+        <div class="youtube-thumbnail-container">
+          <img src="${video.thumbnail || '/images/default-youtube.jpg'}" 
+               alt="${video.title}"
+               class="youtube-thumbnail"
+               onerror="this.src='/images/default-youtube.jpg'">
+          <div class="youtube-play-button">
+            <i class="fas fa-play"></i>
+          </div>
+        </div>
+        <div class="youtube-info">
+          <p class="youtube-video-title">${video.title}</p>
+          <p class="youtube-channel">${video.channelName || '알 수 없음'}</p>
+          ${uploadDate ? `<p class="youtube-upload-date">${uploadDate}</p>` : ''}
+        </div>
+      </a>
+    `;
+  }).join('');
+  
+  youtubeGrid.innerHTML = youtubeHTML;
+  youtubeSection.style.display = 'block';
+  
+  console.log('YouTube 영상 렌더링 완료:', youtubeList.length);
+}
+
+/**
+ * YouTube 섹션 숨기기
+ */
+function hideYoutubeSection() {
+  const youtubeSection = document.getElementById('youtubeSection');
+  if (youtubeSection) {
+    youtubeSection.style.display = 'none';
+  }
 }
 
 /**
@@ -269,12 +462,24 @@ function renderSearchResults(products, keyword = '') {
 function highlightSearchTerm(keyword) {
   if (!keyword) return;
   
+  // 상품 제목 하이라이트
   const productTitles = document.querySelectorAll('.product-title');
   productTitles.forEach(title => {
     const text = title.textContent;
     const highlightedText = text.replace(
       new RegExp(keyword, 'gi'),
       match => `<mark style="background-color: #fff3cd; padding: 2px 4px; border-radius: 3px;">${match}</mark>`
+    );
+    title.innerHTML = highlightedText;
+  });
+  
+  // YouTube 영상 제목 하이라이트
+  const youtubeTitles = document.querySelectorAll('.youtube-video-title');
+  youtubeTitles.forEach(title => {
+    const text = title.textContent;
+    const highlightedText = text.replace(
+      new RegExp(keyword, 'gi'),
+      match => `<mark style="background-color: #ffebee; padding: 2px 4px; border-radius: 3px;">${match}</mark>`
     );
     title.innerHTML = highlightedText;
   });
@@ -382,7 +587,12 @@ async function performSearch(customKeyword = null) {
       throw new Error(response.header.rtmsg || '검색 중 오류가 발생했습니다.');
     }
 
-    renderSearchResults(products, searchParams.keyword);
+    // YouTube 데이터 추출
+    const youtubeList = getYoutubeFromApiResponse(response);
+    console.log('API 응답에서 추출한 YouTube 목록:', youtubeList);
+    console.log('YouTube 목록 길이:', youtubeList ? youtubeList.length : 0);
+    
+    renderSearchResults(products, searchParams.keyword, youtubeList);
     updateSearchCount(products.length);
     updateSearchTitle(searchParams.keyword, totalCount);
     
@@ -435,6 +645,25 @@ function getTotalCountFromApiResponse(res) {
   return 0;
 }
 
+function getYoutubeFromApiResponse(res) {
+  if (!res) return [];
+  
+  // 표준: ApiResponse<SearchDTO>
+  if (res.body && Array.isArray(res.body.youtubeList)) {
+    return res.body.youtubeList;
+  }
+  // 혹시 data로 내려오는 변형 대응
+  if (res.data && Array.isArray(res.data.youtubeList)) {
+    return res.data.youtubeList;
+  }
+  // 아주 드물게 평평한 형태
+  if (Array.isArray(res.youtubeList)) {
+    return res.youtubeList;
+  }
+
+  return [];
+}
+
 /**
  * 페이지네이션 업데이트
  * @param {number} currentPage - 현재 페이지
@@ -449,6 +678,8 @@ function updatePagination(currentPage, totalCount, pageSize) {
   const paginationNumbers = document.getElementById('paginationNumbers');
   
   console.log('페이지네이션 업데이트:', { currentPage, totalCount, totalPages, pageSize });
+  console.log('페이지네이션 컨테이너:', paginationContainer);
+  console.log('페이지 번호 컨테이너:', paginationNumbers);
   
   if (!paginationContainer) {
     console.error('페이지네이션 컨테이너를 찾을 수 없습니다.');
@@ -483,7 +714,12 @@ function updatePagination(currentPage, totalCount, pageSize) {
   }
   
   // 페이지 번호 버튼 생성
-  generatePageNumberButtons(currentPage, totalPages, paginationNumbers);
+  if (paginationNumbers) {
+    generatePageNumberButtons(currentPage, totalPages, paginationNumbers);
+    console.log('페이지 번호 버튼 생성 완료');
+  } else {
+    console.error('페이지 번호 컨테이너를 찾을 수 없습니다.');
+  }
 }
 
 /**
@@ -493,9 +729,15 @@ function updatePagination(currentPage, totalCount, pageSize) {
  * @param {HTMLElement} container - 버튼을 추가할 컨테이너
  */
 function generatePageNumberButtons(currentPage, totalPages, container) {
-  if (!container) return;
+  console.log('페이지 번호 버튼 생성 시작:', { currentPage, totalPages, container });
+  
+  if (!container) {
+    console.error('컨테이너가 없습니다.');
+    return;
+  }
   
   container.innerHTML = '';
+  console.log('컨테이너 초기화 완료');
   
   // 표시할 페이지 번호 범위 계산
   const maxVisiblePages = 7; // 최대 7개 페이지 번호 표시
@@ -507,10 +749,13 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
     startPage = Math.max(1, endPage - maxVisiblePages + 1);
   }
   
+  console.log('페이지 범위:', { startPage, endPage, maxVisiblePages });
+  
   // 첫 페이지 버튼 (1페이지가 표시 범위에 없을 때)
   if (startPage > 1) {
     const firstPageBtn = createPageNumberButton(1, currentPage, totalPages);
     container.appendChild(firstPageBtn);
+    console.log('첫 페이지 버튼 추가:', 1);
     
     // 생략 부호 추가
     if (startPage > 2) {
@@ -519,6 +764,7 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
       ellipsis.textContent = '...';
       ellipsis.style.cssText = 'color: var(--color-secondary-text); margin: 0 4px;';
       container.appendChild(ellipsis);
+      console.log('첫 번째 생략 부호 추가');
     }
   }
   
@@ -526,6 +772,7 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
   for (let i = startPage; i <= endPage; i++) {
     const pageBtn = createPageNumberButton(i, currentPage, totalPages);
     container.appendChild(pageBtn);
+    console.log('페이지 버튼 추가:', i);
   }
   
   // 마지막 페이지 버튼 (마지막 페이지가 표시 범위에 없을 때)
@@ -537,11 +784,15 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
       ellipsis.textContent = '...';
       ellipsis.style.cssText = 'color: var(--color-secondary-text); margin: 0 4px;';
       container.appendChild(ellipsis);
+      console.log('두 번째 생략 부호 추가');
     }
     
     const lastPageBtn = createPageNumberButton(totalPages, currentPage, totalPages);
     container.appendChild(lastPageBtn);
+    console.log('마지막 페이지 버튼 추가:', totalPages);
   }
+  
+  console.log('페이지 번호 버튼 생성 완료. 총 버튼 수:', container.children.length);
 }
 
 /**
@@ -552,6 +803,8 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
  * @returns {HTMLElement} 생성된 버튼 요소
  */
 function createPageNumberButton(pageNum, currentPage, totalPages) {
+  console.log('페이지 버튼 생성:', { pageNum, currentPage, totalPages });
+  
   const button = document.createElement('a');
   button.href = '#';
   button.className = 'page-number-btn';
@@ -560,16 +813,19 @@ function createPageNumberButton(pageNum, currentPage, totalPages) {
   // 현재 페이지인 경우 active 클래스 추가
   if (pageNum === currentPage) {
     button.classList.add('active');
+    console.log('현재 페이지 버튼 활성화:', pageNum);
   }
   
   // 클릭 이벤트 추가
   button.addEventListener('click', function(e) {
     e.preventDefault();
+    console.log('페이지 버튼 클릭:', pageNum);
     if (pageNum !== currentPage) {
       goToPage(pageNum);
     }
   });
   
+  console.log('페이지 버튼 생성 완료:', pageNum);
   return button;
 }
 
@@ -585,6 +841,35 @@ function goToPage(page) {
   window.history.pushState({}, '', newUrl);
   
   performSearch();
+}
+
+/**
+ * 페이지네이션 이벤트 리스너 설정
+ */
+function setupPaginationEventListeners() {
+  // 이전/다음 버튼 이벤트 리스너
+  const prevPageBtn = document.getElementById('prevPageBtn');
+  const nextPageBtn = document.getElementById('nextPageBtn');
+  
+  if (prevPageBtn) {
+    prevPageBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentPage = parseInt(urlParams.get('page') || '1');
+      if (currentPage > 1) {
+        goToPage(currentPage - 1);
+      }
+    });
+  }
+  
+  if (nextPageBtn) {
+    nextPageBtn.addEventListener('click', function(e) {
+      e.preventDefault();
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentPage = parseInt(urlParams.get('page') || '1');
+      goToPage(currentPage + 1);
+    });
+  }
 }
 
 /**
@@ -737,6 +1022,9 @@ function initializeSearchPage() {
       paginationContainer.style.display = 'none';
     }
   }
+  
+  // 페이지네이션 버튼 이벤트 리스너 재설정
+  setupPaginationEventListeners();
 }
 
 /**
@@ -911,28 +1199,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // 페이지 로드 시 필터 상태 복원
   restoreFilterState();
   
-  // 페이지네이션 버튼 이벤트
-  const paginationBtns = document.querySelectorAll('.pagination-btn');
-  paginationBtns.forEach(btn => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      
-      // 현재 URL 파라미터 가져오기
-      const urlParams = new URLSearchParams(window.location.search);
-      const currentPage = parseInt(urlParams.get('page') || '1');
-      
-      // 이전/다음 페이지 계산
-      let newPage = currentPage;
-      if (this.textContent.includes('이전')) {
-        newPage = Math.max(1, currentPage - 1);
-      } else if (this.textContent.includes('다음')) {
-        newPage = currentPage + 1;
-      }
-      
-      // 페이지 이동
-      goToPage(newPage);
-    });
-  });
+  // 페이지네이션 이벤트 리스너는 setupPaginationEventListeners()에서 처리됨
   
   // 페이지 로드 시 API 검색 실행
   const urlParams = new URLSearchParams(window.location.search);
