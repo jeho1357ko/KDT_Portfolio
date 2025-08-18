@@ -234,6 +234,7 @@
   display: flex;
   justify-content: center;
   margin-top: 40px;
+  padding: 20px 0;
 }
 
 .pagination {
@@ -269,6 +270,60 @@
   color: var(--color-secondary-text);
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+/* 페이지 번호 버튼들 */
+.pagination-numbers {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.page-number-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  background: var(--color-white);
+  color: var(--color-text);
+  text-decoration: none;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: var(--transition-default);
+  cursor: pointer;
+  min-width: 36px;
+  box-sizing: border-box;
+}
+
+.page-number-btn:hover {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+  transform: translateY(-1px);
+}
+
+.page-number-btn.active {
+  background: var(--color-primary);
+  color: var(--color-white);
+  border-color: var(--color-primary);
+  font-weight: 600;
+}
+
+.page-number-btn.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* 페이지 정보 표시 */
+.pagination-info {
+  color: var(--color-secondary-text);
+  font-size: 0.9rem;
+  font-weight: 500;
+  margin: 0 16px;
 }
 
 /* 반응형 디자인 */
@@ -314,6 +369,18 @@
   .pagination {
     flex-direction: column;
     gap: 12px;
+  }
+  
+  .pagination-numbers {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+  }
+  
+  .page-number-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 0.8rem;
   }
 }
 

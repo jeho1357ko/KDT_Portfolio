@@ -323,7 +323,7 @@ function parseSearchParams() {
   const price = urlParams.get('price') || '';
   const sort = urlParams.get('sort') || '';
   const page = parseInt(urlParams.get('page') || '1');
-  const size = 12; // 페이지당 상품 개수
+  const size = 20; // 페이지당 상품 개수를 20개로 변경 (5줄 x 4개)
   
   // 가격 범위 파싱
   let minPrice = null;
@@ -353,7 +353,8 @@ function parseSearchParams() {
     sortScore,
     sortDate,
     from: (page - 1) * size,
-    size
+    size,
+    page
   };
 }
 
@@ -372,8 +373,9 @@ async function performSearch(customKeyword = null) {
 
     const response = await fetchSearchResults(searchParams);
 
-    // ✅ SearchDTO에서 products만 안전하게 꺼내기
+    // ✅ SearchDTO에서 products와 totalCount 안전하게 꺼내기
     const products = getProductsFromApiResponse(response);
+    const totalCount = getTotalCountFromApiResponse(response);
 
     // 성공 코드 체크(있을 때만)
     if (response?.header && response.header.rtcd !== 'S00') {
@@ -382,7 +384,10 @@ async function performSearch(customKeyword = null) {
 
     renderSearchResults(products, searchParams.keyword);
     updateSearchCount(products.length);
-    updateSearchTitle(searchParams.keyword);
+    updateSearchTitle(searchParams.keyword, totalCount);
+    
+    // 페이지네이션 업데이트
+    updatePagination(searchParams.page, totalCount, searchParams.size);
 
   } catch (error) {
     console.error('검색 실패:', error);
@@ -411,18 +416,222 @@ function getProductsFromApiResponse(res) {
   return [];
 }
 
+function getTotalCountFromApiResponse(res) {
+  if (!res) return 0;
+  
+  // 표준: ApiResponse<SearchDTO>
+  if (res.body && res.body.totalCount !== undefined) {
+    return res.body.totalCount;
+  }
+  // 혹시 data로 내려오는 변형 대응
+  if (res.data && res.data.totalCount !== undefined) {
+    return res.data.totalCount;
+  }
+  // 아주 드물게 평평한 형태
+  if (res.totalCount !== undefined) {
+    return res.totalCount;
+  }
+
+  return 0;
+}
+
+/**
+ * 페이지네이션 업데이트
+ * @param {number} currentPage - 현재 페이지
+ * @param {number} totalCount - 전체 결과 수
+ * @param {number} pageSize - 페이지당 항목 수
+ */
+function updatePagination(currentPage, totalCount, pageSize) {
+  const totalPages = Math.ceil(totalCount / pageSize);
+  const paginationContainer = document.getElementById('paginationContainer');
+  const prevPageBtn = document.getElementById('prevPageBtn');
+  const nextPageBtn = document.getElementById('nextPageBtn');
+  const paginationNumbers = document.getElementById('paginationNumbers');
+  
+  console.log('페이지네이션 업데이트:', { currentPage, totalCount, totalPages, pageSize });
+  
+  if (!paginationContainer) {
+    console.error('페이지네이션 컨테이너를 찾을 수 없습니다.');
+    return;
+  }
+  
+  if (totalPages <= 1) {
+    paginationContainer.style.display = 'none';
+    console.log('페이지가 1개 이하이므로 페이지네이션 숨김');
+    return;
+  }
+  
+  // 페이지네이션 컨테이너 표시
+  paginationContainer.style.display = 'block';
+  console.log('페이지네이션 표시됨');
+  
+  // 페이지 정보 업데이트
+  const currentPageSpan = document.getElementById('currentPage');
+  const totalPagesSpan = document.getElementById('totalPages');
+  if (currentPageSpan) currentPageSpan.textContent = currentPage;
+  if (totalPagesSpan) totalPagesSpan.textContent = totalPages;
+  
+  // 이전/다음 버튼 활성화/비활성화
+  if (prevPageBtn) {
+    prevPageBtn.style.opacity = currentPage <= 1 ? '0.5' : '1';
+    prevPageBtn.style.pointerEvents = currentPage <= 1 ? 'none' : 'auto';
+  }
+  
+  if (nextPageBtn) {
+    nextPageBtn.style.opacity = currentPage >= totalPages ? '0.5' : '1';
+    nextPageBtn.style.pointerEvents = currentPage >= totalPages ? 'none' : 'auto';
+  }
+  
+  // 페이지 번호 버튼 생성
+  generatePageNumberButtons(currentPage, totalPages, paginationNumbers);
+}
+
+/**
+ * 페이지 번호 버튼 생성
+ * @param {number} currentPage - 현재 페이지
+ * @param {number} totalPages - 전체 페이지 수
+ * @param {HTMLElement} container - 버튼을 추가할 컨테이너
+ */
+function generatePageNumberButtons(currentPage, totalPages, container) {
+  if (!container) return;
+  
+  container.innerHTML = '';
+  
+  // 표시할 페이지 번호 범위 계산
+  const maxVisiblePages = 7; // 최대 7개 페이지 번호 표시
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  
+  // 시작 페이지 조정
+  if (endPage - startPage + 1 < maxVisiblePages) {
+    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+  }
+  
+  // 첫 페이지 버튼 (1페이지가 표시 범위에 없을 때)
+  if (startPage > 1) {
+    const firstPageBtn = createPageNumberButton(1, currentPage, totalPages);
+    container.appendChild(firstPageBtn);
+    
+    // 생략 부호 추가
+    if (startPage > 2) {
+      const ellipsis = document.createElement('span');
+      ellipsis.className = 'pagination-ellipsis';
+      ellipsis.textContent = '...';
+      ellipsis.style.cssText = 'color: var(--color-secondary-text); margin: 0 4px;';
+      container.appendChild(ellipsis);
+    }
+  }
+  
+  // 페이지 번호 버튼들 생성
+  for (let i = startPage; i <= endPage; i++) {
+    const pageBtn = createPageNumberButton(i, currentPage, totalPages);
+    container.appendChild(pageBtn);
+  }
+  
+  // 마지막 페이지 버튼 (마지막 페이지가 표시 범위에 없을 때)
+  if (endPage < totalPages) {
+    // 생략 부호 추가
+    if (endPage < totalPages - 1) {
+      const ellipsis = document.createElement('span');
+      ellipsis.className = 'pagination-ellipsis';
+      ellipsis.textContent = '...';
+      ellipsis.style.cssText = 'color: var(--color-secondary-text); margin: 0 4px;';
+      container.appendChild(ellipsis);
+    }
+    
+    const lastPageBtn = createPageNumberButton(totalPages, currentPage, totalPages);
+    container.appendChild(lastPageBtn);
+  }
+}
+
+/**
+ * 페이지 번호 버튼 생성
+ * @param {number} pageNum - 페이지 번호
+ * @param {number} currentPage - 현재 페이지
+ * @param {number} totalPages - 전체 페이지 수
+ * @returns {HTMLElement} 생성된 버튼 요소
+ */
+function createPageNumberButton(pageNum, currentPage, totalPages) {
+  const button = document.createElement('a');
+  button.href = '#';
+  button.className = 'page-number-btn';
+  button.textContent = pageNum;
+  
+  // 현재 페이지인 경우 active 클래스 추가
+  if (pageNum === currentPage) {
+    button.classList.add('active');
+  }
+  
+  // 클릭 이벤트 추가
+  button.addEventListener('click', function(e) {
+    e.preventDefault();
+    if (pageNum !== currentPage) {
+      goToPage(pageNum);
+    }
+  });
+  
+  return button;
+}
+
+/**
+ * 페이지 이동
+ * @param {number} page - 이동할 페이지 번호
+ */
+function goToPage(page) {
+  const urlParams = new URLSearchParams(window.location.search);
+  urlParams.set('page', page.toString());
+  
+  const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+  window.history.pushState({}, '', newUrl);
+  
+  performSearch();
+}
+
+/**
+ * 키보드 네비게이션 설정
+ */
+function setupKeyboardNavigation() {
+  document.addEventListener('keydown', function(e) {
+    // Alt + 방향키로 페이지 이동
+    if (e.altKey) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const currentPage = parseInt(urlParams.get('page') || '1');
+      
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        if (currentPage > 1) {
+          goToPage(currentPage - 1);
+        }
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        // 전체 페이지 수를 알 수 없으므로 일단 다음 페이지로 이동
+        goToPage(currentPage + 1);
+      }
+    }
+  });
+}
+
 /**
  * 검색 결과 제목 업데이트
  * @param {string} keyword - 검색 키워드
+ * @param {number} totalCount - 전체 결과 수 (선택사항)
  */
-function updateSearchTitle(keyword) {
+function updateSearchTitle(keyword, totalCount = null) {
   const titleElement = document.getElementById('searchResultsTitle');
   if (titleElement) {
+    let titleText = '';
     if (keyword) {
-      titleElement.innerHTML = `"<span>${keyword}</span>" 검색 결과`;
+      titleText = `"<span>${keyword}</span>" 검색 결과`;
+      if (totalCount !== null) {
+        titleText += ` (총 ${totalCount.toLocaleString()}개)`;
+      }
     } else {
-      titleElement.innerHTML = '전체 상품';
+      titleText = '전체 상품';
+      if (totalCount !== null) {
+        titleText += ` (총 ${totalCount.toLocaleString()}개)`;
+      }
     }
+    titleElement.innerHTML = titleText;
   }
 }
 
@@ -513,9 +722,20 @@ function initializeSearchPage() {
     searchKeyword.value = keyword;
   }
 
+  // 페이지네이션 컨테이너 초기 상태 설정
+  const paginationContainer = document.getElementById('paginationContainer');
+  if (paginationContainer) {
+    paginationContainer.style.display = 'none';
+  }
+
   if (keyword) {
     console.log('페이지 로드 시 검색어:', keyword);
     performSearch();
+  } else {
+    // 검색어가 없으면 페이지네이션 숨김
+    if (paginationContainer) {
+      paginationContainer.style.display = 'none';
+    }
   }
 }
 
@@ -709,13 +929,8 @@ document.addEventListener('DOMContentLoaded', function() {
         newPage = currentPage + 1;
       }
       
-      // 새 URL 생성
-      urlParams.set('page', newPage.toString());
-      const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-      window.history.pushState({}, '', newUrl);
-      
-      // 검색 실행
-      performSearch();
+      // 페이지 이동
+      goToPage(newPage);
     });
   });
   
@@ -728,6 +943,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // 초기화 함수들 실행
   initializeSearchPage();
   setupEnterKeySearch();
+  setupKeyboardNavigation();
 });
 
 // 스핀 애니메이션 CSS

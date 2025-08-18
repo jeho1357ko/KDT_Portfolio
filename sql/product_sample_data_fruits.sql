@@ -48,7 +48,7 @@ VALUES (1, '바나나', '수입 바나나 1kg 2kg 필리핀 바나나', 2000, '�
 
 -- 사과 (미시마, 미얀마, 부사)
 INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
-VALUES (1, '사과 미시마', '미시마 사과 2kg 3kg 달콤한 미시마 사과', 2500, '주문 후 1-2일 내 배송', '택배', '경북', '미시마 품종의 달콤한 사과입니다. 과즙이 풍부하고 맛이 좋습니다.', 18000, 120, NU'https://thumbnail9.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/7abd/c0e1186d5f5de5a038d7c056a180163559884d304034dffc5e006449bdc0.jpg', '판매중');
+VALUES (1, '사과 미시마', '미시마 사과 2kg 3kg 달콤한 미시마 사과', 2500, '주문 후 1-2일 내 배송', '택배', '경북', '미시마 품종의 달콤한 사과입니다. 과즙이 풍부하고 맛이 좋습니다.', 18000, 120, 'https://thumbnail9.coupangcdn.com/thumbnails/remote/320x320ex/image/vendor_inventory/7abd/c0e1186d5f5de5a038d7c056a180163559884d304034dffc5e006449bdc0.jpg', '판매중');
 
 INSERT INTO PRODUCT (seller_id, product_name, title, delivery_fee, delivery_information, delivery_METHOD, Country_of_origin, content, price, quantity, thumbnail, status) 
 VALUES (1, '사과 미얀마', '미얀마 사과 2kg 3kg 신선한 미얀마 사과', 2500, '주문 후 1-2일 내 배송', '택배', '경북', '미얀마 품종의 신선한 사과입니다. 아삭하고 맛이 좋습니다.', 16000, 100, 'https://thumbnail7.coupangcdn.com/thumbnails/remote/320x320ex/image/rs_quotation_api/spgntivu/a5fb005ae3cc44509c7c04384feaf098.jpg', '판매중');

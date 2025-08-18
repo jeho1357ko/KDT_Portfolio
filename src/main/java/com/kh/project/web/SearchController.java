@@ -2,18 +2,19 @@ package com.kh.project.web;
 
 import java.util.List;
 
-import com.kh.project.domain.elasticsearch.YoutubeSearchSVC;
-import com.kh.project.domain.entity.Youtube;
-import com.kh.project.web.api.SearchDTO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kh.project.domain.elasticsearch.ProductSearchDAO;
 import com.kh.project.domain.elasticsearch.ProductSearchSVC;
+import com.kh.project.domain.elasticsearch.YoutubeSearchSVC;
 import com.kh.project.domain.entity.Product;
+import com.kh.project.domain.entity.Youtube;
 import com.kh.project.web.api.ApiResponse;
 import com.kh.project.web.api.ApiResponseCode;
+import com.kh.project.web.api.SearchDTO;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,15 +34,20 @@ public class SearchController {
       @RequestParam(value = "minPrice", required = false) Integer minPrice,
       @RequestParam(value = "maxPrice", required = false) Integer maxPrice,
       @RequestParam(value = "from", defaultValue = "0") int from,
-      @RequestParam(value = "size", defaultValue = "10") int size,
+      @RequestParam(value = "size", defaultValue = "20") int size,
       @RequestParam(value = "sortScore", required = false) String sortScore,
       @RequestParam(value = "sortDate", required = false) String sortDate
   ) {
-    List<Product> products = productSearchSVC.search(keyword, status,  minPrice, maxPrice, sortScore,sortDate, from, size);
+    // 전체 결과 수와 함께 검색
+    ProductSearchDAO.SearchResult searchResult = productSearchSVC.searchWithTotal(keyword, status, minPrice, maxPrice, sortScore, sortDate, from, size);
+    List<Product> products = searchResult.getProducts();
+    long totalCount = searchResult.getTotalCount();
+    
     List<Youtube> youtubeList = youtubeSearchSVC.search(keyword, from, size);
     SearchDTO searchDTO = new SearchDTO();
     searchDTO.setProducts(products);
     searchDTO.setYoutubeList(youtubeList);
+    searchDTO.setTotalCount(totalCount);
     return ApiResponse.of(ApiResponseCode.SUCCESS,searchDTO);
   }
 } 

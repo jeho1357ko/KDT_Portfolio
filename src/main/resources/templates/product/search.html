@@ -180,14 +180,22 @@
       </div>
 
       <!-- 페이지네이션 -->
-      <div th:if="${products != null and #lists.size(products) > 0}" class="pagination-container" id="paginationContainer" style="display: none;">
+      <div class="pagination-container" id="paginationContainer">
         <div class="pagination">
           <a href="#" class="pagination-btn" id="prevPageBtn">
             <i class="fas fa-chevron-left"></i> 이전
           </a>
+          
+          <!-- 페이지 번호 버튼들 -->
+          <div class="pagination-numbers" id="paginationNumbers">
+            <!-- JavaScript로 동적 생성 -->
+          </div>
+          
+          <!-- 페이지 정보 -->
           <span class="pagination-info">
             <span id="currentPage">1</span> / <span id="totalPages">1</span>
           </span>
+          
           <a href="#" class="pagination-btn" id="nextPageBtn">
             다음 <i class="fas fa-chevron-right"></i>
           </a>

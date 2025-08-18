@@ -27,8 +27,29 @@ public class ProductSearchDAO {
 
   final private ElasticsearchClient esClient;
 
-  //일반 검색 함수
+  // 검색 결과와 전체 개수를 함께 반환하는 클래스
+  public static class SearchResult {
+    private final List<Product> products;
+    private final long totalCount;
+    
+    public SearchResult(List<Product> products, long totalCount) {
+      this.products = products;
+      this.totalCount = totalCount;
+    }
+    
+    public List<Product> getProducts() { return products; }
+    public long getTotalCount() { return totalCount; }
+  }
+
+  //일반 검색 함수 (기존 호환성을 위해 유지)
   public List<Product> search(String keyword, String status, Integer minPrice, Integer maxPrice,
+                              String sortScore, String sortDate, int from, int size) {
+    SearchResult result = searchWithTotal(keyword, status, minPrice, maxPrice, sortScore, sortDate, from, size);
+    return result.getProducts();
+  }
+
+  // 전체 결과 수와 함께 검색하는 함수
+  public SearchResult searchWithTotal(String keyword, String status, Integer minPrice, Integer maxPrice,
                               String sortScore, String sortDate, int from, int size) {
 
     log.info("keyword: {}", keyword);
@@ -146,11 +167,14 @@ public class ProductSearchDAO {
         return s;
       }, Product.class);
 
-      log.info(" total hits: {}", response.hits().total().value());
+      long totalCount = response.hits().total().value();
+      log.info(" total hits: {}", totalCount);
 
-      return response.hits().hits().stream()
+      List<Product> products = response.hits().hits().stream()
           .map(hit -> hit.source())
           .toList();
+
+      return new SearchResult(products, totalCount);
 
     } catch (Exception e) {
       log.error(" ElasticsearchException: {}", e.getMessage());
@@ -158,9 +182,9 @@ public class ProductSearchDAO {
         log.error(" ES error details: {}", esEx.error());
       }
       e.printStackTrace();
-      return List.of();
+      return new SearchResult(List.of(), 0);
     }
-  } //search 함수 끝
+  } //searchWithTotal 함수 끝
 
   // 삭제 함수
   public void delete(Long productId) throws IOException {
