@@ -46,6 +46,71 @@
       </div>
     </section>
   </main>
+
+  <!-- 리뷰 작성 모달 -->
+  <div id="reviewModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>리뷰 작성</h3>
+        <button type="button" class="close-btn" onclick="closeReviewModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="product-info">
+          <img id="reviewProductImage" src="" alt="상품 이미지" class="product-thumbnail">
+          <div class="product-details">
+            <h4 id="reviewProductTitle"></h4>
+            <p id="reviewProductInfo"></p>
+          </div>
+        </div>
+        <form id="reviewForm">
+          <input type="hidden" id="reviewProductId" name="productId">
+          <input type="hidden" id="reviewOrderId" name="orderId">
+          <input type="hidden" id="reviewOrderItemId" name="orderItemId">
+          
+          <div class="form-group">
+            <label for="reviewTitle">제목 *</label>
+            <input type="text" id="reviewTitle" name="title" required maxlength="100" placeholder="리뷰 제목을 입력하세요">
+          </div>
+          
+          <div class="form-group">
+            <label for="reviewScore">평점 *</label>
+            <div class="star-rating">
+              <input type="radio" id="star5" name="score" value="5" required>
+              <label for="star5">★</label>
+              <input type="radio" id="star4" name="score" value="4">
+              <label for="star4">★</label>
+              <input type="radio" id="star3" name="score" value="3">
+              <label for="star3">★</label>
+              <input type="radio" id="star2" name="score" value="2">
+              <label for="star2">★</label>
+              <input type="radio" id="star1" name="score" value="1">
+              <label for="star1">★</label>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="reviewContent">내용 *</label>
+            <textarea id="reviewContent" name="content" required maxlength="1000" rows="5" placeholder="상품에 대한 솔직한 리뷰를 작성해주세요"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label for="reviewImage">이미지 (선택사항)</label>
+            <input type="file" id="reviewImage" name="image" accept="image/*">
+            <div id="imagePreview" class="image-preview" style="display: none;">
+              <img id="previewImg" src="" alt="미리보기">
+              <button type="button" onclick="removeImagePreview()">삭제</button>
+            </div>
+          </div>
+          
+          <div class="form-actions">
+            <button type="button" onclick="closeReviewModal()" class="btn-cancel">취소</button>
+            <button type="submit" class="btn-submit">리뷰 등록</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
 <script th:src="@{/js/buyer/order_history.js}"></script>
 </body>
 </html>

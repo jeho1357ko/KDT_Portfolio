@@ -261,6 +261,7 @@ function handleImageError(img) {
                loading="lazy"
                onerror="this.src='/images/product-placeholder.jpg'">
           <div class="order-details">
+            <div class="order-number">주문번호: ${order.orderNumber || order.orderId}</div>
             <div class="product-name">${productInfo.title}</div>
             <div class="seller-name">수령자: ${order.name}</div>
             <div class="price-quantity">주문일: ${this.formatDate(order.orderDate)} | ${itemCount}개 상품</div>
@@ -299,6 +300,17 @@ function handleImageError(img) {
         try {
           const productInfo = await this.getProductInfo(item.productId);
           
+          // 리뷰 작성 가능 여부 확인
+          const canWriteReview = await this.canWriteReview(item.productId, item.orderId, item.orderItemId);
+          const hasReview = await this.hasReview(item.productId);
+          
+          let reviewButton = '';
+          if (canWriteReview && !hasReview) {
+            reviewButton = `<button class="review-btn" onclick="openReviewModal(${item.productId}, ${item.orderId}, ${item.orderItemId}, '${productInfo.title}', '${productInfo.thumbnail}', ${item.quantity}, ${item.unitPrice})">리뷰 작성</button>`;
+          } else if (hasReview) {
+            reviewButton = `<button class="review-btn review-written" disabled>리뷰 작성 완료</button>`;
+          }
+          
           productElement.innerHTML = `
             <img class="product-item-image" 
                  src="${productInfo.thumbnail}" 
@@ -308,13 +320,16 @@ function handleImageError(img) {
             <div class="product-item-details">
               <div class="product-item-name">${productInfo.title}</div>
               <div class="product-item-info">수량: ${item.quantity}개 | 가격: ${this.formatNumber(item.unitPrice)}원</div>
+              ${reviewButton}
             </div>
           `;
           
-          // 상품 클릭 이벤트
+          // 상품 클릭 이벤트 (리뷰 버튼 클릭 시에는 상품 페이지로 이동하지 않음)
           productElement.addEventListener('click', (e) => {
-            e.stopPropagation();
-            window.location.href = `/seller/product/${item.productId}`;
+            if (!e.target.classList.contains('review-btn')) {
+              e.stopPropagation();
+              window.location.href = `/seller/product/${item.productId}`;
+            }
           });
           
         } catch (error) {
@@ -331,13 +346,38 @@ function handleImageError(img) {
         return productElement;
       }
 
+      // ===== 리뷰 작성 가능 여부 확인 =====
+      async canWriteReview(productId, orderId, orderItemId) {
+        // 주문 상태와 관계없이 리뷰 작성 가능
+        return true;
+      }
+
+      // ===== 이미 리뷰를 작성했는지 확인 =====
+      async hasReview(productId) {
+        try {
+          const response = await fetch(`/api/review/All?productId=${productId}`);
+          const data = await response.json();
+          
+          if (data.header && data.header.rtcd === 'S00' && data.body) {
+            // 현재 로그인한 사용자가 작성한 리뷰가 있는지 확인
+            const reviews = data.body;
+            return reviews.length > 0;
+          }
+          return false;
+        } catch (error) {
+          console.error('리뷰 존재 여부 확인 오류:', error);
+          return false;
+        }
+      }
+
       // ===== 폴백 주문 렌더링 =====
       renderFallbackOrder(orderElement, order, statusClass, statusText, itemCount) {
         orderElement.innerHTML = `
           <div class="order-main">
             <img class="product-image" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik02MCA0MEM2MCAzNS41ODE3IDY0LjU4MTcgMzEgNzAgMzFDNzUuNDE4MyAzMSA4MCAzNS41ODE3IDgwIDQwQzgwIDQ0LjQxODMgNzUuNDE4MyA0OSA3MCA0OUM2NC41ODE3IDQ5IDYwIDQ0LjQxODMgNjAgNDBaIiBmaWxsPSIjNkM3NTdEIi8+CjxwYXRoIGQ9Ik0zMCA4MEMzMCA3NS41ODE3IDM0LjU4MTcgNzEgNDAgNzFINDVINDVDNTAuNDE4MyA3MSA1NSA3NS41ODE3IDU1IDgwQzU1IDg0LjQxODMgNTAuNDE4MyA4OSA0NSA4OUg0MEMzNC41ODE3IDg5IDMwIDg0LjQxODMgMzAgODBaIiBmaWxsPSIjNkM3NTdEIi8+CjxwYXRoIGQ9Ik04MCA4MEM4MCA3NS41ODE3IDg0LjU4MTcgNzEgOTAgNzFDOTUuNDE4MyA3MSAxMDAgNzUuNTgxNyAxMDAgODBDMTAwIDg0LjQxODMgOTUuNDE4MyA4OSA5MCA4OUM4NC41ODE3IDg5IDgwIDg0LjQxODMgODAgODBaIiBmaWxsPSIjNkM3NTdEIi8+Cjwvc3ZnPgo=" alt="상품 이미지">
             <div class="order-details">
-              <div class="product-name">주문번호: ${order.orderNumber || order.orderId}</div>
+              <div class="order-number">주문번호: ${order.orderNumber || order.orderId}</div>
+              <div class="product-name">주문 정보 없음</div>
               <div class="seller-name">수령자: ${order.name}</div>
               <div class="price-quantity">주문일: ${this.formatDate(order.orderDate)}${itemCount > 0 ? ` | ${itemCount}개 상품` : ''}</div>
               <div class="order-info">주소: ${order.deliveryAddress}</div>
@@ -446,6 +486,117 @@ function handleImageError(img) {
     function goToCart() {
       window.location.href = '/buyer/cart';
     }
+
+    // ===== 리뷰 모달 관련 전역 함수들 =====
+    let currentReviewData = null;
+
+    function openReviewModal(productId, orderId, orderItemId, productTitle, productImage, quantity, unitPrice) {
+      currentReviewData = {
+        productId,
+        orderId,
+        orderItemId,
+        productTitle,
+        productImage,
+        quantity,
+        unitPrice
+      };
+
+      // 모달 내용 설정
+      document.getElementById('reviewProductImage').src = productImage;
+      document.getElementById('reviewProductTitle').textContent = productTitle;
+      document.getElementById('reviewProductInfo').textContent = `수량: ${quantity}개 | 가격: ${Number(unitPrice).toLocaleString()}원`;
+      
+      document.getElementById('reviewProductId').value = productId;
+      document.getElementById('reviewOrderId').value = orderId;
+      document.getElementById('reviewOrderItemId').value = orderItemId;
+      
+      // 폼 초기화
+      document.getElementById('reviewForm').reset();
+      document.getElementById('imagePreview').style.display = 'none';
+      
+      // 모달 표시
+      document.getElementById('reviewModal').style.display = 'flex';
+    }
+
+    function closeReviewModal() {
+      document.getElementById('reviewModal').style.display = 'none';
+      currentReviewData = null;
+    }
+
+    function removeImagePreview() {
+      document.getElementById('reviewImage').value = '';
+      document.getElementById('imagePreview').style.display = 'none';
+    }
+
+    // 이미지 미리보기 기능
+    document.addEventListener('DOMContentLoaded', function() {
+      const imageInput = document.getElementById('reviewImage');
+      const imagePreview = document.getElementById('imagePreview');
+      const previewImg = document.getElementById('previewImg');
+
+      imageInput.addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function(e) {
+            previewImg.src = e.target.result;
+            imagePreview.style.display = 'flex';
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+
+      // 리뷰 폼 제출 처리
+      document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        if (!currentReviewData) {
+          alert('리뷰 데이터가 없습니다.');
+          return;
+        }
+
+        const formData = new FormData();
+        formData.append('productId', currentReviewData.productId);
+        formData.append('orderId', currentReviewData.orderId);
+        formData.append('orderItemId', currentReviewData.orderItemId);
+        formData.append('title', document.getElementById('reviewTitle').value);
+        formData.append('score', document.querySelector('input[name="score"]:checked').value);
+        formData.append('content', document.getElementById('reviewContent').value);
+
+        const imageFile = document.getElementById('reviewImage').files[0];
+        if (imageFile) {
+          formData.append('image', imageFile);
+        }
+
+        try {
+          const response = await fetch('/api/review/save', {
+            method: 'POST',
+            body: formData
+          });
+
+          const result = await response.json();
+          
+          if (result.header && result.header.rtcd === 'S00') {
+            alert('리뷰가 성공적으로 등록되었습니다.');
+            closeReviewModal();
+            // 페이지 새로고침하여 리뷰 버튼 상태 업데이트
+            location.reload();
+          } else {
+            alert('리뷰 등록에 실패했습니다: ' + (result.header?.rtmsg || '알 수 없는 오류'));
+          }
+        } catch (error) {
+          console.error('리뷰 등록 오류:', error);
+          alert('리뷰 등록 중 오류가 발생했습니다.');
+        }
+      });
+
+      // 모달 외부 클릭 시 닫기
+      document.getElementById('reviewModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+          closeReviewModal();
+        }
+      });
+    });
 
     // ===== 초기화 =====
     document.addEventListener('DOMContentLoaded', () => {

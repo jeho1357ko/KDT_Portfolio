@@ -105,7 +105,7 @@ public class YoutubeApiService {
         return UriComponentsBuilder
             .fromHttpUrl("https://www.googleapis.com/youtube/v3/search")
             .queryParam("part", "snippet")
-            .queryParam("q", keyword + " 고르는법")
+            .queryParam("q", keyword )
             .queryParam("type", "video")
             .queryParam("maxResults", maxResults)
             .queryParam("regionCode", regionCode)

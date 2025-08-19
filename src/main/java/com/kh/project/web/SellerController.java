@@ -148,7 +148,7 @@ public class SellerController {
 
   // 로그인 후 화면
   @GetMapping("/seller/main/{sid}")
-  public String sellerPage(@PathVariable("sid") Long sid , Model model, HttpSession session){
+  public String sellerPage(@PathVariable(value = "sid") Long sid , Model model, HttpSession session){
     // 세션에서 로그인한 판매자 정보 가져오기
     LoginSeller loginSeller = (LoginSeller) session.getAttribute("loginSeller");
     
@@ -202,7 +202,7 @@ public class SellerController {
 
   //회원 정보  조회
   @GetMapping("/seller/myPage/{sid}")
-  public String myPage( HttpSession session , Model model,@PathVariable("sid") Long sid){
+  public String myPage( HttpSession session , Model model,@PathVariable(value = "sid") Long sid){
     // 세션에 저장된 정보를 담은 loginSeller 라는 객체를  LoginSeller 객체에 담아 loginSeller 라는 이름으로 꺼냄
     LoginSeller loginSeller = (LoginSeller) session.getAttribute("loginSeller");
 
@@ -234,7 +234,7 @@ public class SellerController {
   }
   // 회원 정보 수정
   @GetMapping("/seller/myPage/{sid}/edit")
-  public String myInformationEdit(@PathVariable("sid") Long sid, HttpSession session, Model model) {
+  public String myInformationEdit(@PathVariable(value = "sid") Long sid, HttpSession session, Model model) {
     LoginSeller loginSeller = (LoginSeller) session.getAttribute("loginSeller");
 
     if (loginSeller == null) {
@@ -267,7 +267,7 @@ public class SellerController {
                        @ModelAttribute UpdateSeller updateSeller,
                        RedirectAttributes redirectAttributes,
                        Model model,
-                       @PathVariable("sid") Long sid) {
+                       @PathVariable(value = "sid") Long sid) {
 
     LoginSeller loginSeller = (LoginSeller) session.getAttribute("loginSeller");
     if (!loginSeller.getSellerId().equals(sid)) {
@@ -293,7 +293,7 @@ public class SellerController {
 
   // 회원 탈퇴 페이지
   @GetMapping("/seller/{sid}/delete")
-  public String deletePage(@PathVariable("sid") Long sid , HttpSession httpSession, Model model) {
+  public String deletePage(@PathVariable(value = "sid") Long sid , HttpSession httpSession, Model model) {
     LoginSeller loginseller = (LoginSeller) httpSession.getAttribute("loginSeller");
     if (!loginseller.getSellerId().equals(sid)) {
       model.addAttribute("error", "잘못된 접근 입니다.");
@@ -303,7 +303,7 @@ public class SellerController {
   }
   //회원 탈퇴 요청 처리
   @PostMapping("/seller/{sid}/delete")
-  public String delete(@PathVariable("sid") Long sid , HttpSession session , RedirectAttributes redirectAttributes , Model model){
+  public String delete(@PathVariable(value = "sid") Long sid , HttpSession session , RedirectAttributes redirectAttributes , Model model){
     LoginSeller loginSeller = (LoginSeller) session.getAttribute("loginSeller");
 
     if (loginSeller == null || !loginSeller.getSellerId().equals(sid)){

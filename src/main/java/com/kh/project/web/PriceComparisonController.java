@@ -62,7 +62,7 @@ public class PriceComparisonController {
     // 상품별 가격 비교
     @GetMapping("/api/compare/{productName}")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> compareProductPrices(@PathVariable String productName) {
+    public ResponseEntity<Map<String, Object>> compareProductPrices(@PathVariable(value = "productName") String productName) {
         try {
             Map<String, Object> result = priceComparisonService.compareProductPrices(productName);
             return ResponseEntity.ok(result);
@@ -75,7 +75,7 @@ public class PriceComparisonController {
     // 상품별 최신 가격 조회
     @GetMapping("/api/product/{productName}")
     @ResponseBody
-    public ResponseEntity<List<ProductPrice>> getLatestPricesByProduct(@PathVariable String productName) {
+    public ResponseEntity<List<ProductPrice>> getLatestPricesByProduct(@PathVariable(value = "productName") String productName) {
         try {
             List<ProductPrice> prices = priceComparisonService.getLatestPricesByProduct(productName);
             return ResponseEntity.ok(prices);
@@ -89,7 +89,7 @@ public class PriceComparisonController {
     @GetMapping("/api/trend/{productName}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getPriceTrend(
-            @PathVariable String productName,
+            @PathVariable(value = "productName") String productName,
             @RequestParam(value = "months", defaultValue = "6") int months) {
         try {
             Map<String, Object> result = priceComparisonService.getPriceTrend(productName, months);
@@ -116,7 +116,7 @@ public class PriceComparisonController {
     // 특정 상품 가격 데이터 동기화 (관리자용)
     @PostMapping("/api/sync/product/{productName}")
     @ResponseBody
-    public ResponseEntity<String> syncProductPriceData(@PathVariable String productName) {
+    public ResponseEntity<String> syncProductPriceData(@PathVariable(value = "productName") String productName) {
         try {
             // 현재 날짜로 공공데이터 조회
             String currentDate = java.time.LocalDate.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyyMMdd"));
@@ -165,7 +165,7 @@ public class PriceComparisonController {
     
     // 가격 비교 결과 페이지
     @GetMapping("/result/{productName}")
-    public String priceCompareResult(@PathVariable String productName, Model model) {
+    public String priceCompareResult(@PathVariable(value = "productName") String productName, Model model) {
         try {
             Map<String, Object> result = priceComparisonService.compareProductPrices(productName);
             model.addAttribute("result", result);
@@ -181,7 +181,7 @@ public class PriceComparisonController {
     @GetMapping("/api/detail/{productName}")
     @ResponseBody
     public ResponseEntity<Map<String, Object>> getProductDetailPrices(
-            @PathVariable String productName,
+            @PathVariable(value = "productName") String productName,
             @RequestParam(value = "currentPrice", required = false) Double currentPrice) {
         try {
             Map<String, Object> result = priceComparisonService.getProductDetailPrices(productName, currentPrice);
@@ -195,7 +195,7 @@ public class PriceComparisonController {
     // 상품 상세 페이지용 크기별 평균 가격 조회
     @GetMapping("/api/detail/{productName}/sizes")
     @ResponseBody
-    public ResponseEntity<Map<String, Object>> getProductSizePrices(@PathVariable String productName) {
+    public ResponseEntity<Map<String, Object>> getProductSizePrices(@PathVariable(value = "productName") String productName) {
         try {
             Map<String, Object> result = priceComparisonService.getProductSizePrices(productName);
             return ResponseEntity.ok(result);

@@ -121,7 +121,7 @@ public class CartController {
 
   // 장바구니 목록 조회
   @GetMapping("/{bid}")
-  public ApiResponse<List<CartItemDTO>> findByBuyerId(@PathVariable("bid") Long bid) {
+  public ApiResponse<List<CartItemDTO>> findByBuyerId(@PathVariable(value = "bid") Long bid) {
     log.info("=== 장바구니 조회 API 호출 ===");
     log.info("요청된 buyerId: {}", bid);
     log.info("현재 서버 포트: {}", System.getProperty("server.port"));

@@ -51,7 +51,7 @@ public class ProductController {
   // API 엔드포인트 추가
   @GetMapping("/api/product/{productId}")
   @org.springframework.web.bind.annotation.ResponseBody
-  public ApiResponse<Product> getProductApi(@PathVariable("productId") Long productId) {
+  public ApiResponse<Product> getProductApi(@PathVariable(value = "productId") Long productId) {
     try {
       Optional<Product> productOpt = productSVC.findById(productId);
       if (productOpt.isPresent()) {
@@ -351,7 +351,7 @@ public class ProductController {
 
   // 판매글 목록 페이지
   @GetMapping("/list/{sid}")
-  public String sellerPage(@PathVariable("sid") Long sid , Model model, HttpSession session){
+  public String sellerPage(@PathVariable(value = "sid") Long sid , Model model, HttpSession session){
     try {
       List<Product> ids = productSVC.findByIds(sid);
       model.addAttribute("products", ids != null ? ids : new ArrayList<>());
@@ -387,7 +387,7 @@ public class ProductController {
 
   // 판매글 등록 페이지
   @GetMapping("/add/{sid}")
-  public String savePage(@PathVariable("sid") Long sid , Model model, HttpSession session){
+  public String savePage(@PathVariable(value = "sid") Long sid , Model model, HttpSession session){
     model.addAttribute("product",new SaveForm());
     model.addAttribute("sid",sid);
     
@@ -416,7 +416,7 @@ public class ProductController {
 
   // 판매글 조회(개별) 상세 페이지
   @GetMapping("/product/{pid}")
-  public String detailPage(@PathVariable("pid") Long pid, Model model, HttpSession session) {
+  public String detailPage(@PathVariable(value = "pid") Long pid, Model model, HttpSession session) {
     Optional<Product> optionalProduct = productSVC.findById(pid);
     if (optionalProduct.isPresent()) {
       Product product = optionalProduct.get();
@@ -466,7 +466,7 @@ public class ProductController {
 
   // 판매글 등록 처리
   @PostMapping("/add/{sid}")
-  public String saveProduct(@PathVariable("sid") Long sid, @ModelAttribute SaveForm saveForm, RedirectAttributes redirectAttributes){
+  public String saveProduct(@PathVariable(value = "sid") Long sid, @ModelAttribute SaveForm saveForm, RedirectAttributes redirectAttributes){
     Product product = new Product();
     BeanUtils.copyProperties(saveForm,product);
 
@@ -500,7 +500,7 @@ public class ProductController {
 
   // 판매글 수정 페이지
   @GetMapping("/product/{pid}/edit")
-  public String updatePage(@PathVariable("pid") Long pid ,Model model, HttpSession session ){
+  public String updatePage(@PathVariable(value = "pid") Long pid ,Model model, HttpSession session ){
 
     // 🔥 기존 상품 정보 불러오기!
     Optional<Product> optionalProduct = productSVC.findById(pid);
@@ -544,7 +544,7 @@ public class ProductController {
 
   //판매글 수정 처리
   @PostMapping("/product/{pid}/edit")
-  public String updateProduct(@PathVariable("pid") Long pid , UpdateForm updateForm , RedirectAttributes redirectAttributes) throws IOException {
+  public String updateProduct(@PathVariable(value = "pid") Long pid , UpdateForm updateForm , RedirectAttributes redirectAttributes) throws IOException {
     updateForm.setProductId(pid);
     Product product = new Product();
     BeanUtils.copyProperties(updateForm,product);
@@ -562,7 +562,7 @@ public class ProductController {
 
   // 판매글 단건 삭제 처리
   @PostMapping("/product/{pid}/delete") //
-  public String deleteProduct(@PathVariable("pid") Long pid,
+  public String deleteProduct(@PathVariable(value = "pid") Long pid,
                               @RequestParam("sid") Long sid,
                               RedirectAttributes redirectAttributes) {
     productSVC.deleteById(pid);

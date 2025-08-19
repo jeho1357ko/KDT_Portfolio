@@ -110,6 +110,8 @@ public class ReviewDAOImpl implements ReviewDAO{
   // 전체 조회
   @Override
   public List<Review> findAll(Long productId) {
+    log.info("ReviewDAO.findAll 호출 - productId: {}", productId);
+    
     if (productId == null) {
       log.warn("productId가 null입니다. 빈 리스트를 반환합니다.");
       return new ArrayList<>();
@@ -119,7 +121,14 @@ public class ReviewDAOImpl implements ReviewDAO{
         "from review where product_id = :productId " +
         "order by review_id desc";
     SqlParameterSource param = new MapSqlParameterSource().addValue("productId", productId);
-    return template.query(sql, param, reviewRowMapper);
+    
+    log.info("실행할 SQL: {}", sql);
+    log.info("SQL 파라미터: productId = {}", productId);
+    
+    List<Review> result = template.query(sql, param, reviewRowMapper);
+    log.info("SQL 실행 결과 - 리뷰 개수: {}", result.size());
+    
+    return result;
   }
 
   // 수정 (title, content, pic 만 수정 예시. 필요시 다른 필드 추가)

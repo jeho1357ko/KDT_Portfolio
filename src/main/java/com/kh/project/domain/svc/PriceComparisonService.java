@@ -451,6 +451,10 @@ public class PriceComparisonService {
         Map<String, Object> result = new HashMap<>();
         
         try {
+            log.info("=== 가격 정보 조회 시작 ===");
+            log.info("입력 상품명: {}", productName);
+            log.info("현재 상품 가격: {}", currentProductPrice);
+            
             if (productName == null || productName.trim().isEmpty()) {
                 log.warn("상품명이 null이거나 비어있습니다.");
                 result.put("hasData", false);

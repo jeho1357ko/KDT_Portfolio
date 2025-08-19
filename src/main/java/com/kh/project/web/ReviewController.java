@@ -1,5 +1,24 @@
 package com.kh.project.web;
 
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
 import com.kh.project.domain.buyer.svc.BuyerSVC;
 import com.kh.project.domain.entity.Review;
 import com.kh.project.domain.review.svc.ReviewSVC;
@@ -7,20 +26,11 @@ import com.kh.project.web.api.ApiResponse;
 import com.kh.project.web.api.ApiResponseCode;
 import com.kh.project.web.buyer.LoginForm;
 import com.kh.project.web.review.ReviewView;
-import com.kh.project.web.review.SaveForm;
 import com.kh.project.web.review.UpdateForm;
+
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -33,25 +43,48 @@ public class ReviewController {
 
   // 리뷰 저장
   @PostMapping("/save")
-  public ApiResponse<Long> save(@RequestBody SaveForm saveForm, HttpSession session) {
+  public ApiResponse<Long> save(@RequestParam("productId") Long productId,
+                                @RequestParam("orderId") Long orderId,
+                                @RequestParam("orderItemId") Long orderItemId,
+                                @RequestParam("title") String title,
+                                @RequestParam("score") Long score,
+                                @RequestParam("content") String content,
+                                @RequestParam(value = "image", required = false) MultipartFile image,
+                                HttpSession session) {
     LoginForm loginBuyer = (LoginForm) session.getAttribute("loginBuyer");
     if (loginBuyer == null) {
       log.warn("리뷰 저장 거부: 로그인 필요");
       return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
     }
 
-    Review review = new Review();
-    BeanUtils.copyProperties(saveForm, review);
-    review.setBuyerId(loginBuyer.getBuyerId()); // 세션 buyerId 강제 세팅
-    review.setCdate(LocalDateTime.now());
-    review.setUdate(null);
+    try {
+      Review review = new Review();
+      review.setProductId(productId);
+      review.setOrderId(orderId);
+      review.setOrderItemId(orderItemId);
+      review.setTitle(title);
+      review.setScore(score);
+      review.setContent(content);
+      review.setBuyerId(loginBuyer.getBuyerId());
+      review.setCdate(LocalDateTime.now());
+      review.setUdate(null);
 
-    Long reviewId = reviewSVC.save(review);
-    if (reviewId != null) {
-      return ApiResponse.of(ApiResponseCode.SUCCESS, reviewId);
-    } else {
-      log.warn("리뷰 저장 실패: {}", review);
-      return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+      // 이미지 처리
+      if (image != null && !image.isEmpty()) {
+        byte[] imageBytes = image.getBytes();
+        review.setPic(imageBytes);
+      }
+
+      Long reviewId = reviewSVC.save(review);
+      if (reviewId != null) {
+        return ApiResponse.of(ApiResponseCode.SUCCESS, reviewId);
+      } else {
+        log.warn("리뷰 저장 실패: {}", review);
+        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+      }
+    } catch (Exception e) {
+      log.error("리뷰 저장 중 오류: {}", e.getMessage(), e);
+      return ApiResponse.of(ApiResponseCode.INTERNAL_SERVER_ERROR, null);
     }
   }
 
@@ -65,8 +98,12 @@ public class ReviewController {
   }
 
   @GetMapping("/All")
-  public ApiResponse<List<ReviewView>> findAll(@RequestParam(required = false) Long productId){
+  public ApiResponse<List<ReviewView>> findAll(@RequestParam(value = "productId", required = false) Long productId){
+    log.info("=== 리뷰 조회 시작 ===");
+    log.info("요청된 productId: {}", productId);
+    
     List<Review> list = reviewSVC.findAll(productId);
+    log.info("조회된 리뷰 개수: {}", list.size());
 
     // buyerId -> nickname 맵 (중복 조회 방지)
     Map<Long,String> nicknameCache = new HashMap<>();
@@ -93,7 +130,7 @@ public class ReviewController {
   // 리뷰 수정 (본인만 가능)
   @PatchMapping("/update/{reviewId}")
   public ApiResponse<Integer> update(
-      @PathVariable Long reviewId,
+      @PathVariable(value = "reviewId") Long reviewId,
       @RequestBody UpdateForm form,
       HttpSession session
   ) {
@@ -130,7 +167,7 @@ public class ReviewController {
 
   // 리뷰 삭제 (본인만 가능)
   @DeleteMapping("/delete/{reviewId}")
-  public ApiResponse<Integer> delete(@PathVariable Long reviewId, HttpSession session) {
+  public ApiResponse<Integer> delete(@PathVariable(value = "reviewId") Long reviewId, HttpSession session) {
     LoginForm loginBuyer = (LoginForm) session.getAttribute("loginBuyer");
     if (loginBuyer == null) {
       log.warn("리뷰 삭제 거부: 로그인 필요");

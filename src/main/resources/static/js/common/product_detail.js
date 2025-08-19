@@ -195,6 +195,8 @@ function setProductData(data) {
 
 // 가격 비교 관련 함수들 (생략된 기존 로직 유지)
 async function loadPriceComparisonData() {
+  console.log('[loadPriceComparisonData] 시작');
+  
   if (!productData) {
     console.error('상품 데이터가 설정되지 않았습니다.');
     return;
@@ -206,18 +208,42 @@ async function loadPriceComparisonData() {
     const productNameEl = document.getElementById('productName');
     productName = productNameEl ? productNameEl.textContent.trim() : null;
   }
-  if (!productName) return console.error('상품명을 찾을 수 없습니다.');
+  if (!productName) {
+    console.error('상품명을 찾을 수 없습니다.');
+    return;
+  }
 
+  console.log('[loadPriceComparisonData] 원본 상품명:', productName);
+  
   productName = productName.replace(/[\/\(\)~,，]/g, ' ').replace(/\s+/g, ' ').trim();
   const keywords = productName.split(' ');
   const primaryKeyword = keywords[0] || productName;
+  
+  console.log('[loadPriceComparisonData] 처리된 상품명:', productName);
+  console.log('[loadPriceComparisonData] 주요 키워드:', primaryKeyword);
 
   try {
     const currentPrice = productData.price;
-    const response = await fetch(`/price/api/detail/${encodeURIComponent(primaryKeyword)}?currentPrice=${currentPrice}`);
-    if (!response.ok) throw new Error(`가격 정보를 불러올 수 없습니다. (${response.status})`);
+    const url = `/price/api/detail/${encodeURIComponent(primaryKeyword)}?currentPrice=${currentPrice}`;
+    console.log('[loadPriceComparisonData] 요청 URL:', url);
+    
+    const response = await fetch(url);
+    console.log('[loadPriceComparisonData] 응답 상태:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[loadPriceComparisonData] 응답 에러:', errorText);
+      throw new Error(`가격 정보를 불러올 수 없습니다. (${response.status})`);
+    }
+    
     const data = await response.json();
-    if (data.hasData) displayLastMonthPrice(data);
+    console.log('[loadPriceComparisonData] 응답 데이터:', data);
+    
+    if (data.hasData) {
+      displayLastMonthPrice(data);
+    } else {
+      console.log('[loadPriceComparisonData] 데이터가 없습니다.');
+    }
   } catch (error) {
     console.error('가격 비교 데이터 로드 중 오류:', error);
   }
@@ -423,16 +449,42 @@ function csrfHeader() {
 
 // 공통 fetch 래퍼: ApiResponse {code,data} 또는 {header,body} 대응
 async function apiFetch(url, options = {}) {
+  console.log('[apiFetch] 요청 URL:', url);
+  console.log('[apiFetch] 옵션:', options);
+  
   const baseHeaders = { 'Content-Type': 'application/json', ...csrfHeader() };
-  const res = await fetch(url, { headers: baseHeaders, credentials: 'same-origin', ...options });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const json = await res.json();
+  console.log('[apiFetch] 헤더:', baseHeaders);
+  
+  try {
+    const res = await fetch(url, { headers: baseHeaders, credentials: 'same-origin', ...options });
+    console.log('[apiFetch] 응답 상태:', res.status);
+    console.log('[apiFetch] 응답 헤더:', Object.fromEntries(res.headers.entries()));
+    
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error('[apiFetch] 응답 에러:', errorText);
+      throw new Error(`HTTP ${res.status}: ${errorText}`);
+    }
+    
+    const json = await res.json();
+    console.log('[apiFetch] 응답 JSON:', json);
 
-  if (json && typeof json === 'object') {
-    if ('code' in json && 'data' in json) return json.data;
-    if ('header' in json && 'body' in json) return json.body;
+    if (json && typeof json === 'object') {
+      if ('code' in json && 'data' in json) {
+        console.log('[apiFetch] ApiResponse 형식 감지, data 반환:', json.data);
+        return json.data;
+      }
+      if ('header' in json && 'body' in json) {
+        console.log('[apiFetch] header/body 형식 감지, body 반환:', json.body);
+        return json.body;
+      }
+    }
+    console.log('[apiFetch] 기본 JSON 반환:', json);
+    return json; // 배열 등
+  } catch (error) {
+    console.error('[apiFetch] 에러:', error);
+    throw error;
   }
-  return json; // 배열 등
 }
 
 // 유틸
@@ -542,7 +594,10 @@ async function loadReviews(productId) {
   const sessionBuyerId = buyerIdInput ? Number(buyerIdInput.value) : null;
 
   try {
-    const resp = await apiFetch(ReviewAPI.list(productId), { method: 'GET' });
+    const url = ReviewAPI.list(productId);
+    console.log('[loadReviews] 요청 URL:', url);
+    
+    const resp = await apiFetch(url, { method: 'GET' });
     console.log('[loadReviews] api resp =', resp);
     allReviews = Array.isArray(resp) ? resp : [];
 
