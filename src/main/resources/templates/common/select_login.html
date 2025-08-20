@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>로그인 유형 선택 - 농산물 직거래 플랫폼</title>
+  <title>로그인 유형 선택 - planT</title>
   <meta name="description" content="구매자와 판매자 로그인을 선택하세요. 농산물 직거래 플랫폼에서 안전하고 편리한 거래를 경험하세요.">
+  
+  <!-- 외부 리소스 -->
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/common/select_login.css}">
 </head>
@@ -13,7 +15,9 @@
   <header class="navbar-container">
     <div class="navbar">
       <a th:href="@{/home}" class="logo-container">
-        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="농산물 직거래 플랫폼 로고" class="navbar-logo-img"/>
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" 
+             alt="농산물 직거래 플랫폼 로고" 
+             class="navbar-logo-img"/>
         <span class="brand-name">planT</span>
       </a>
       <div class="navbar-buttons">
@@ -27,34 +31,64 @@
   <main class="main-container">
     <h1 class="page-title">로그인</h1>
 
+    <!-- 선택 카드 컨테이너 -->
     <div class="selection-container">
       <!-- 구매자 로그인 카드 -->
-      <a th:href="@{/buyer/login}" class="selection-card" role="button" aria-label="구매자 로그인 페이지로 이동">
+      <a th:href="@{/buyer/login}" 
+         class="selection-card" 
+         role="button" 
+         aria-label="구매자 로그인 페이지로 이동">
         <div class="card-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" 
+               width="24" 
+               height="24" 
+               viewBox="0 0 24 24" 
+               fill="none" 
+               stroke="currentColor" 
+               stroke-width="2" 
+               stroke-linecap="round" 
+               stroke-linejoin="round" 
+               aria-hidden="true">
             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
             <line x1="3" y1="6" x2="21" y2="6"></line>
             <path d="M16 10a4 4 0 0 1-8 0"></path>
           </svg>
         </div>
         <h2 class="card-title">구매자 로그인</h2>
-        <p class="card-description">즐겨찾는 상품과 주문 내역을 확인하고, 빠르고 간편하게 쇼핑을 즐겨보세요.</p>
+        <p class="card-description">
+          즐겨찾는 상품과 주문 내역을 확인하고, 빠르고 간편하게 쇼핑을 즐겨보세요.
+        </p>
       </a>
 
       <!-- 판매자 로그인 카드 -->
-      <a th:href="@{/seller/login}" class="selection-card" role="button" aria-label="판매자 로그인 페이지로 이동">
+      <a th:href="@{/seller/login}" 
+         class="selection-card" 
+         role="button" 
+         aria-label="판매자 로그인 페이지로 이동">
         <div class="card-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <svg xmlns="http://www.w3.org/2000/svg" 
+               width="24" 
+               height="24" 
+               viewBox="0 0 24 24" 
+               fill="none" 
+               stroke="currentColor" 
+               stroke-width="2" 
+               stroke-linecap="round" 
+               stroke-linejoin="round" 
+               aria-hidden="true">
             <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path>
             <line x1="7" y1="7" x2="7.01" y2="7"></line>
           </svg>
         </div>
         <h2 class="card-title">판매자 로그인</h2>
-        <p class="card-description">상품을 관리하고, 주문을 확인하며, 고객과 소통하세요. 판매 활동을 시작합니다.</p>
+        <p class="card-description">
+          상품을 관리하고, 주문을 확인하며, 고객과 소통하세요. 판매 활동을 시작합니다.
+        </p>
       </a>
     </div>
   </main>
 
+  <!-- JavaScript 파일 로드 -->
   <script th:src="@{/js/common/select_login.js}"></script>
 </body>
 </html>

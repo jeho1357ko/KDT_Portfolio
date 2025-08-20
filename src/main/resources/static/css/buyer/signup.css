@@ -1,389 +1,421 @@
+/* ===== 외부 폰트 import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap');
 
-    /* CSS 변수 정의 */
-    :root {
-      --color-primary: #658352;
-      --color-primary-light: #94A687;
-      --color-primary-hover: #5a7347;
-      --color-background: #FBF9EF;
-      --color-text: #1E2203;
-      --color-text-muted: #6c757d;
-      --color-border: #E9E7DE;
-      --color-white: #fff;
-      --color-gray-light: #f8f9fa;
-      --color-gray-medium: #e9ecef;
-      --color-danger: #dc3545;
-      --color-success: #28a745;
-      --color-warning: #fff3cd;
-      --color-warning-border: #ffeaa7;
-      --color-warning-text: #856404;
-      --layout-max-width: 1400px;
-      --layout-radius: 12px;
-      --layout-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-      --layout-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
-      --transition-default: all 0.3s ease;
-      --transition-fast: all 0.2s ease;
-    }
+/* ===== CSS 변수 정의 ===== */
+:root {
+  --color-primary: #658352;
+  --color-primary-light: #94A687;
+  --color-primary-hover: #5a7347;
+  --color-background: #FBF9EF;
+  --color-text: #1E2203;
+  --color-text-muted: #6c757d;
+  --color-border: #E9E7DE;
+  --color-white: #fff;
+  --color-gray-light: #f8f9fa;
+  --color-gray-medium: #e9ecef;
+  --color-danger: #dc3545;
+  --color-success: #28a745;
+  --color-warning: #fff3cd;
+  --color-warning-border: #ffeaa7;
+  --color-warning-text: #856404;
+  --layout-max-width: 1400px;
+  --layout-radius: 12px;
+  --layout-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  --layout-shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+  --transition-default: all 0.3s ease;
+  --transition-fast: all 0.2s ease;
+}
 
-    /* 기본 스타일 */
-    * {
-      box-sizing: border-box;
-    }
+/* ===== 기본 스타일 ===== */
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: 'Inter', 'Cabin', sans-serif;
-      background-color: var(--color-background);
-      color: var(--color-text);
-      padding: 120px 20px 40px;
-      line-height: 1.6;
-    }
+body {
+  margin: 0;
+  font-family: 'Inter', 'Cabin', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  padding: 120px 20px 40px;
+  line-height: 1.6;
+}
 
-    /* Navbar 스타일 */
-    .navbar-container {
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      z-index: 1000;
-      position: fixed;
-      justify-content: center;
-      background: var(--color-white);
-      box-shadow: var(--layout-shadow);
-    }
+/* ===== 네비게이션 바 ===== */
+.navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: var(--color-white);
+  box-shadow: var(--layout-shadow);
+  z-index: 1000;
+}
 
-    .navbar {
-      width: 100%;
-      display: flex;
-      max-width: var(--layout-max-width);
-      align-items: center;
-      padding: 16px 48px;
-      justify-content: space-between;
-    }
+.navbar {
+  width: 100%;
+  max-width: var(--layout-max-width);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+}
 
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--color-text);
-      transition: var(--transition-default);
-    }
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition-default);
+}
 
-    .logo-container:hover {
-      transform: scale(1.02);
-    }
+.logo-container:hover {
+  transform: scale(1.02);
+}
 
-    .navbar-logo-img {
-      height: 3rem;
-      border-radius: 8px;
-      transition: var(--transition-default);
-    }
+.navbar-logo-img {
+  height: 3rem;
+  border-radius: 8px;
+  transition: var(--transition-default);
+}
 
-    .brand-name {
-      font-family: 'Cabin', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: var(--color-primary);
-      letter-spacing: 0.5px;
-      margin: 0;
-      line-height: 1;
-    }
+.brand-name {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  margin: 0;
+  line-height: 1;
+}
 
-    .navbar-buttons {
-      gap: 16px;
-      display: flex;
-      align-items: center;
-    }
+.navbar-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
-    .btn-filled, .btn-outline {
-      display: flex;
-      align-items: center;
-      font-weight: bold;
-      padding: 10px 24px;
-      border-radius: 24px;
-      font-size: 1rem;
-      text-decoration: none;
-      transition: var(--transition-default);
-      cursor: pointer;
-      border: 1px solid var(--color-primary);
-    }
+/* ===== 버튼 스타일 ===== */
+.btn-filled, .btn-outline {
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  padding: 10px 24px;
+  border-radius: 24px;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: var(--transition-default);
+  cursor: pointer;
+  border: 1px solid var(--color-primary);
+}
 
-    .btn-filled {
-      color: var(--color-white);
-      background: var(--color-primary);
-    }
+.btn-filled {
+  color: var(--color-white);
+  background: var(--color-primary);
+}
 
-    .btn-filled:hover {
-      background: var(--color-primary-hover);
-      transform: translateY(-2px);
-    }
+.btn-filled:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-2px);
+}
 
-    .btn-outline {
-      color: var(--color-primary);
-      background: transparent;
-    }
+.btn-outline {
+  color: var(--color-primary);
+  background: transparent;
+}
 
-    .btn-outline:hover {
-      background: rgba(101, 131, 82, 0.1);
-      transform: translateY(-2px);
-    }
+.btn-outline:hover {
+  background: rgba(101, 131, 82, 0.1);
+  transform: translateY(-2px);
+}
 
-    /* 메인 컨테이너 */
-    .signup-container {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: var(--color-white);
-      padding: 40px 50px;
-      border-radius: var(--layout-radius);
-      box-shadow: var(--layout-shadow);
-      transition: var(--transition-default);
-    }
+/* ===== 메인 컨테이너 ===== */
+.signup-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  background-color: var(--color-white);
+  padding: 40px 50px;
+  border-radius: var(--layout-radius);
+  box-shadow: var(--layout-shadow);
+  transition: var(--transition-default);
+}
 
-    .signup-container:hover {
-      box-shadow: var(--layout-shadow-hover);
-    }
+.signup-container:hover {
+  box-shadow: var(--layout-shadow-hover);
+}
 
-    .signup-container h2 {
-      font-family: 'Cabin', sans-serif;
-      font-weight: 700;
-      color: var(--color-primary);
-      text-align: center;
-      font-size: 2.2rem;
-      margin: 0 0 30px;
-    }
+.signup-container h2 {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  font-size: 2.2rem;
+  margin: 0 0 30px;
+}
 
-    /* 폼 요소 */
-    .form-row {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
+/* ===== 폼 요소 ===== */
+.form-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
 
-    .form-row label {
-      width: 120px;
-      text-align: left;
-      font-weight: bold;
-      flex-shrink: 0;
-      padding-top: 10px;
-      font-size: 0.95rem;
-      color: var(--color-text);
-    }
+.form-row label {
+  width: 120px;
+  text-align: left;
+  font-weight: bold;
+  flex-shrink: 0;
+  padding-top: 10px;
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
 
-    .input-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-    }
+.input-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 
-    input[type="text"], 
-    input[type="email"], 
-    input[type="password"], 
-    input[type="date"], 
-    select {
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--color-border);
-      font-size: 1rem;
-      width: 100%;
-      transition: var(--transition-default);
-      background-color: var(--color-white);
-    }
+input[type="text"], 
+input[type="email"], 
+input[type="password"], 
+input[type="tel"], 
+input[type="date"], 
+select {
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+  width: 100%;
+  transition: var(--transition-default);
+  background-color: var(--color-white);
+}
 
-    input:focus, 
-    select:focus {
-      border-color: var(--color-primary);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(101, 131, 82, 0.1);
-    }
+input:focus, 
+select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(101, 131, 82, 0.1);
+}
 
-    input:disabled {
-      background-color: var(--color-gray-light);
-      cursor: not-allowed;
-    }
+input:disabled {
+  background-color: var(--color-gray-light);
+  cursor: not-allowed;
+}
 
-    /* 주소 검색 */
-    .postcode-group {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
+/* ===== 필수 입력 표시 ===== */
+.required-mark {
+  color: var(--color-danger);
+  font-weight: bold;
+}
 
-    #postcode {
-      background-color: var(--color-gray-light);
-    }
+/* ===== 접근성 개선 ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
-    #searchPostcodeBtn {
-      padding: 12px 16px;
-      font-size: 0.9rem;
-      font-weight: bold;
-      border-radius: 8px;
-      border: 1px solid var(--color-primary);
-      background-color: transparent;
-      color: var(--color-primary);
-      cursor: pointer;
-      flex-shrink: 0;
-      transition: var(--transition-default);
-    }
+/* 포커스 표시 개선 */
+button:focus,
+input:focus,
+select:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
-    #searchPostcodeBtn:hover {
-      background-color: var(--color-primary);
-      color: var(--color-white);
-      transform: translateY(-1px);
-    }
+/* ===== 주소 검색 ===== */
+.postcode-group {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
 
-    #shopAddress {
-      background-color: var(--color-gray-light);
-      margin-bottom: 10px;
-    }
+#postNumber {
+  background-color: var(--color-gray-light);
+}
 
-    #detailAddress {
-      margin-bottom: 10px;
-    }
+#searchPostcodeBtn {
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  font-weight: bold;
+  border-radius: 8px;
+  border: 1px solid var(--color-primary);
+  background-color: transparent;
+  color: var(--color-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: var(--transition-default);
+}
 
-    /* 회원가입 버튼 */
-    .signup-btn {
-      display: block;
-      width: 100%;
-      padding: 16px;
-      margin-top: 30px;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 24px;
-      border: none;
-      background-color: var(--color-primary);
-      color: var(--color-white);
-      cursor: pointer;
-      transition: var(--transition-default);
-    }
+#searchPostcodeBtn:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  transform: translateY(-1px);
+}
 
-    .signup-btn:hover {
-      background-color: var(--color-primary-hover);
-      transform: translateY(-2px);
-      box-shadow: var(--layout-shadow-hover);
-    }
+#shopAddress {
+  background-color: var(--color-gray-light);
+  margin-bottom: 10px;
+}
 
-    .signup-btn:disabled {
-      background-color: var(--color-gray-medium);
-      cursor: not-allowed;
-      transform: none;
-      box-shadow: none;
-    }
+#detailAddress {
+  margin-bottom: 10px;
+}
 
-    /* 에러 메시지 */
-    .error-msg {
-      color: var(--color-danger);
-      font-size: 0.85rem;
-      margin-top: 6px;
-      min-height: 1.2em;
-      transition: var(--transition-fast);
-    }
+/* ===== 회원가입 버튼 ===== */
+.signup-btn {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  margin-top: 30px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  border-radius: 24px;
+  border: none;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  cursor: pointer;
+  transition: var(--transition-default);
+}
 
-    .error-msg.show {
-      display: block;
-    }
+.signup-btn:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--layout-shadow-hover);
+}
 
-    .error-msg.hide {
-      display: none;
-    }
+.signup-btn:disabled {
+  background-color: var(--color-gray-medium);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
 
-    /* 생년월일 선택기 */
-    .birth-selector {
-      display: flex;
-      gap: 8px;
-    }
+/* ===== 에러 메시지 ===== */
+.error-msg {
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  margin-top: 6px;
+  min-height: 1.2em;
+  transition: var(--transition-fast);
+}
 
-    .birth-select {
-      flex: 1;
-      padding: 12px 16px;
-      border-radius: 8px;
-      border: 1px solid var(--color-border);
-      font-size: 1rem;
-      background-color: var(--color-white);
-      cursor: pointer;
-      transition: var(--transition-default);
-    }
+.error-msg.show {
+  display: block;
+}
 
-    .birth-select:focus {
-      border-color: var(--color-primary);
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(101, 131, 82, 0.1);
-    }
+.error-msg.hide {
+  display: none;
+}
 
-    .birth-select option {
-      padding: 8px;
-    }
+/* ===== 생년월일 선택기 ===== */
+.birth-selector {
+  display: flex;
+  gap: 8px;
+}
 
-    /* 서버 에러 메시지 */
-    .server-error {
-      background-color: var(--color-warning);
-      border: 1px solid var(--color-warning-border);
-      color: var(--color-warning-text);
-      padding: 12px 16px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-size: 0.9rem;
-    }
+.birth-select {
+  flex: 1;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  font-size: 1rem;
+  background-color: var(--color-white);
+  cursor: pointer;
+  transition: var(--transition-default);
+}
 
-    /* 반응형 디자인 */
-    @media (max-width: 768px) {
-      body {
-        padding: 100px 10px 20px;
-      }
+.birth-select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(101, 131, 82, 0.1);
+}
 
-      .navbar {
-        padding: 12px 20px;
-      }
+.birth-select option {
+  padding: 8px;
+}
 
-      .signup-container {
-        padding: 30px 20px;
-        margin: 0 10px;
-      }
+/* ===== 서버 에러 메시지 ===== */
+.server-error {
+  background-color: var(--color-warning);
+  border: 1px solid var(--color-warning-border);
+  color: var(--color-warning-text);
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 0.9rem;
+}
 
-      .signup-container h2 {
-        font-size: 1.8rem;
-      }
+/* ===== 반응형 디자인 ===== */
+@media (max-width: 768px) {
+  body {
+    padding: 100px 10px 20px;
+  }
 
-      .form-row {
-        flex-direction: column;
-        gap: 8px;
-      }
+  .navbar {
+    padding: 12px 20px;
+  }
 
-      .form-row label {
-        width: 100%;
-        padding-top: 0;
-      }
+  .signup-container {
+    padding: 30px 20px;
+    margin: 0 10px;
+  }
 
-      .birth-selector {
-        flex-direction: column;
-      }
+  .signup-container h2 {
+    font-size: 1.8rem;
+  }
 
-      .postcode-group {
-        flex-direction: column;
-      }
+  .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
 
-      #searchPostcodeBtn {
-        width: 100%;
-      }
-    }
+  .form-row label {
+    width: 100%;
+    padding-top: 0;
+  }
 
-    @media (max-width: 480px) {
-      .signup-container {
-        padding: 20px 15px;
-      }
+  .birth-selector {
+    flex-direction: column;
+  }
 
-      .signup-container h2 {
-        font-size: 1.5rem;
-      }
+  .postcode-group {
+    flex-direction: column;
+  }
 
-      input[type="text"], 
-      input[type="email"], 
-      input[type="password"], 
-      input[type="date"], 
-      select {
-        padding: 10px 12px;
-        font-size: 0.9rem;
-      }
-    }
+  #searchPostcodeBtn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .signup-container {
+    padding: 20px 15px;
+  }
+
+  .signup-container h2 {
+    font-size: 1.5rem;
+  }
+
+  input[type="text"], 
+  input[type="email"], 
+  input[type="password"], 
+  input[type="tel"], 
+  input[type="date"], 
+  select {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+}
   

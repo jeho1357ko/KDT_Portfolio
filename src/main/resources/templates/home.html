@@ -5,7 +5,8 @@
   <title>농산물 직거래 플랫폼 - 홈</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="소비자에게 신뢰할 수 있는 고품질 농산물을 제공하는 직거래 온라인 플랫폼">
-  <!-- Google Fonts: Cabin, Inter -->
+  
+  <!-- 외부 리소스 -->
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/common/home.css}">
@@ -18,6 +19,7 @@
         <img src="/images/free-icon-sprout-7101338.png" alt="농산물 직거래 플랫폼 로고" class="navbar-logo-img"/>
         <span class="brand-name">planT</span>
       </a>
+      
       <div class="navbar-buttons">
         <!-- 구매자 로그인 상태 -->
         <th:block th:if="${buyerId != null}">
@@ -25,7 +27,9 @@
             <span th:text="${nickname}" style="font-weight: bold;"></span>
           </a>
           <a th:href="@{/buyer/cart/{bid}(bid=${buyerId})}" class="btn-outline">장바구니</a>
-          <a href="#" onclick="logout('buyer')" class="btn-filled">로그아웃</a>
+          <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn-filled">로그아웃</button>
+          </form>
         </th:block>
         
         <!-- 판매자 로그인 상태 -->
@@ -34,7 +38,9 @@
             <span th:text="${nickname}" style="font-weight: bold;"></span>
           </a>
           <a th:href="@{/seller/main/{sid}(sid=${sellerId})}" class="btn-outline">대시보드</a>
-          <a href="#" onclick="logout('seller')" class="btn-filled">로그아웃</a>
+          <form th:action="@{/seller/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn-filled">로그아웃</button>
+          </form>
         </th:block>
 
         <!-- 비로그인 상태 -->
@@ -74,37 +80,35 @@
             <i class="fas fa-search"></i> 상품 검색
           </h2>
           <div class="search-form-container">
-            <!-- <form action="/product/search" method="GET" class="search-form"> -->
-              <div class="search-input-group">
-                <input type="text" name="keyword" id="searchKeyword" class="search-input"
-                       placeholder="상품명을 입력하세요..."
-                       autocomplete="off">
-                <button type="submit" class="search-button" onclick="goSearch()">
-                  <i class="fas fa-search"></i>
-                </button>
-              </div>
-            <!-- </form> -->
+            <div class="search-input-group">
+              <input type="text" 
+                     name="keyword" 
+                     id="searchKeyword" 
+                     class="search-input"
+                     placeholder="상품명을 입력하세요..."
+                     autocomplete="off">
+              <button type="submit" class="search-button" onclick="goSearch()">
+                <i class="fas fa-search"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </section>
-
-    <!-- <input type="text" id="searchKeyword" placeholder="검색어 입력">
-    <button onclick="goSearch()">검색</button> -->
 
     <!-- 인기상품 슬라이더 섹션 -->
     <section class="products-section" th:if="${not #lists.isEmpty(popularProducts)}">
       <div class="products-container">
         <h2 class="products-title">인기 상품</h2>
         <div class="popular-slider" id="popularSlider">
-          <!-- 왼쪽 버튼 레이어 -->
+          <!-- 왼쪽 네비게이션 버튼 -->
           <div class="popular-nav-layer prev">
             <button class="popular-nav" onclick="movePopularSlider(-1)">
               <i class="fas fa-chevron-left"></i>
             </button>
           </div>
           
-          <!-- 가운데 인기상품 레이어 -->
+          <!-- 인기상품 컨텐츠 영역 -->
           <div class="popular-content-layer">
             <div class="popular-track">
               <div class="popular-page" th:each="chunk,stat : ${#numbers.sequence(0, (popularProducts.size()-1)/4)}">
@@ -113,12 +117,13 @@
                    class="product-card"
                    th:title="${product.title}"
                    th:onclick="addToRecentProducts(${product.productId}, '${product.title}', '${product.thumbnail}', ${product.price}); return true;">
+                  
                   <img th:src="${product.thumbnail}" 
                        th:alt="${product.title}"
                        class="product-image"
                        th:onerror="handleImageError(this)">
                   
-                  <!-- 재고소진 상품에 매진 표시 -->
+                  <!-- 재고소진 상품 매진 표시 -->
                   <div th:if="${product.status == '재고소진'}" class="sold-out-overlay">
                     <span class="sold-out-text">매진</span>
                   </div>
@@ -135,7 +140,7 @@
             <div class="popular-dots" id="popularDots"></div>
           </div>
           
-          <!-- 오른쪽 버튼 레이어 -->
+          <!-- 오른쪽 네비게이션 버튼 -->
           <div class="popular-nav-layer next">
             <button class="popular-nav" onclick="movePopularSlider(1)">
               <i class="fas fa-chevron-right"></i>
@@ -145,7 +150,7 @@
       </div>
     </section>
 
-    <!-- 상품 그리드 섹션 -->
+    <!-- 최신 상품 그리드 섹션 -->
     <section class="products-section">
       <div class="products-container">
         <h2 class="products-title">최신 상품</h2>
@@ -161,12 +166,13 @@
              class="product-card"
              th:title="${product.title}"
              th:onclick="addToRecentProducts(${product.productId}, '${product.title}', '${product.thumbnail}', ${product.price}); return true;">
+            
             <img th:src="${product.thumbnail}" 
                  th:alt="${product.title}"
                  class="product-image"
                  th:onerror="handleImageError(this)">
             
-            <!-- 재고소진 상품에 매진 표시 -->
+            <!-- 재고소진 상품 매진 표시 -->
             <div th:if="${product.status == '재고소진'}" class="sold-out-overlay">
               <span class="sold-out-text">매진</span>
             </div>
@@ -181,10 +187,9 @@
     </section>
   </main>
 
-  <!-- 사이드바 전용 섹션 -->
+  <!-- 최근 본 상품 사이드바 -->
   <section class="sidebar-section">
     <div class="sidebar-container">
-      <!-- 최근 본 상품 사이드바 -->
       <aside class="recent-products-sidebar" id="recentProductsSidebar">
         <div class="recent-products-header">
           <h3 class="recent-products-title">
@@ -204,15 +209,9 @@
       </aside>
     </div>
   </section>
-      </div>
-    </section>
-  </main>
 
-<!--  <form action="test/copy/db" method="post">-->
-<!--    <button type="submit">연동</button>-->
-<!--  </form>-->
-
-      <script th:src="@{/js/common/recent-products.js}"></script>
-    <script th:src="@{/js/common/home.js}"></script>
+  <!-- JavaScript 파일 로드 -->
+  <script th:src="@{/js/common/recent-products.js}"></script>
+  <script th:src="@{/js/common/home.js}"></script>
 </body>
 </html>

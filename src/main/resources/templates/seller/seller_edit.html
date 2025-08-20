@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>판매자 정보 수정</title>
+    
+    <!-- 외부 리소스 -->
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
     <link rel="stylesheet" th:href="@{/css/seller/info_edit.css}">
 </head>
@@ -11,12 +13,14 @@
     <!-- 네비게이션 바 -->
     <header class="navbar-container">
         <div class="navbar">
-                <a th:href="@{/home}" class="logo-container">
-      <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
-      <span class="brand-name">planT</span>
-    </a>
+            <a th:href="@{/home}" class="logo-container">
+                <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+                <span class="brand-name">planT</span>
+            </a>
             <div class="navbar-buttons">
-                <a th:if="${name != null}" th:href="@{/seller/info/{sid}(sid=${sellerId})}" style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
+                <a th:if="${name != null}" 
+                   th:href="@{/seller/info/{sid}(sid=${sellerId})}" 
+                   style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
                     <span th:text="${name}"></span>
                 </a>
                 <a th:href="@{/seller/main/{sid}(sid=${sellerId})}" class="btn-outline">대시보드</a>
@@ -29,7 +33,10 @@
 
     <!-- 판매자 정보 수정 폼 -->
     <div class="form-container">
-        <form th:action="@{/seller/myPage/{sid}/edit(sid=${sellerId})}" th:object="${myInformationEdit}" method="post" id="sellerEditForm">
+        <form th:action="@{/seller/myPage/{sid}/edit(sid=${sellerId})}" 
+              th:object="${myInformationEdit}" 
+              method="post" 
+              id="sellerEditForm">
             <h2>판매자 정보 수정</h2>
 
             <!-- 이메일 (읽기 전용) -->
@@ -44,8 +51,13 @@
             <div class="form-row">
                 <label for="tel">전화번호</label>
                 <div class="input-col">
-                    <input type="text" th:field="*{tel}" maxlength="13" required>
-                    <div class="error-msg" th:if="${#fields.hasErrors('tel')}" th:errors="*{tel}"></div>
+                    <input type="text" 
+                           th:field="*{tel}" 
+                           maxlength="13" 
+                           required>
+                    <div class="error-msg" 
+                         th:if="${#fields.hasErrors('tel')}" 
+                         th:errors="*{tel}"></div>
                 </div>
             </div>
 
@@ -62,7 +74,9 @@
                 <label for="shopName">상호명</label>
                 <div class="input-col">
                     <input type="text" th:field="*{shopName}" required>
-                    <div class="error-msg" th:if="${#fields.hasErrors('shopName')}" th:errors="*{shopName}"></div>
+                    <div class="error-msg" 
+                         th:if="${#fields.hasErrors('shopName')}" 
+                         th:errors="*{shopName}"></div>
                 </div>
             </div>
 
@@ -71,7 +85,9 @@
                 <label for="name">대표자 이름</label>
                 <div class="input-col">
                     <input type="text" th:field="*{name}" required>
-                    <div class="error-msg" th:if="${#fields.hasErrors('name')}" th:errors="*{name}"></div>
+                    <div class="error-msg" 
+                         th:if="${#fields.hasErrors('name')}" 
+                         th:errors="*{name}"></div>
                 </div>
             </div>
 
@@ -80,11 +96,25 @@
                 <label for="postNumber">가게 주소</label>
                 <div class="input-col">
                     <div class="address-search-container">
-                        <input type="text" id="postNumber" placeholder="우편번호" readonly required>
-                        <button type="button" id="btn-postNumber" class="address-search-btn">주소 검색</button>
+                        <input type="text" 
+                               id="postNumber" 
+                               placeholder="우편번호" 
+                               readonly 
+                               required>
+                        <button type="button" 
+                                id="btn-postNumber" 
+                                class="address-search-btn">주소 검색</button>
                     </div>
-                    <input type="text" id="basicAddress" placeholder="주소" readonly required style="margin-bottom: 10px;">
-                    <input type="text" id="detailAddress" placeholder="상세주소를 입력해주세요." required>
+                    <input type="text" 
+                           id="basicAddress" 
+                           placeholder="주소" 
+                           readonly 
+                           required 
+                           style="margin-bottom: 10px;">
+                    <input type="text" 
+                           id="detailAddress" 
+                           placeholder="상세주소를 입력해주세요." 
+                           required>
                     <!-- shopAddress는 hidden으로 폼 제출 시 함께 전송 -->
                     <input type="hidden" th:field="*{shopAddress}" id="shopAddress">
                 </div>
@@ -92,12 +122,15 @@
 
             <!-- 폼 액션 버튼 -->
             <div class="form-actions">
-                <a id="cancel-btn" class="cancel-btn" th:href="@{/seller/myPage/{sid}(sid=${sellerId})}">취소</a>
+                <a id="cancel-btn" 
+                   class="cancel-btn" 
+                   th:href="@{/seller/myPage/{sid}(sid=${sellerId})}">취소</a>
                 <button type="submit" id="update-btn" class="update-btn">수정</button>
             </div>
         </form>
     </div>
 
+    <!-- JavaScript 파일 로드 -->
     <script th:src="@{/js/seller/info_edit.js}"></script>
 </body>
 </html> 

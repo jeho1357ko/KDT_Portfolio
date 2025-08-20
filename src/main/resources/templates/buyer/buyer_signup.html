@@ -3,141 +3,235 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>구매자 회원가입</title>
+  <title>구매자 회원가입 - planT</title>
+  <meta name="description" content="농산물 직거래 플랫폼 planT의 구매자 회원가입 페이지입니다.">
+  
+  <!-- 외부 리소스 -->
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/buyer/signup.css}">
 </head>
 <body>
-  <!-- Navbar -->
-  <header class="navbar-container">
-    <div class="navbar">
-      <a href="/home" class="logo-container">
-        <img src="/images/free-icon-sprout-7101338.png" alt="로고" class="navbar-logo-img"/>
+  <!-- 네비게이션 바 -->
+  <header class="navbar-container" role="banner">
+    <nav class="navbar" role="navigation" aria-label="메인 네비게이션">
+      <a href="/home" class="logo-container" aria-label="홈으로 이동">
+        <img src="/images/free-icon-sprout-7101338.png" 
+             alt="planT 로고" 
+             class="navbar-logo-img"/>
         <span class="brand-name">planT</span>
       </a>
       <div class="navbar-buttons">
         <a href="/common/select_login" class="btn-outline">로그인</a>
         <a href="/common/select_signup" class="btn-filled">회원가입</a>
       </div>
-    </div>
+    </nav>
   </header>
 
   <!-- 메인 컨테이너 -->
-  <div class="signup-container">
-    <form th:action="@{/buyer/signup}" th:object="${buyer}" method="post" id="signupForm">
-      <h2>구매자 회원가입</h2>
+  <main class="signup-container" role="main">
+    <form th:action="@{/buyer/signup}" 
+          th:object="${buyer}" 
+          method="post" 
+          id="signupForm"
+          aria-labelledby="signupTitle">
+      <h2 id="signupTitle">구매자 회원가입</h2>
 
       <!-- 서버 에러 메시지 -->
-      <div th:if="${error}" class="server-error" th:text="${error}"></div>
+      <div th:if="${error}" 
+           class="server-error" 
+           th:text="${error}"
+           role="alert"
+           aria-live="polite"></div>
 
       <!-- 이메일 -->
       <div class="form-row">
-        <label for="email">이메일</label>
+        <label for="email">이메일 <span class="required-mark">*</span></label>
         <div class="input-col">
-          <input type="email" id="email" th:field="*{email}" placeholder="example@email.com" required />
-          <div th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="error-msg show"></div>
+          <input type="email" 
+                 id="email" 
+                 th:field="*{email}" 
+                 placeholder="example@email.com" 
+                 required 
+                 aria-describedby="error-email"
+                 autocomplete="email" />
+          <div th:if="${#fields.hasErrors('email')}" 
+               th:errors="*{email}" 
+               class="error-msg show"
+               id="server-error-email"></div>
           <div id="error-email" class="error-msg hide"></div>
         </div>
       </div>
 
       <!-- 비밀번호 -->
       <div class="form-row">
-        <label for="password">비밀번호</label>
+        <label for="password">비밀번호 <span class="required-mark">*</span></label>
         <div class="input-col">
-          <input type="password" id="password" th:field="*{password}" placeholder="비밀번호 입력" required />
-          <div th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="error-msg show"></div>
+          <input type="password" 
+                 id="password" 
+                 th:field="*{password}" 
+                 placeholder="비밀번호 입력" 
+                 required 
+                 aria-describedby="error-password"
+                 autocomplete="new-password" />
+          <div th:if="${#fields.hasErrors('password')}" 
+               th:errors="*{password}" 
+               class="error-msg show"
+               id="server-error-password"></div>
           <div id="error-password" class="error-msg hide"></div>
         </div>
       </div>
 
       <!-- 이름 -->
       <div class="form-row">
-        <label for="name">이름</label>
+        <label for="name">이름 <span class="required-mark">*</span></label>
         <div class="input-col">
-          <input type="text" id="name" th:field="*{name}" placeholder="이름 입력" required />
-          <div th:if="${#fields.hasErrors('name')}" th:errors="*{name}" class="error-msg show"></div>
+          <input type="text" 
+                 id="name" 
+                 th:field="*{name}" 
+                 placeholder="이름 입력" 
+                 required 
+                 aria-describedby="error-name"
+                 autocomplete="given-name" />
+          <div th:if="${#fields.hasErrors('name')}" 
+               th:errors="*{name}" 
+               class="error-msg show"
+               id="server-error-name"></div>
           <div id="error-name" class="error-msg hide"></div>
         </div>
       </div>
 
       <!-- 닉네임 -->
       <div class="form-row">
-        <label for="nickname">닉네임</label>
+        <label for="nickname">닉네임 <span class="required-mark">*</span></label>
         <div class="input-col">
-          <input type="text" id="nickname" th:field="*{nickname}" placeholder="닉네임 입력" required />
-          <div th:if="${#fields.hasErrors('nickname')}" th:errors="*{nickname}" class="error-msg show"></div>
+          <input type="text" 
+                 id="nickname" 
+                 th:field="*{nickname}" 
+                 placeholder="닉네임 입력" 
+                 required 
+                 aria-describedby="error-nickname"
+                 autocomplete="nickname" />
+          <div th:if="${#fields.hasErrors('nickname')}" 
+               th:errors="*{nickname}" 
+               class="error-msg show"
+               id="server-error-nickname"></div>
           <div id="error-nickname" class="error-msg hide"></div>
         </div>
       </div>
 
       <!-- 전화번호 -->
       <div class="form-row">
-        <label for="tel">전화번호</label>
+        <label for="tel">전화번호 <span class="required-mark">*</span></label>
         <div class="input-col">
-          <input type="text" id="tel" th:field="*{tel}" placeholder="010-1234-5678" required />
-          <div th:if="${#fields.hasErrors('tel')}" th:errors="*{tel}" class="error-msg show"></div>
+          <input type="tel" 
+                 id="tel" 
+                 th:field="*{tel}" 
+                 placeholder="010-1234-5678" 
+                 required 
+                 aria-describedby="error-tel"
+                 autocomplete="tel" />
+          <div th:if="${#fields.hasErrors('tel')}" 
+               th:errors="*{tel}" 
+               class="error-msg show"
+               id="server-error-tel"></div>
           <div id="error-tel" class="error-msg hide"></div>
         </div>
       </div>
 
       <!-- 성별 -->
       <div class="form-row">
-        <label for="gender">성별</label>
+        <label for="gender">성별 <span class="required-mark">*</span></label>
         <div class="input-col">
-          <select id="gender" th:field="*{gender}" required>
+          <select id="gender" 
+                  th:field="*{gender}" 
+                  required 
+                  aria-describedby="error-gender">
             <option value="">선택</option>
             <option value="남성">남성</option>
             <option value="여성">여성</option>
           </select>
-          <div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="error-msg show"></div>
+          <div th:if="${#fields.hasErrors('gender')}" 
+               th:errors="*{gender}" 
+               class="error-msg show"
+               id="server-error-gender"></div>
           <div id="error-gender" class="error-msg hide"></div>
         </div>
       </div>
 
       <!-- 생년월일 -->
       <div class="form-row">
-        <label for="birth">생년월일</label>
+        <label for="birth">생년월일 <span class="required-mark">*</span></label>
         <div class="input-col">
-          <div class="birth-selector">
-            <select id="birthYear" class="birth-select">
+          <div class="birth-selector" role="group" aria-labelledby="birthLabel">
+            <select id="birthYear" 
+                    class="birth-select" 
+                    aria-label="출생년도">
               <option value="">년도</option>
             </select>
-            <select id="birthMonth" class="birth-select">
+            <select id="birthMonth" 
+                    class="birth-select" 
+                    aria-label="출생월">
               <option value="">월</option>
             </select>
-            <select id="birthDay" class="birth-select">
+            <select id="birthDay" 
+                    class="birth-select" 
+                    aria-label="출생일">
               <option value="">일</option>
             </select>
           </div>
           <input type="hidden" id="birth" th:field="*{birth}" />
-          <div th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}" class="error-msg show"></div>
+          <div th:if="${#fields.hasErrors('birth')}" 
+               th:errors="*{birth}" 
+               class="error-msg show"
+               id="server-error-birth"></div>
           <div id="error-birth" class="error-msg hide"></div>
         </div>
       </div>
 
       <!-- 주소 -->
       <div class="form-row">
-        <label for="postNumber">주소</label>
+        <label for="postNumber">주소 <span class="required-mark">*</span></label>
         <div class="input-col">
           <div class="postcode-group">
-            <input type="text" id="postNumber" th:field="*{postNumber}" placeholder="우편번호" readonly required>
-            <button type="button" id="searchPostcodeBtn">주소 검색</button>
+            <input type="text" 
+                   id="postNumber" 
+                   th:field="*{postNumber}" 
+                   placeholder="우편번호" 
+                   readonly 
+                   required 
+                   aria-describedby="error-address" />
+            <button type="button" 
+                    id="searchPostcodeBtn"
+                    aria-label="주소 검색">주소 검색</button>
           </div>
-          <input type="text" id="shopAddress" placeholder="주소" readonly>
-          <input type="text" id="detailAddress" placeholder="상세주소를 입력해주세요">
-          <input type="hidden" th:field="*{address}" id="fullAddress">
+          <input type="text" 
+                 id="shopAddress" 
+                 placeholder="주소" 
+                 readonly 
+                 aria-describedby="error-address" />
+          <input type="text" 
+                 id="detailAddress" 
+                 placeholder="상세주소를 입력해주세요"
+                 aria-describedby="error-address" />
+          <input type="hidden" th:field="*{address}" id="fullAddress" />
           <div id="error-address" class="error-msg hide"></div>
         </div>
       </div>
 
       <!-- 회원가입 버튼 -->
-      <button type="submit" class="signup-btn">회원가입</button>
+      <button type="submit" 
+              class="signup-btn"
+              aria-describedby="submitHelp">회원가입</button>
+      <div id="submitHelp" class="sr-only">
+        모든 필수 항목을 입력한 후 회원가입을 완료합니다.
+      </div>
     </form>
-  </div>
+  </main>
 
-  <!-- Daum Postcode API -->
+  <!-- 외부 스크립트 -->
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   
+  <!-- JavaScript 파일 로드 -->
   <script th:src="@{/js/buyer/signup.js}"></script>
 </body>
 </html>

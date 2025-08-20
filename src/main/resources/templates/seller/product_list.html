@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>상품 목록</title>
+  
+  <!-- 외부 리소스 -->
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/seller/product_list.css}">
 </head>
@@ -16,7 +18,9 @@
         <span class="brand-name">planT</span>
       </a>
       <div class="navbar-buttons">
-        <a th:if="${name != null}" th:href="@{/seller/myPage/{sid}(sid=${sid})}" style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
+        <a th:if="${name != null}" 
+           th:href="@{/seller/myPage/{sid}(sid=${sid})}" 
+           style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
           <span th:text="${name}">님</span>
         </a>
         <a th:href="@{/seller/main/{sid}(sid=${sid})}" class="btn-outline">대시보드</a>
@@ -27,13 +31,17 @@
     </div>
   </header>
 
+  <!-- 메인 컨테이너 -->
   <div class="container">
     <h2>상품 목록</h2>
 
+    <!-- 상품 목록 컨테이너 -->
     <div class="list-container">
       <form id="productActionForm" th:action="@{/seller/products/delete}" method="post">
         <input type="hidden" name="sid" th:value="${sid}" />
         
+        <!-- 리스트 헤더 -->
+        <!-- 리스트 헤더 -->
         <div class="list-header">
           <div class="header-buttons">
             <a th:href="@{/seller/add/{sid}(sid=${sid})}" class="action-btn add-btn">상품 등록</a>
@@ -46,6 +54,7 @@
           </div>
         </div>
 
+        <!-- 상품 테이블 -->
         <table class="product-table">
           <thead>
             <tr>
@@ -62,16 +71,20 @@
             </tr>
           </thead>
           <tbody>
+            <!-- 빈 데이터 메시지 -->
             <tr th:if="${products == null || products.isEmpty()}">
               <td colspan="8" class="empty-message">등록된 상품이 없습니다.</td>
             </tr>
+            
+            <!-- 상품 목록 -->
             <tr th:each="product, stat : ${products}">
               <td class="checkbox-column">
                 <input type="checkbox" name="productIds" th:value="${product.productId}" />
               </td>
               <td class="number-column" th:text="${stat.count}">1</td>
               <td class="title title-column">
-                <a th:href="@{/seller/product/{id}(id=${product.productId})}" th:text="${product.title}">게시글 제목</a>
+                <a th:href="@{/seller/product/{id}(id=${product.productId})}" 
+                   th:text="${product.title}">게시글 제목</a>
               </td>
               <td class="price-column">
                 <span th:text="${product.price}"></span>원
@@ -80,15 +93,18 @@
                 <span th:text="${product.quantity}"></span>개
               </td>
               <td class="status-column">
-                <select class="status-select" th:attr="data-product-id=${product.productId}" onchange="updateProductStatus(this)">
+                <select class="status-select" 
+                        th:attr="data-product-id=${product.productId}" 
+                        onchange="updateProductStatus(this)">
                   <option value="판매중" th:selected="${product.status == '판매중'}">판매중</option>
                   <option value="비활성화" th:selected="${product.status == '비활성화'}">비활성화</option>
                   <option value="재고소진" th:selected="${product.status == '재고소진'}">재고소진</option>
                 </select>
               </td>
-              <td class="date-column" th:text="${product.cdate}">2024/05/21</td>
+              <td class="date-column" th:text="${product.cdate}">25-08-20 09:49</td>
               <td class="action-column">
-                <a th:href="@{/seller/product/{id}/edit(id=${product.productId})}" class="edit-btn">수정</a>
+                <a th:href="@{/seller/product/{id}/edit(id=${product.productId})}" 
+                   class="edit-btn">수정</a>
               </td>
             </tr>
           </tbody>
@@ -97,6 +113,8 @@
     </div>
   </div>
 
+  <!-- JavaScript 파일 로드 -->
+  <!-- JavaScript 파일 로드 -->
   <script th:src="@{/js/seller/product_list.js}"></script>
 </body>
 </html>

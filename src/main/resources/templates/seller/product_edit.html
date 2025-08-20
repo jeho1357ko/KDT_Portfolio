@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>상품 수정</title>
+  
+  <!-- 외부 리소스 -->
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/seller/product_edit.css}">
 </head>
@@ -16,7 +18,9 @@
         <span class="brand-name">planT</span>
       </a>
       <div class="navbar-buttons">
-        <a th:if="${name != null}" th:href="@{/seller/myPage/{sid}(sid=${sid})}" style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
+        <a th:if="${name != null}" 
+           th:href="@{/seller/myPage/{sid}(sid=${sid})}" 
+           style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
           <span th:text="${name}"></span>
         </a>
         <a th:href="@{/seller/main/{sid}(sid=${sid})}" class="btn-outline">대시보드</a>
@@ -28,46 +32,82 @@
     </div>
   </header>
 
+  <!-- 메인 컨테이너 -->
   <div class="page-container">
     <h1 class="page-title">상품 수정</h1>
 
+    <!-- 상품 수정 폼 -->
     <div class="form-container">
-      <form id="productEditForm" th:action="@{/seller/product/{id}/edit(id=${product.productId})}" method="post" th:object="${product}" novalidate>
+      <form id="productEditForm" 
+            th:action="@{/seller/product/{id}/edit(id=${product.productId})}" 
+            method="post" 
+            th:object="${product}" 
+            novalidate>
 
+        <!-- 기본 정보 섹션 -->
         <div class="form-section">
           <h3>기본 정보</h3>
           <div class="form-group" id="productNameGroup">
             <label for="productName" class="required">품종</label>
-            <input type="text" id="productName" th:field="*{productName}" required maxlength="200">
+            <input type="text" 
+                   id="productName" 
+                   th:field="*{productName}" 
+                   required 
+                   maxlength="200">
             <div class="error-message" id="productNameError"></div>
           </div>
           <div class="form-group" id="titleGroup">
             <label for="title" class="required">고객에게 보여줄 제목</label>
-            <input type="text" id="title" th:field="*{title}" required maxlength="200">
+            <input type="text" 
+                   id="title" 
+                   th:field="*{title}" 
+                   required 
+                   maxlength="200">
             <div class="error-message" id="titleError"></div>
           </div>
           <div class="form-group" id="contentGroup">
             <label for="content" class="required">상품 내용</label>
-            <textarea id="content" th:field="*{content}" required></textarea>
+            <textarea id="content" 
+                      th:field="*{content}" 
+                      required></textarea>
             <div class="error-message" id="contentError"></div>
           </div>
           <div class="form-group" id="countryOfOriginGroup">
             <label for="countryOfOrigin" class="required">원산지</label>
-            <input type="text" id="countryOfOrigin" th:field="*{countryOfOrigin}" required maxlength="60">
+            <input type="text" 
+                   id="countryOfOrigin" 
+                   th:field="*{countryOfOrigin}" 
+                   required 
+                   maxlength="60">
             <div class="error-message" id="countryOfOriginError"></div>
           </div>
         </div>
 
+        <!-- 판매 정보 섹션 -->
         <div class="form-section">
           <h3>판매 정보</h3>
           <div class="form-group" id="priceGroup">
             <label for="price" class="required">가격 (원)</label>
-            <input type="number" id="price" th:field="*{price}" min="0" max="9999999999" step="1" required maxlength="10">
+            <input type="number" 
+                   id="price" 
+                   th:field="*{price}" 
+                   min="0" 
+                   max="9999999999" 
+                   step="1" 
+                   required 
+                   maxlength="10">
             <div class="error-message" id="priceError"></div>
           </div>
           <div class="form-group" id="quantityGroup">
             <label for="quantity" class="required">수량 (재고)</label>
-            <input type="number" id="quantity" th:field="*{quantity}" min="0" max="9999999999" step="1" required maxlength="10">
+            <input type="number" 
+                   id="quantity" 
+                   th:field="*{quantity}" 
+                   min="0" 
+                   max="9999999999" 
+                   step="1" 
+                   required 
+                   maxlength="10">
             <div class="error-message" id="quantityError"></div>
           </div>
           <div class="form-group" id="statusGroup">
@@ -82,42 +122,67 @@
           </div>
         </div>
 
+        <!-- 이미지 등록 섹션 -->
         <div class="form-section">
           <h3>이미지 등록</h3>
           <div class="form-group" id="thumbnailGroup">
             <label for="thumbnail">섬네일 사진 URL</label>
-            <input type="url" id="thumbnail" th:field="*{thumbnail}" placeholder="대표 이미지 URL을 입력하세요" maxlength="255">
+            <input type="url" 
+                   id="thumbnail" 
+                   th:field="*{thumbnail}" 
+                   placeholder="대표 이미지 URL을 입력하세요" 
+                   maxlength="255">
             <div class="error-message" id="thumbnailError"></div>
           </div>
         </div>
 
+        <!-- 배송 정보 섹션 -->
         <div class="form-section">
           <h3>배송 정보</h3>
           <div class="form-group" id="deliveryFeeGroup">
             <label for="deliveryFee" class="required">배송비 (원)</label>
-            <input type="number" id="deliveryFee" th:field="*{deliveryFee}" min="0" max="99999" step="1" required maxlength="5">
+            <input type="number" 
+                   id="deliveryFee" 
+                   th:field="*{deliveryFee}" 
+                   min="0" 
+                   max="99999" 
+                   step="1" 
+                   required 
+                   maxlength="5">
             <div class="error-message" id="deliveryFeeError"></div>
           </div>
           <div class="form-group" id="deliveryMethodGroup">
             <label for="deliveryMethod">배송 방법</label>
-            <textarea id="deliveryMethod" th:field="*{deliveryMethod}" rows="3" placeholder="예: CJ대한통운 (평일 오후 2시 이전 주문 시 당일 출고)" maxlength="30"></textarea>
+            <textarea id="deliveryMethod" 
+                      th:field="*{deliveryMethod}" 
+                      rows="3" 
+                      placeholder="예: CJ대한통운 (평일 오후 2시 이전 주문 시 당일 출고)" 
+                      maxlength="30"></textarea>
             <div class="error-message" id="deliveryMethodError"></div>
           </div>
           <div class="form-group" id="deliveryInformationGroup">
             <label for="deliveryInformation">배송 안내</label>
-            <textarea id="deliveryInformation" th:field="*{deliveryInformation}" rows="3" placeholder="예: 제주 및 도서산간 지역은 추가 배송비가 발생할 수 있습니다." maxlength="200"></textarea>
+            <textarea id="deliveryInformation" 
+                      th:field="*{deliveryInformation}" 
+                      rows="3" 
+                      placeholder="예: 제주 및 도서산간 지역은 추가 배송비가 발생할 수 있습니다." 
+                      maxlength="200"></textarea>
             <div class="error-message" id="deliveryInformationError"></div>
           </div>
         </div>
 
+        <!-- 폼 액션 버튼 -->
         <div class="form-actions">
-          <button type="button" class="cancel-btn" onclick="history.back()">취소</button>
+          <button type="button" 
+                  class="cancel-btn" 
+                  onclick="history.back()">취소</button>
           <button type="submit" class="submit-btn" id="submitBtn">수정 완료</button>
         </div>
       </form>
     </div>
   </div>
 
+  <!-- JavaScript 파일 로드 -->
   <script th:src="@{/js/seller/product_edit.js}"></script>
 </body>
 </html>

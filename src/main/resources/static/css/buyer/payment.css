@@ -1,96 +1,93 @@
+/* ===== 외부 폰트 import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap');
 
-    /* ===== CSS 변수 ===== */
-    :root {
-      /* 색상 */
-      --color-primary: #658352;
-      --color-primary-hover: #94A687;
-      --color-primary-light: rgba(101, 131, 82, 0.1);
-      --color-white: #ffffff;
-      --color-background: #FBF9EF;
-      --color-text: #1E2203;
-      --color-text-light: #666666;
-      --color-border: #E9E7DE;
-      --color-secondary-background: #F5F4ED;
-      --color-error: #e74c3c;
-      --color-success: #27ae60;
-      --color-warning: #f39c12;
-      
-      /* 레이아웃 */
-      --layout-max-width: 1400px;
-      --container-max-width: 1200px;
-      --border-radius: 12px;
-      --border-radius-large: 20px;
-      --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
-      --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
-      
-      /* 타이포그래피 */
-      --font-family-primary: 'Inter', sans-serif;
-      --font-family-heading: 'Cabin', sans-serif;
-      --font-size-small: 0.875rem;
-      --font-size-base: 1rem;
-      --font-size-large: 1.125rem;
-      --font-size-xl: 1.25rem;
-      --font-size-2xl: 1.5rem;
-      --font-size-3xl: 2rem;
-      --font-size-4xl: 2.5rem;
-      
-      /* 간격 */
-      --spacing-xs: 4px;
-      --spacing-sm: 8px;
-      --spacing-md: 16px;
-      --spacing-lg: 24px;
-      --spacing-xl: 32px;
-      --spacing-2xl: 40px;
-      --spacing-3xl: 48px;
-      
-      /* 애니메이션 */
-      --transition-fast: 0.2s;
-      --transition-normal: 0.3s;
-      --transition-slow: 0.5s;
-  }
-
-  /* ===== 기본 스타일 ===== */
-  * {
-      box-sizing: border-box;
-  }
-
-  body {
-      font-family: var(--font-family-primary);
-      background-color: var(--color-background);
-      color: var(--color-text);
-      margin: 0;
-      padding: 120px 20px 40px;
-      line-height: 1.6;
-      font-size: var(--font-size-base);
-  }
-
-  /* ===== 네비게이션 바 ===== */
-  .navbar-container {
-      top: 0;
-      left: 0;
-      width: 100%;
-      display: flex;
-      z-index: 1000;
-      position: fixed;
-      justify-content: center;
-      background: var(--color-white);
-      box-shadow: var(--shadow-light);
-  }
+/* ===== CSS 변수 정의 ===== */
+:root {
+  /* 색상 */
+  --color-primary: #658352;
+  --color-primary-hover: #94A687;
+  --color-primary-light: rgba(101, 131, 82, 0.1);
+  --color-white: #ffffff;
+  --color-background: #FBF9EF;
+  --color-text: #1E2203;
+  --color-text-light: #666666;
+  --color-border: #E9E7DE;
+  --color-secondary-background: #F5F4ED;
+  --color-error: #e74c3c;
+  --color-success: #27ae60;
+  --color-warning: #f39c12;
   
-  .navbar {
-      width: 100%;
-      display: flex;
-      max-width: var(--layout-max-width);
-      align-items: center;
-      padding: var(--spacing-md) var(--spacing-3xl);
-      justify-content: space-between;
-  }
+  /* 레이아웃 */
+  --layout-max-width: 1400px;
+  --container-max-width: 1200px;
+  --border-radius: 12px;
+  --border-radius-large: 20px;
+  --shadow-light: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 16px rgba(0, 0, 0, 0.15);
   
-  .navbar-logo-img {
-      height: 3rem;
-      border-radius: var(--border-radius);
-      transition: transform var(--transition-fast);
-  }
+  /* 타이포그래피 */
+  --font-family-primary: 'Inter', sans-serif;
+  --font-family-heading: 'Cabin', sans-serif;
+  --font-size-small: 0.875rem;
+  --font-size-base: 1rem;
+  --font-size-large: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  
+  /* 간격 */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 40px;
+  --spacing-3xl: 48px;
+  
+  /* 애니메이션 */
+  --transition-fast: 0.2s;
+  --transition-normal: 0.3s;
+  --transition-slow: 0.5s;
+}
+
+/* ===== 기본 스타일 ===== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-family-primary);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  margin: 0;
+  padding: 120px 20px 40px;
+  line-height: 1.6;
+  font-size: var(--font-size-base);
+}
+
+/* ===== 네비게이션 바 ===== */
+.navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: var(--color-white);
+  box-shadow: var(--shadow-light);
+  z-index: 1000;
+}
+
+.navbar {
+  width: 100%;
+  max-width: var(--layout-max-width);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-md) var(--spacing-3xl);
+}
+
 .logo-container {
   display: flex;
   align-items: center;
@@ -104,6 +101,12 @@
   transform: scale(1.02);
 }
 
+.navbar-logo-img {
+  height: 3rem;
+  border-radius: var(--border-radius);
+  transition: transform var(--transition-fast);
+}
+
 .brand-name {
   font-family: var(--font-family-heading);
   font-weight: 700;
@@ -114,729 +117,728 @@
   line-height: 1;
 }
 
-  
-  
-  
-  .navbar-buttons {
-      gap: var(--spacing-md);
-      display: flex;
-      align-items: center;
-  }
-  
-  .btn-filled, .btn-outline {
-      display: flex;
-      align-items: center;
-      font-weight: 600;
-      padding: var(--spacing-sm) var(--spacing-lg);
-      border-radius: 24px;
-      font-size: var(--font-size-base);
-      text-decoration: none;
-      transition: all var(--transition-fast);
-      cursor: pointer;
-      border: 1px solid var(--color-primary);
-      font-family: var(--font-family-primary);
-  }
-  
-  .btn-filled {
-      color: var(--color-white);
-      background: var(--color-primary);
-  }
-  
-  .btn-filled:hover {
-      background: var(--color-primary-hover);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-medium);
-  }
-  
-  .btn-outline {
-      color: var(--color-primary);
-      background: transparent;
-  }
-  
-  .btn-outline:hover {
-      background: var(--color-primary-light);
-      transform: translateY(-1px);
-  }
-  
-  .user-name {
-      color: var(--color-primary);
-      font-weight: 600;
-      text-decoration: none;
-      padding: var(--spacing-sm) var(--spacing-md);
-      border-radius: 20px;
-      transition: all var(--transition-fast);
-  }
-  
-  .user-name:hover {
-      background-color: var(--color-primary);
-      color: var(--color-white);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-medium);
-  }
+.navbar-buttons {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+}
 
-  /* ===== 메인 컨테이너 ===== */
-  .payment-container {
-      width: 100%;
-      max-width: var(--container-max-width);
-      margin: 0 auto;
-  }
-  
-  .payment-container h1 {
-      text-align: center;
-      font-size: var(--font-size-4xl);
-      color: var(--color-primary);
-      margin-bottom: var(--spacing-2xl);
-      font-family: var(--font-family-heading);
-      font-weight: 700;
-  }
-  
-  .payment-layout {
-      display: flex;
-      gap: var(--spacing-xl);
-      align-items: flex-start;
-  }
-  
-  .main-content {
-      flex-grow: 1;
-  }
-  
-  .section-box {
-      background-color: var(--color-white);
-      padding: var(--spacing-xl);
-      border-radius: var(--border-radius-large);
-      box-shadow: var(--shadow-light);
-      margin-bottom: var(--spacing-xl);
-      transition: box-shadow var(--transition-normal);
-  }
-  
-  .section-box:hover {
-      box-shadow: var(--shadow-medium);
-  }
-  
-  .section-box h2 {
-      font-size: var(--font-size-2xl);
-      margin-top: 0;
-      margin-bottom: var(--spacing-lg);
-      color: var(--color-primary);
-      border-bottom: 2px solid var(--color-border);
-      padding-bottom: var(--spacing-sm);
-      font-family: var(--font-family-heading);
-      font-weight: 600;
-  }
+/* ===== 버튼 스타일 ===== */
+.btn-filled, .btn-outline {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: 24px;
+  font-size: var(--font-size-base);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+  border: 1px solid var(--color-primary);
+  font-family: var(--font-family-primary);
+}
 
-  /* ===== 주문 상품 스타일 ===== */
-  .order-item {
-      display: flex;
-      align-items: center;
-      padding: var(--spacing-sm) 0;
-      border-bottom: 1px solid var(--color-border);
-      transition: background-color var(--transition-fast);
-  }
-  
-  .order-item:last-child {
-      border-bottom: none;
-  }
-  
-  .order-item:hover {
-      background-color: var(--color-secondary-background);
-      border-radius: var(--border-radius);
-      padding: var(--spacing-sm);
-      margin: 0 calc(-1 * var(--spacing-sm));
-  }
-  
-  .order-item img {
-      width: 80px;
-      height: 80px;
-      border-radius: var(--border-radius);
-      margin-right: var(--spacing-lg);
-      object-fit: cover;
-      transition: transform var(--transition-fast);
-  }
-  
-  .order-item:hover img {
-      transform: scale(1.05);
-  }
-  
-  .order-item .info {
-      flex-grow: 1;
-  }
-  
-  .order-item .name {
-      font-weight: 600;
-      margin-bottom: var(--spacing-xs);
-      color: var(--color-text);
-  }
-  
-  .order-item .quantity, .order-item .price {
-      color: var(--color-text-light);
-      font-size: var(--font-size-small);
-  }
-  
-  .order-item .price {
-      font-weight: 600;
-      color: var(--color-primary);
-  }
+.btn-filled {
+  color: var(--color-white);
+  background: var(--color-primary);
+}
 
-  /* ===== 폼 스타일 ===== */
-  .form-group {
-      margin-bottom: var(--spacing-lg);
-  }
-  
-  .form-group label {
-      display: block;
-      margin-bottom: var(--spacing-sm);
-      font-weight: 600;
-      color: var(--color-text);
-      font-size: var(--font-size-base);
-  }
-  
-  .form-group input[type="text"],
-  .form-group input[type="password"],
-  .form-group input[type="tel"] {
-      width: 100%;
-      padding: var(--spacing-sm) var(--spacing-md);
-      border: 2px solid var(--color-border);
-      border-radius: var(--border-radius);
-      box-sizing: border-box;
-      font-size: var(--font-size-base);
-      transition: all var(--transition-fast);
-      font-family: var(--font-family-primary);
-  }
-  
-  .form-group input:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px var(--color-primary-light);
-      transform: translateY(-1px);
-  }
-  
-  .form-group input:hover {
-      border-color: var(--color-primary-hover);
-  }
+.btn-filled:hover {
+  background: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
 
-  /* ===== 필수 입력 표시 ===== */
-  .required-mark {
-      color: var(--color-error);
-      font-weight: bold;
-  }
+.btn-outline {
+  color: var(--color-primary);
+  background: transparent;
+}
 
-  .help-text {
-    display: block;
-    margin-top: var(--spacing-xs);
-    font-size: var(--font-size-small);
-    color: var(--color-text-light);
-    line-height: 1.4;
+.btn-outline:hover {
+  background: var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.user-name {
+  color: var(--color-primary);
+  font-weight: 600;
+  text-decoration: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: 20px;
+  transition: all var(--transition-fast);
+}
+
+.user-name:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* ===== 메인 컨테이너 ===== */
+.payment-container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin: 0 auto;
+}
+
+.payment-container h1 {
+  text-align: center;
+  font-size: var(--font-size-4xl);
+  color: var(--color-primary);
+  margin-bottom: var(--spacing-2xl);
+  font-family: var(--font-family-heading);
+  font-weight: 700;
+}
+
+.payment-layout {
+  display: flex;
+  gap: var(--spacing-xl);
+  align-items: flex-start;
+}
+
+.main-content {
+  flex-grow: 1;
+}
+
+/* ===== 섹션 박스 ===== */
+.section-box {
+  background-color: var(--color-white);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-light);
+  margin-bottom: var(--spacing-xl);
+  transition: box-shadow var(--transition-normal);
+}
+
+.section-box:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.section-box h2 {
+  font-size: var(--font-size-2xl);
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: var(--spacing-sm);
+  font-family: var(--font-family-heading);
+  font-weight: 600;
+}
+
+/* ===== 주문 상품 스타일 ===== */
+.order-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-sm) 0;
+  border-bottom: 1px solid var(--color-border);
+  transition: background-color var(--transition-fast);
+}
+
+.order-item:last-child {
+  border-bottom: none;
+}
+
+.order-item:hover {
+  background-color: var(--color-secondary-background);
+  border-radius: var(--border-radius);
+  padding: var(--spacing-sm);
+  margin: 0 calc(-1 * var(--spacing-sm));
+}
+
+.order-item img {
+  width: 80px;
+  height: 80px;
+  border-radius: var(--border-radius);
+  margin-right: var(--spacing-lg);
+  object-fit: cover;
+  transition: transform var(--transition-fast);
+}
+
+.order-item:hover img {
+  transform: scale(1.05);
+}
+
+.order-item .info {
+  flex-grow: 1;
+}
+
+.order-item .name {
+  font-weight: 600;
+  margin-bottom: var(--spacing-xs);
+  color: var(--color-text);
+}
+
+.order-item .quantity, .order-item .price {
+  color: var(--color-text-light);
+  font-size: var(--font-size-small);
+}
+
+.order-item .price {
+  font-weight: 600;
+  color: var(--color-primary);
+}
+
+/* ===== 폼 스타일 ===== */
+.form-group {
+  margin-bottom: var(--spacing-lg);
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
+
+.form-group input[type="text"],
+.form-group input[type="password"],
+.form-group input[type="tel"] {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-sizing: border-box;
+  font-size: var(--font-size-base);
+  transition: all var(--transition-fast);
+  font-family: var(--font-family-primary);
+}
+
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+  transform: translateY(-1px);
+}
+
+.form-group input:hover {
+  border-color: var(--color-primary-hover);
+}
+
+/* ===== 필수 입력 표시 ===== */
+.required-mark {
+  color: var(--color-error);
+  font-weight: bold;
+}
+
+.help-text {
+  display: block;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-small);
+  color: var(--color-text-light);
+  line-height: 1.4;
 }
 
 .error-message {
-    display: none;
-    margin-top: var(--spacing-xs);
-    font-size: var(--font-size-small);
-    color: var(--color-error);
-    line-height: 1.4;
-    padding: var(--spacing-xs) var(--spacing-sm);
-    background-color: rgba(231, 76, 60, 0.1);
-    border-radius: var(--border-radius);
-    border-left: 3px solid var(--color-error);
-    font-weight: 500;
+  display: none;
+  margin-top: var(--spacing-xs);
+  font-size: var(--font-size-small);
+  color: var(--color-error);
+  line-height: 1.4;
+  padding: var(--spacing-xs) var(--spacing-sm);
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: var(--border-radius);
+  border-left: 3px solid var(--color-error);
+  font-weight: 500;
 }
 
 .error-message.show {
-    display: block;
-    animation: slideDown 0.3s ease;
+  display: block;
+  animation: slideDown 0.3s ease;
 }
 
 @keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-  /* ===== 우편번호 그룹 ===== */
-  .postcode-group {
-      display: flex;
-      gap: var(--spacing-sm);
-      align-items: center;
-  }
+/* ===== 우편번호 그룹 ===== */
+.postcode-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
 
-  .postcode-group input {
-      flex-grow: 1;
-  }
+.postcode-group input {
+  flex-grow: 1;
+}
 
-  .postcode-group button {
-      padding: var(--spacing-sm) var(--spacing-lg);
-      border: 2px solid var(--color-primary);
-      background-color: var(--color-white);
-      color: var(--color-primary);
-      border-radius: var(--border-radius);
-      cursor: pointer;
-      font-weight: 600;
-      transition: all var(--transition-fast);
-      width: 130px;
-      font-family: var(--font-family-primary);
+.postcode-group button {
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border: 2px solid var(--color-primary);
+  background-color: var(--color-white);
+  color: var(--color-primary);
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all var(--transition-fast);
+  width: 130px;
+  font-family: var(--font-family-primary);
+}
+
+.postcode-group button:hover {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  transform: translateY(-1px);
+}
+
+/* ===== 결제 수단 스타일 ===== */
+.payment-options {
+  display: flex;
+  gap: var(--spacing-lg);
+  align-items: center;
+  margin-bottom: var(--spacing-lg);
+  border: none;
+  padding: 0;
+}
+
+.payment-options label {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--color-text);
+  transition: color var(--transition-fast);
+}
+
+.payment-options label:hover {
+  color: var(--color-primary);
+}
+
+.payment-options input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--color-primary);
+}
+
+/* ===== 결제 상세 정보 스타일 ===== */
+.payment-details {
+  margin-top: var(--spacing-lg);
+  padding: var(--spacing-lg);
+  background-color: var(--color-secondary-background);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--color-border);
+}
+
+.payment-details h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-md);
+  color: var(--color-primary);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-xl);
+}
+
+.payment-details p {
+  margin: 0 0 var(--spacing-sm);
+  line-height: 1.6;
+}
+
+.payment-details p:last-child {
+  margin-bottom: 0;
+}
+
+.account-info {
+  margin-bottom: var(--spacing-md);
+}
+
+.important-notice {
+  color: var(--color-error);
+  font-weight: bold;
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-sm);
+  background-color: rgba(231, 76, 60, 0.1);
+  border-radius: var(--border-radius);
+  border-left: 4px solid var(--color-error);
+}
+
+/* ===== 카드 정보 스타일 ===== */
+.card-number-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.card-number-group input {
+  flex-grow: 1;
+  text-align: center;
+  padding: var(--spacing-sm);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  letter-spacing: 1px;
+  transition: all var(--transition-fast);
+}
+
+.card-number-group input:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+.card-number-group span {
+  font-size: var(--font-size-large);
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+.expiry-group {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+.expiry-group span {
+  font-size: var(--font-size-large);
+  font-weight: bold;
+  color: var(--color-text);
+}
+
+.expiry-input {
+  width: 60px;
+  text-align: center;
+}
+
+.cvc-input {
+  width: 100px;
+  text-align: center;
+}
+
+.password-input {
+  width: 100px;
+  text-align: center;
+}
+
+.card-input {
+  padding: var(--spacing-sm);
+  border: 2px solid var(--color-border);
+  border-radius: var(--border-radius);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  text-align: center;
+  transition: all var(--transition-fast);
+}
+
+.card-input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-light);
+}
+
+/* ===== 요약 박스 스타일 ===== */
+.summary-box {
+  width: 320px;
+  flex-shrink: 0;
+  background-color: var(--color-white);
+  padding: var(--spacing-xl);
+  border-radius: var(--border-radius-large);
+  box-shadow: var(--shadow-light);
+  position: sticky;
+  top: 40px;
+  transition: box-shadow var(--transition-normal);
+}
+
+.summary-box:hover {
+  box-shadow: var(--shadow-medium);
+}
+
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-sm);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+}
+
+.summary-row.total {
+  font-weight: bold;
+  font-size: var(--font-size-xl);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+  color: var(--color-primary);
+}
+
+#payBtn {
+  display: block;
+  box-sizing: border-box;
+  text-decoration: none;
+  text-align: center;
+  width: 100%;
+  padding: var(--spacing-sm);
+  border-radius: 24px;
+  font-size: var(--font-size-large);
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  margin-top: var(--spacing-lg);
+  transition: all var(--transition-fast);
+  font-family: var(--font-family-primary);
+}
+
+#payBtn:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
+
+#payBtn:active {
+  transform: translateY(0);
+}
+
+#payBtn.loading {
+  background-color: var(--color-text-light);
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ===== 모달 스타일 ===== */
+.modal {
+  display: none;
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+  animation: fadeIn var(--transition-normal) ease;
+}
+
+.modal.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-content {
+  background: var(--color-white);
+  padding: var(--spacing-2xl);
+  border-radius: var(--border-radius-large);
+  text-align: center;
+  box-shadow: var(--shadow-medium);
+  width: 90%;
+  max-width: 400px;
+  animation: slideUp var(--transition-normal) ease;
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-content h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-lg);
+  color: var(--color-primary);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-2xl);
+}
+
+.modal-content p {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  margin: 0 0 var(--spacing-xl) 0;
+  color: var(--color-text);
+}
+
+.modal-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  justify-content: center;
+}
+
+.modal-buttons button {
+  flex-grow: 1;
+  height: 50px;
+  border-radius: 24px;
+  font-size: var(--font-size-base);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  border: none;
+  font-family: var(--font-family-primary);
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  border: none;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-medium);
+}
+
+/* ===== 접근성 개선 ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 포커스 표시 개선 */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* 스크린 리더 지원 */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* 고대비 모드 지원 */
+@media (prefers-contrast: high) {
+  :root {
+    --color-border: #000000;
+    --color-text-light: #000000;
   }
   
-  .postcode-group button:hover {
-      background-color: var(--color-primary);
-      color: var(--color-white);
-      transform: translateY(-1px);
+  .form-group input {
+    border-width: 3px;
   }
+}
 
-  /* ===== 결제 수단 스타일 ===== */
+/* ===== 반응형 디자인 ===== */
+@media screen and (max-width: 1024px) {
+  .payment-layout {
+    flex-direction: column;
+    gap: var(--spacing-lg);
+  }
+  
+  .summary-box {
+    width: 100%;
+    position: static;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .payment-container {
+    padding: 0 var(--spacing-md);
+  }
+  
+  .payment-container h1 {
+    font-size: var(--font-size-3xl);
+  }
+  
+  .section-box {
+    padding: var(--spacing-lg);
+  }
+  
   .payment-options {
-      display: flex;
-      gap: var(--spacing-lg);
-      align-items: center;
-      margin-bottom: var(--spacing-lg);
-      border: none;
-      padding: 0;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-md);
   }
   
-  .payment-options label {
-      display: flex;
-      align-items: center;
-      gap: var(--spacing-sm);
-      cursor: pointer;
-      font-weight: 600;
-      color: var(--color-text);
-      transition: color var(--transition-fast);
+  .navbar {
+    padding: var(--spacing-md) var(--spacing-lg);
   }
   
-  .payment-options label:hover {
-      color: var(--color-primary);
+  .navbar-buttons {
+    gap: var(--spacing-sm);
   }
   
-  .payment-options input[type="radio"] {
-      width: 18px;
-      height: 18px;
-      accent-color: var(--color-primary);
+  .btn-filled, .btn-outline {
+    padding: var(--spacing-xs) var(--spacing-md);
+    font-size: var(--font-size-small);
   }
   
-  /* ===== 결제 상세 정보 스타일 ===== */
-  .payment-details {
-      margin-top: var(--spacing-lg);
-      padding: var(--spacing-lg);
-      background-color: var(--color-secondary-background);
-      border-radius: var(--border-radius);
-      border: 1px solid var(--color-border);
+  .order-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
   }
   
-  .payment-details h3 {
-      margin-top: 0;
-      margin-bottom: var(--spacing-md);
-      color: var(--color-primary);
-      font-family: var(--font-family-heading);
-      font-size: var(--font-size-xl);
+  .order-item img {
+    margin-right: 0;
+    margin-bottom: var(--spacing-sm);
   }
   
-  .payment-details p {
-      margin: 0 0 var(--spacing-sm);
-      line-height: 1.6;
-  }
-  
-  .payment-details p:last-child {
-      margin-bottom: 0;
-  }
-
-  .account-info {
-      margin-bottom: var(--spacing-md);
-  }
-
-  .important-notice {
-      color: var(--color-error);
-      font-weight: bold;
-      margin-top: var(--spacing-md);
-      padding: var(--spacing-sm);
-      background-color: rgba(231, 76, 60, 0.1);
-      border-radius: var(--border-radius);
-      border-left: 4px solid var(--color-error);
-  }
-
-  /* ===== 카드 정보 스타일 ===== */
   .card-number-group {
-      display: flex;
-      gap: var(--spacing-sm);
-      align-items: center;
+    flex-wrap: wrap;
   }
   
   .card-number-group input {
-      flex-grow: 1;
-      text-align: center;
-      padding: var(--spacing-sm);
-      border: 2px solid var(--color-border);
-      border-radius: var(--border-radius);
-      font-size: var(--font-size-base);
-      font-weight: 600;
-      letter-spacing: 1px;
-      transition: all var(--transition-fast);
+    flex: 1 1 calc(50% - var(--spacing-sm));
+    min-width: 80px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .payment-container h1 {
+    font-size: var(--font-size-2xl);
   }
   
-  .card-number-group input:focus {
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px var(--color-primary-light);
+  .section-box h2 {
+    font-size: var(--font-size-xl);
   }
   
-  .card-number-group span {
-      font-size: var(--font-size-large);
-      font-weight: bold;
-      color: var(--color-text);
-  }
-
-  .expiry-group {
-      display: flex;
-      gap: var(--spacing-sm);
-      align-items: center;
-  }
-
-  .expiry-group span {
-      font-size: var(--font-size-large);
-      font-weight: bold;
-      color: var(--color-text);
-  }
-
-  .expiry-input {
-      width: 60px;
-      text-align: center;
-  }
-
-  .cvc-input {
-      width: 100px;
-      text-align: center;
-  }
-
-  .password-input {
-      width: 100px;
-      text-align: center;
-  }
-
+  .form-group input,
   .card-input {
-      padding: var(--spacing-sm);
-      border: 2px solid var(--color-border);
-      border-radius: var(--border-radius);
-      font-size: var(--font-size-base);
-      font-weight: 600;
-      text-align: center;
-      transition: all var(--transition-fast);
+    font-size: var(--font-size-base);
+    padding: var(--spacing-sm);
   }
   
-  .card-input:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px var(--color-primary-light);
-  }
-
-  /* ===== 요약 박스 스타일 ===== */
-  .summary-box {
-      width: 320px;
-      flex-shrink: 0;
-      background-color: var(--color-white);
-      padding: var(--spacing-xl);
-      border-radius: var(--border-radius-large);
-      box-shadow: var(--shadow-light);
-      position: sticky;
-      top: 40px;
-      transition: box-shadow var(--transition-normal);
+  .postcode-group {
+    flex-direction: column;
+    gap: var(--spacing-sm);
   }
   
-  .summary-box:hover {
-      box-shadow: var(--shadow-medium);
+  .postcode-group button {
+    width: 100%;
   }
   
-  .summary-row {
-      display: flex;
-      justify-content: space-between;
-      margin-bottom: var(--spacing-sm);
-      font-size: var(--font-size-base);
-      line-height: 1.6;
+  .card-number-group {
+    flex-direction: column;
+    gap: var(--spacing-sm);
   }
   
-  .summary-row.total {
-      font-weight: bold;
-      font-size: var(--font-size-xl);
-      padding-top: var(--spacing-lg);
-      border-top: 1px solid var(--color-border);
-      color: var(--color-primary);
+  .card-number-group input {
+    flex: 1;
+    width: 100%;
   }
   
-  #payBtn {
-      display: block;
-      box-sizing: border-box;
-      text-decoration: none;
-      text-align: center;
-      width: 100%;
-      padding: var(--spacing-sm);
-      border-radius: 24px;
-      font-size: var(--font-size-large);
-      font-weight: 600;
-      cursor: pointer;
-      border: none;
-      background-color: var(--color-primary);
-      color: var(--color-white);
-      margin-top: var(--spacing-lg);
-      transition: all var(--transition-fast);
-      font-family: var(--font-family-primary);
+  .expiry-group {
+    flex-direction: column;
+    gap: var(--spacing-sm);
   }
   
-  #payBtn:hover {
-      background-color: var(--color-primary-hover);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-medium);
+  .expiry-input {
+    width: 100%;
   }
   
-  #payBtn:active {
-      transform: translateY(0);
+  .cvc-input,
+  .password-input {
+    width: 100%;
   }
-
-  #payBtn.loading {
-      background-color: var(--color-text-light);
-      cursor: not-allowed;
-      transform: none;
-  }
-
-  /* ===== 모달 스타일 ===== */
-  .modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0,0,0,0.6);
-      justify-content: center;
-      align-items: center;
-      animation: fadeIn var(--transition-normal) ease;
-  }
-  
-  .modal.active {
-      display: flex;
-  }
-  
-  @keyframes fadeIn {
-      from { opacity: 0; }
-      to { opacity: 1; }
-  }
-  
-  .modal-content {
-      background: var(--color-white);
-      padding: var(--spacing-2xl);
-      border-radius: var(--border-radius-large);
-      text-align: center;
-      box-shadow: var(--shadow-medium);
-      width: 90%;
-      max-width: 400px;
-      animation: slideUp var(--transition-normal) ease;
-  }
-  
-  @keyframes slideUp {
-      from { transform: translateY(20px); opacity: 0; }
-      to { transform: translateY(0); opacity: 1; }
-  }
-
-  .modal-content h3 {
-      margin-top: 0;
-      margin-bottom: var(--spacing-lg);
-      color: var(--color-primary);
-      font-family: var(--font-family-heading);
-      font-size: var(--font-size-2xl);
-  }
-
-  .modal-content p {
-      font-size: var(--font-size-xl);
-      font-weight: 600;
-      margin: 0 0 var(--spacing-xl) 0;
-      color: var(--color-text);
-  }
-  
-  .modal-buttons {
-      display: flex;
-      gap: var(--spacing-md);
-      justify-content: center;
-  }
-  
-  .modal-buttons button {
-      flex-grow: 1;
-      height: 50px;
-      border-radius: 24px;
-      font-size: var(--font-size-base);
-      font-weight: 700;
-      cursor: pointer;
-      transition: all var(--transition-fast);
-      border: none;
-      font-family: var(--font-family-primary);
-  }
-
-  .btn-primary {
-      background-color: var(--color-primary);
-      color: var(--color-white);
-      border: none;
-  }
-
-  .btn-primary:hover {
-      background-color: var(--color-primary-hover);
-      transform: translateY(-1px);
-      box-shadow: var(--shadow-medium);
-  }
-
-  /* ===== 반응형 디자인 ===== */
-  @media screen and (max-width: 1024px) {
-      .payment-layout {
-          flex-direction: column;
-          gap: var(--spacing-lg);
-      }
-      
-      .summary-box {
-          width: 100%;
-          position: static;
-      }
-  }
-  
-  @media screen and (max-width: 768px) {
-      .payment-container {
-          padding: 0 var(--spacing-md);
-      }
-      
-      .payment-container h1 {
-          font-size: var(--font-size-3xl);
-      }
-      
-      .section-box {
-          padding: var(--spacing-lg);
-      }
-      
-      .payment-options {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: var(--spacing-md);
-      }
-      
-      .navbar {
-          padding: var(--spacing-md) var(--spacing-lg);
-      }
-      
-      .navbar-buttons {
-          gap: var(--spacing-sm);
-      }
-      
-      .btn-filled, .btn-outline {
-          padding: var(--spacing-xs) var(--spacing-md);
-          font-size: var(--font-size-small);
-      }
-      
-      .order-item {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: var(--spacing-sm);
-      }
-      
-      .order-item img {
-          margin-right: 0;
-          margin-bottom: var(--spacing-sm);
-      }
-      
-      .card-number-group {
-          flex-wrap: wrap;
-      }
-      
-      .card-number-group input {
-          flex: 1 1 calc(50% - var(--spacing-sm));
-          min-width: 80px;
-      }
-  }
-  
-  @media screen and (max-width: 480px) {
-      .payment-container h1 {
-          font-size: var(--font-size-2xl);
-      }
-      
-      .section-box h2 {
-          font-size: var(--font-size-xl);
-      }
-      
-      .form-group input,
-      .card-input {
-          font-size: var(--font-size-base);
-          padding: var(--spacing-sm);
-      }
-      
-      .postcode-group {
-          flex-direction: column;
-          gap: var(--spacing-sm);
-      }
-      
-      .postcode-group button {
-          width: 100%;
-      }
-      
-      .card-number-group {
-          flex-direction: column;
-          gap: var(--spacing-sm);
-      }
-      
-      .card-number-group input {
-          flex: 1;
-          width: 100%;
-      }
-      
-      .expiry-group {
-          flex-direction: column;
-          gap: var(--spacing-sm);
-      }
-      
-      .expiry-input {
-          width: 100%;
-      }
-      
-      .cvc-input,
-      .password-input {
-          width: 100%;
-      }
-  }
-
-  /* ===== 접근성 개선 ===== */
-  .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-  }
-  
-  /* 포커스 표시 개선 */
-  button:focus,
-  input:focus,
-  select:focus,
-  textarea:focus {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
-  }
-
-  /* 스크린 리더 지원 */
-  @media (prefers-reduced-motion: reduce) {
-      * {
-          animation-duration: 0.01ms !important;
-          animation-iteration-count: 1 !important;
-          transition-duration: 0.01ms !important;
-      }
-  }
-
-  /* 고대비 모드 지원 */
-  @media (prefers-contrast: high) {
-      :root {
-          --color-border: #000000;
-          --color-text-light: #000000;
-      }
-      
-      .form-group input {
-          border-width: 3px;
-      }
-  }
+}

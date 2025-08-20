@@ -1,3 +1,5 @@
+/* ===== 외부 폰트 import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap');
 
 /* ===== CSS 변수 정의 ===== */
 :root {
@@ -13,6 +15,7 @@
   --color-success: #2a7c3e;
   --color-warning: #b82a0b;
   --color-muted: #666;
+  --color-disabled: #f0f0f0;
   --layout-max-width: 1400px;
   --layout-radius-card: 20px;
   --layout-radius-button: 12px;
@@ -34,44 +37,53 @@ body {
   line-height: 1.6;
 }
 
+h2 {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  font-size: 2.4rem;
+  margin: 0 0 32px 0;
+}
+
 /* ===== 네비게이션 바 ===== */
 .navbar-container {
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  display: flex;
   z-index: 1000;
-  position: fixed;
-  justify-content: center;
   background: var(--color-white);
   box-shadow: 0 2px 12px 0 rgba(0,0,0,0.06);
 }
 
 .navbar {
   width: 100%;
-  display: flex;
   max-width: var(--layout-max-width);
+  margin: 0 auto;
+  display: flex;
   align-items: center;
-  padding: 16px 48px;
   justify-content: space-between;
+  padding: 16px 48px;
 }
 
-.navbar-logo-img {
-  height: 3rem;
-  border-radius: 8px;
-  transition: var(--transition-default);
-}
 .logo-container {
   display: flex;
   align-items: center;
   gap: 12px;
   text-decoration: none;
   color: var(--color-text);
-  transition: var(--transition-default, all 0.3s ease);
+  transition: var(--transition-default);
 }
 
 .logo-container:hover {
   transform: scale(1.02);
+}
+
+.navbar-logo-img {
+  height: 3rem;
+  border-radius: 8px;
+  transition: var(--transition-default);
 }
 
 .brand-name {
@@ -84,21 +96,19 @@ body {
   line-height: 1;
 }
 
-
-
-
 .navbar-buttons {
-  gap: 16px;
   display: flex;
   align-items: center;
+  gap: 16px;
 }
 
+/* ===== 버튼 스타일 ===== */
 .btn-filled, .btn-outline {
   display: flex;
   align-items: center;
   font-weight: bold;
   padding: 10px 24px;
-  border-radius: 24px;
+  border-radius: var(--layout-radius-button);
   font-size: 1rem;
   text-decoration: none;
   transition: var(--transition-default);
@@ -136,16 +146,6 @@ body {
   box-sizing: border-box;
 }
 
-/* ===== 페이지 제목 ===== */
-h2 {
-  font-family: 'Cabin', sans-serif;
-  font-weight: 700;
-  color: var(--color-primary);
-  text-align: center;
-  font-size: 2.4rem;
-  margin: 0 0 32px 0;
-}
-
 /* ===== 리스트 컨테이너 ===== */
 .list-container {
   background-color: var(--color-white);
@@ -178,7 +178,7 @@ h2 {
   font-size: 1rem;
   font-weight: bold;
   border-radius: var(--layout-radius-button);
-  color: white;
+  color: var(--color-white);
   cursor: pointer;
   transition: var(--transition-default);
   text-decoration: none;
@@ -212,7 +212,7 @@ h2 {
   font-weight: bold;
   border-radius: var(--layout-radius-button);
   border: 1px solid var(--color-primary);
-  background-color: white;
+  background-color: var(--color-white);
   color: var(--color-primary);
   cursor: pointer;
   transition: var(--transition-default);
@@ -255,7 +255,7 @@ h2 {
 
 .edit-btn:hover {
   background-color: var(--color-primary);
-  color: white;
+  color: var(--color-white);
   transform: translateY(-1px);
 }
 
@@ -369,7 +369,7 @@ h2 {
   font-weight: bold;
   font-size: 0.85rem;
   border: 1px solid var(--color-border);
-  background-color: white;
+  background-color: var(--color-white);
   cursor: pointer;
   min-width: 80px;
   text-align: center;
@@ -412,6 +412,7 @@ h2 {
 .loading {
   opacity: 0.6;
   pointer-events: none;
+  position: relative;
 }
 
 .loading::after {
@@ -441,10 +442,13 @@ h2 {
 
   .list-container {
     padding: 24px 20px;
+    min-width: auto;
   }
 
   .product-table {
     font-size: 0.9rem;
+    display: block;
+    overflow-x: auto;
   }
 
   .product-table th, .product-table td {
@@ -462,14 +466,22 @@ h2 {
     gap: 8px;
   }
 
-  .product-table {
-    display: block;
-    overflow-x: auto;
-  }
-
   .bulk-status-select {
     min-width: 120px;
     font-size: 0.9rem;
     padding: 10px 12px;
+  }
+
+  .navbar {
+    padding: 16px 20px;
+  }
+
+  .navbar-buttons {
+    gap: 8px;
+  }
+
+  .btn-filled, .btn-outline {
+    padding: 8px 16px;
+    font-size: 0.9rem;
   }
 }

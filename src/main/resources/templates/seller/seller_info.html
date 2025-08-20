@@ -4,18 +4,22 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>판매자 정보</title>
+  
+  <!-- 외부 리소스 -->
   <link rel="stylesheet" th:href="@{/css/seller/info.css}">
 </head>
 <body>
   <!-- 네비게이션 바 -->
   <header class="navbar-container">
     <div class="navbar">
-          <a th:href="@{/home}" class="logo-container">
-      <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
-      <span class="brand-name">planT</span>
-    </a>
+      <a th:href="@{/home}" class="logo-container">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
+      </a>
       <div class="navbar-buttons">
-        <a th:if="${name != null}" th:href="@{/seller/myPage/{sid}(sid=${sellerId})}" style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
+        <a th:if="${name != null}" 
+           th:href="@{/seller/myPage/{sid}(sid=${sellerId})}" 
+           style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
           <span th:text="${name}"></span>
         </a>
         <a th:href="@{/seller/main/{sid}(sid=${sellerId})}" class="btn-outline">대시보드</a>
@@ -31,30 +35,43 @@
   <div class="info-container" th:object="${myInfo}">
     <h2>판매자 정보</h2>
 
+    <!-- 이메일 정보 -->
     <div class="info-row">
       <span class="info-label">이메일</span>
       <span class="info-value" th:text="*{email}"></span>
     </div>
+    
+    <!-- 비밀번호 정보 -->
     <div class="info-row">
       <span class="info-label">비밀번호</span>
       <span class="info-value">****</span>
     </div>
+    
+    <!-- 전화번호 정보 -->
     <div class="info-row">
       <span class="info-label">전화번호</span>
       <span class="info-value" th:text="*{tel}"></span>
     </div>
+    
+    <!-- 사업자등록번호 정보 -->
     <div class="info-row">
       <span class="info-label">사업자등록번호</span>
       <span class="info-value" th:text="*{bizRegNo}"></span>
     </div>
+    
+    <!-- 상호명 정보 -->
     <div class="info-row">
       <span class="info-label">상호명</span>
       <span class="info-value" th:text="*{shopName}"></span>
     </div>
+    
+    <!-- 대표자 이름 정보 -->
     <div class="info-row">
       <span class="info-label">대표자 이름</span>
       <span class="info-value" th:text="*{name}"></span>
     </div>
+    
+    <!-- 가게 주소 정보 -->
     <div class="info-row">
       <span class="info-label">가게 주소</span>
       <div class="info-value address">
@@ -63,6 +80,7 @@
       </div>
     </div>
 
+    <!-- 액션 버튼 영역 -->
     <div class="info-actions">
       <button type="button" id="back-btn" th:onclick="|location.href='@{/seller/main/{sid}(sid=${sellerId})}'|">목록으로</button>
       <button type="button" id="edit-btn">수정하기</button>
@@ -76,7 +94,10 @@
       <div class="modal-icon security">🔒</div>
       <h2>보안 인증</h2>
       <p>개인정보 보호를 위해 현재 비밀번호를 다시 한 번 입력해주세요.</p>
-      <input type="password" id="passwordInput" placeholder="현재 비밀번호를 입력하세요" autocomplete="current-password">
+      <input type="password" 
+             id="passwordInput" 
+             placeholder="현재 비밀번호를 입력하세요" 
+             autocomplete="current-password">
       <div id="modalErrorMessage" class="error-msg"></div>
       <div class="modal-actions">
         <button id="confirmPasswordBtn">확인</button>
@@ -112,7 +133,7 @@
   <!-- sellerId를 JavaScript로 전달하기 위한 숨겨진 요소 -->
   <div data-seller-id th:attr="data-seller-id=${sellerId}" style="display: none;"></div>
 
-  <!-- JavaScript -->
+  <!-- JavaScript 파일 로드 -->
   <script th:src="@{/js/seller/info.js}"></script>
 </body>
 </html>

@@ -3,41 +3,63 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>구매자 정보 수정</title>
+  <title>구매자 정보 수정 - planT</title>
+  <meta name="description" content="농산물 직거래 플랫폼 planT의 구매자 정보 수정 페이지입니다.">
+  
+  <!-- 외부 리소스 -->
   <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link th:href="@{/css/buyer/edit.css}" rel="stylesheet">
 </head>
 <body>
   <!-- 네비게이션 바 -->
-  <header class="navbar-container">
+  <header class="navbar-container" role="banner">
     <div class="navbar">
-      <a th:href="@{/home}" class="logo-container" aria-label="홈으로 이동">
-        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+      <a th:href="@{/home}" 
+         class="logo-container" 
+         aria-label="홈으로 이동">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" 
+             alt="planT 로고" 
+             class="navbar-logo-img"/>
         <span class="brand-name">planT</span>
       </a>
       <div class="navbar-buttons">
-        <a th:href="@{/buyer/info}" class="btn-outline" aria-label="내 정보">내 정보</a>
-        <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
-          <button type="submit" class="btn-filled">로그아웃</button>
+        <a th:href="@{/buyer/info}" 
+           class="btn-outline" 
+           aria-label="내 정보">내 정보</a>
+        <form th:action="@{/buyer/logout}" 
+              method="post" 
+              style="display:inline;">
+          <button type="submit" 
+                  class="btn-filled"
+                  aria-label="로그아웃">로그아웃</button>
         </form>
       </div>
     </div>
   </header>
 
   <!-- 메인 컨텐츠 -->
-  <main class="edit-container">
-    <h1>구매자 정보 수정</h1>
+  <main class="edit-container" role="main" aria-labelledby="editTitle">
+    <h1 id="editTitle">구매자 정보 수정</h1>
     
-    <form th:action="@{/buyer/edit}" method="post" th:object="${buyerEditForm}" class="edit-form" novalidate>
+    <form th:action="@{/buyer/edit}" 
+          method="post" 
+          th:object="${buyerEditForm}" 
+          class="edit-form" 
+          novalidate>
+      
       <!-- 전역 오류 메시지 표시 -->
-      <div th:if="${#fields.hasGlobalErrors()}" class="global-error" role="alert" aria-live="polite">
-        <div th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div>
+      <div th:if="${#fields.hasGlobalErrors()}" 
+           class="global-error" 
+           role="alert" 
+           aria-live="polite">
+        <div th:each="error : ${#fields.globalErrors()}" 
+             th:text="${error}"></div>
       </div>
 
-      <!-- 이메일 필드 -->
+      <!-- 이메일 필드 (수정 불가) -->
       <div class="form-row">
-        <label for="email">이메일 (수정 불가)</label>
+        <label for="email">이메일 <span class="required-mark">*</span> (수정 불가)</label>
         <input type="email" 
                id="email" 
                th:field="*{email}" 
@@ -46,9 +68,9 @@
         <div id="email-description" class="sr-only">이메일은 수정할 수 없습니다.</div>
       </div>
 
-      <!-- 이름 필드 -->
+      <!-- 이름 필드 (수정 불가) -->
       <div class="form-row">
-        <label for="name">이름 (수정 불가)</label>
+        <label for="name">이름 <span class="required-mark">*</span> (수정 불가)</label>
         <input type="text" 
                id="name" 
                th:field="*{name}" 
@@ -59,7 +81,7 @@
 
       <!-- 닉네임 필드 -->
       <div class="form-row">
-        <label for="nickname">닉네임</label>
+        <label for="nickname">닉네임 <span class="required-mark">*</span></label>
         <input type="text" 
                id="nickname" 
                th:field="*{nickname}" 
@@ -76,7 +98,7 @@
 
       <!-- 연락처 필드 -->
       <div class="form-row">
-        <label for="tel">연락처</label>
+        <label for="tel">연락처 <span class="required-mark">*</span></label>
         <input type="tel" 
                id="tel" 
                th:field="*{tel}" 
@@ -130,7 +152,7 @@
 
       <!-- 주소 필드 -->
       <div class="form-row">
-        <label for="postNumber">주소</label>
+        <label for="postNumber">주소 <span class="required-mark">*</span></label>
         <div class="input-col">
           <div class="postcode-group">
             <input type="text" 
@@ -182,7 +204,9 @@
       </div>
 
       <!-- 폼 액션 버튼 -->
-      <div class="form-actions" role="group" aria-label="폼 액션">
+      <div class="form-actions" 
+           role="group" 
+           aria-label="폼 액션">
         <button type="button" 
                 class="cancel-btn" 
                 onclick="location.href='/buyer/info'"
@@ -198,6 +222,7 @@
     </form>
   </main>
 
+  <!-- JavaScript 파일 로드 -->
   <script th:src="@{/js/buyer/edit.js}"></script>
 </body>
 </html>

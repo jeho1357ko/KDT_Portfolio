@@ -1,4 +1,9 @@
-// =========================== 상품 기본 로직 ===========================
+/**
+ * 상품 상세 페이지 JavaScript 모듈
+ * 상품 정보 표시, 장바구니 추가, 가격 비교, 리뷰 관리 기능을 담당
+ */
+
+// ===== 상품 기본 로직 =====
 
 // 상품 정보 변수 (HTML에서 전달받은 데이터로 초기화됨)
 let productData = null;
@@ -45,7 +50,10 @@ function handleImageError(img) {
   }
 }
 
-// 초기화 함수
+/**
+ * DOM 요소 초기화
+ * @returns {boolean} 초기화 성공 여부
+ */
 function initializeElements() {
   quantityInput = document.getElementById('quantity');
   minusBtn = document.querySelector('.minus-btn');
@@ -59,7 +67,10 @@ function initializeElements() {
   return true;
 }
 
-// 가격 계산 함수
+/**
+ * 가격 계산 함수
+ * @returns {Object} 수량과 총 가격 정보
+ */
 function calculateTotal() {
   const quantity = parseInt(quantityInput.value) || 1;
   const pricePerUnit = Number(quantityInput.dataset.price) || 0;
@@ -68,7 +79,9 @@ function calculateTotal() {
   return { quantity, total };
 }
 
-// 이벤트 리스너 설정
+/**
+ * 이벤트 리스너 설정
+ */
 function setupEventListeners() {
   minusBtn.addEventListener('click', () => {
     let quantity = parseInt(quantityInput.value) || 1;
@@ -91,7 +104,9 @@ function setupEventListeners() {
   });
 }
 
-// 장바구니 추가 함수
+/**
+ * 장바구니 추가 함수
+ */
 async function addToCart() {
   if (!productData) {
     console.error('상품 데이터가 설정되지 않았습니다.');
@@ -131,7 +146,9 @@ async function addToCart() {
   }
 }
 
-// 바로구매 함수
+/**
+ * 바로구매 함수
+ */
 function buyNow() {
   if (!productData) {
     console.error('상품 데이터가 설정되지 않았습니다.');
@@ -161,7 +178,9 @@ function buyNow() {
   window.location.href = '/buyer/payment';
 }
 
-// 로그인 리다이렉트 함수
+/**
+ * 로그인 리다이렉트 함수
+ */
 function redirectToLogin() {
   if (!productData) {
     console.error('상품 데이터가 설정되지 않았습니다.');
@@ -172,28 +191,60 @@ function redirectToLogin() {
   showModal('loginModal');
 }
 
-// 모달 표시/닫기
-function showModal(id) { document.getElementById(id).classList.add('active'); }
-function closeModal() { document.getElementById('cartModal').classList.remove('active'); }
-function closeLoginModal() { document.getElementById('loginModal').classList.remove('active'); }
+// ===== 모달 관련 함수들 =====
 
-// 장바구니로 이동
+/**
+ * 모달 표시
+ * @param {string} id - 모달 ID
+ */
+function showModal(id) { 
+  document.getElementById(id).classList.add('active'); 
+}
+
+/**
+ * 장바구니 모달 닫기
+ */
+function closeModal() { 
+  document.getElementById('cartModal').classList.remove('active'); 
+}
+
+/**
+ * 로그인 모달 닫기
+ */
+function closeLoginModal() { 
+  document.getElementById('loginModal').classList.remove('active'); 
+}
+
+/**
+ * 장바구니로 이동
+ */
 function goToCart() {
   const buyerId = document.getElementById('buyerId')?.value;
   if (buyerId) window.location.href = `/buyer/cart/${buyerId}`;
   else alert('로그인 정보가 없습니다.');
 }
 
-// 로그인 페이지로 이동
-function goToLogin() { window.location.href = '/buyer/login'; }
+/**
+ * 로그인 페이지로 이동
+ */
+function goToLogin() { 
+  window.location.href = '/buyer/login'; 
+}
 
-// Thymeleaf에서 전달받은 상품 데이터 설정
+/**
+ * Thymeleaf에서 전달받은 상품 데이터 설정
+ * @param {Object} data - 상품 데이터
+ */
 function setProductData(data) { 
   productData = data; 
   console.log('상품 데이터 설정됨:', productData);
 }
 
-// 가격 비교 관련 함수들 (생략된 기존 로직 유지)
+// ===== 가격 비교 관련 함수들 =====
+
+/**
+ * 가격 비교 데이터 로드
+ */
 async function loadPriceComparisonData() {
   console.log('[loadPriceComparisonData] 시작');
   
@@ -249,6 +300,10 @@ async function loadPriceComparisonData() {
   }
 }
 
+/**
+ * 저번달 가격 표시
+ * @param {Object} data - 가격 데이터
+ */
 function displayLastMonthPrice(data) {
   const lastMonthPriceEl = document.getElementById('lastMonthPrice');
   const lastMonthPriceValueEl = document.getElementById('lastMonthPriceValue');
@@ -280,7 +335,12 @@ function displayLastMonthPrice(data) {
   }
 }
 
-// 다나와 스타일 팝업 관련 (생략 없이 유지)
+// ===== 다나와 스타일 팝업 관련 =====
+
+/**
+ * 크기별 가격 팝업 표시
+ * @param {HTMLElement} element - 클릭된 버튼 요소
+ */
 async function showSizePricesAtPosition(element) {
   const hiddenProductNameEl = document.getElementById('hiddenProductName');
   let productName = hiddenProductNameEl ? hiddenProductNameEl.textContent.trim() : productData.title;
@@ -312,6 +372,10 @@ async function showSizePricesAtPosition(element) {
   }
 }
 
+/**
+ * 팝업에 크기별 가격 표시
+ * @param {Object} data - 크기별 가격 데이터
+ */
 function displaySizePricesInPopup(data) {
   const popupContent = document.getElementById('popupContent');
   if (!popupContent) return;
@@ -340,11 +404,17 @@ function displaySizePricesInPopup(data) {
   popupContent.innerHTML = html;
 }
 
+/**
+ * 다나와 팝업 닫기
+ */
 function closeDanawaPopup() {
   const danawaPopup = document.getElementById('danawaPopup');
   if (danawaPopup) danawaPopup.style.display = 'none';
 }
 
+/**
+ * 크기별 가격 로드
+ */
 async function loadSizePrices() {
   const hiddenProductNameEl = document.getElementById('hiddenProductName');
   let productName = hiddenProductNameEl ? hiddenProductNameEl.textContent.trim() : productData.title;
@@ -368,6 +438,10 @@ async function loadSizePrices() {
   }
 }
 
+/**
+ * 크기별 가격 표시
+ * @param {Object} data - 크기별 가격 데이터
+ */
 function displaySizePrices(data) {
   const sizePricesContent = document.getElementById('sizePricesContent');
   if (!sizePricesContent) return;
@@ -408,17 +482,26 @@ function displaySizePrices(data) {
   sizePricesContent.innerHTML = html;
 }
 
-// 페이지 로드 시 초기화
+// ===== 페이지 초기화 =====
+
+/**
+ * 페이지 로드 시 초기화
+ */
 document.addEventListener('DOMContentLoaded', function() {
   if (initializeElements()) {
     setupEventListeners();
     calculateTotal();
 
     const productImage = document.getElementById('productImage');
-    if (productImage) productImage.addEventListener('error', function() { handleImageError(this); });
+    if (productImage) productImage.addEventListener('error', function() { 
+      handleImageError(this); 
+    });
 
-    setTimeout(() => { loadPriceComparisonData(); }, 500);
+    setTimeout(() => { 
+      loadPriceComparisonData(); 
+    }, 500);
 
+    // 다나와 팝업 외부 클릭 시 닫기
     document.addEventListener('click', function(e) {
       const danawaPopup = document.getElementById('danawaPopup');
       if (danawaPopup && danawaPopup.style.display === 'block') {
@@ -430,7 +513,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 
-// =========================== 리뷰 섹션 ===========================
+// ===== 리뷰 섹션 =====
 
 // 엔드포인트 모음
 const ReviewAPI = {
@@ -439,7 +522,10 @@ const ReviewAPI = {
   delete: (id) => `/api/review/delete/${encodeURIComponent(id)}`
 };
 
-// CSRF 헤더 (있으면 사용)
+/**
+ * CSRF 헤더 (있으면 사용)
+ * @returns {Object} CSRF 헤더 객체
+ */
 function csrfHeader() {
   const meta = document.querySelector('meta[name="_csrf"]');
   const headerMeta = document.querySelector('meta[name="_csrf_header"]');
@@ -447,7 +533,12 @@ function csrfHeader() {
   return {};
 }
 
-// 공통 fetch 래퍼: ApiResponse {code,data} 또는 {header,body} 대응
+/**
+ * 공통 fetch 래퍼: ApiResponse {code,data} 또는 {header,body} 대응
+ * @param {string} url - 요청 URL
+ * @param {Object} options - fetch 옵션
+ * @returns {Promise<Object>} 응답 데이터
+ */
 async function apiFetch(url, options = {}) {
   console.log('[apiFetch] 요청 URL:', url);
   console.log('[apiFetch] 옵션:', options);
@@ -487,7 +578,13 @@ async function apiFetch(url, options = {}) {
   }
 }
 
-// 유틸
+// ===== 유틸리티 함수들 =====
+
+/**
+ * 날짜 포맷팅
+ * @param {string} iso - ISO 날짜 문자열
+ * @returns {string} 포맷팅된 날짜
+ */
 function formatDate(iso) {
   if (!iso) return '';
   try {
@@ -496,13 +593,27 @@ function formatDate(iso) {
     const m = `${d.getMonth() + 1}`.padStart(2, '0');
     const day = `${d.getDate()}`.padStart(2, '0');
     return `${y}-${m}-${day}`;
-  } catch { return iso; }
+  } catch { 
+    return iso; 
+  }
 }
+
+/**
+ * 별점 표시
+ * @param {number} score - 별점 점수
+ * @returns {string} 별점 문자열
+ */
 function star(score) {
   if (score == null) return '';
   const s = Math.max(0, Math.min(5, Number(score)));
   return '★'.repeat(Math.round(s)) + '☆'.repeat(5 - Math.round(s));
 }
+
+/**
+ * HTML 이스케이프
+ * @param {string} str - 이스케이프할 문자열
+ * @returns {string} 이스케이프된 문자열
+ */
 function escapeHtml(str) {
   if (str == null) return '';
   return String(str)
@@ -510,7 +621,22 @@ function escapeHtml(str) {
     .replaceAll('>','&gt;').replaceAll('"','&quot;')
     .replaceAll("'",'&#39;');
 }
-function escapeAttr(str) { return escapeHtml(str); }
+
+/**
+ * 속성 이스케이프
+ * @param {string} str - 이스케이프할 문자열
+ * @returns {string} 이스케이프된 문자열
+ */
+function escapeAttr(str) { 
+  return escapeHtml(str); 
+}
+
+/**
+ * 텍스트 자르기
+ * @param {string} text - 자를 텍스트
+ * @param {number} limit - 제한 길이
+ * @returns {Object} 자른 텍스트 정보
+ */
 function truncateText(text, limit = 100) {
   const t = String(text || '');
   return t.length > limit
@@ -518,7 +644,14 @@ function truncateText(text, limit = 100) {
     : { short: t, hasMore: false };
 }
 
-// 템플릿: 이미지(있을 때만), 1행=별점+닉네임, 2행=제목·등록일 / 본문(100자 접힘)
+// ===== 리뷰 렌더링 =====
+
+/**
+ * 리뷰 아이템 렌더링
+ * @param {Object} r - 리뷰 데이터
+ * @param {number} sessionBuyerId - 세션 구매자 ID
+ * @returns {string} HTML 문자열
+ */
 function renderReviewItem(r, sessionBuyerId) {
   const isOwner = sessionBuyerId && Number(r?.buyerId) === Number(sessionBuyerId);
   const created = formatDate(r?.cdate);
@@ -583,11 +716,17 @@ function renderReviewItem(r, sessionBuyerId) {
   </div>`;
 }
 
+// ===== 리뷰 관리 =====
+
 // 아코디언 & 페이지네이션
 const REVIEWS_PER_PAGE = 3;
 let allReviews = [];
 let currentReviewPage = 1;
 
+/**
+ * 리뷰 로드
+ * @param {number} productId - 상품 ID
+ */
 async function loadReviews(productId) {
   console.log('[loadReviews] productId =', productId);
   const buyerIdInput = document.getElementById('buyerId');
@@ -625,6 +764,11 @@ async function loadReviews(productId) {
   }
 }
 
+/**
+ * 리뷰 페이지 렌더링
+ * @param {number} page - 페이지 번호
+ * @param {number} sessionBuyerId - 세션 구매자 ID
+ */
 function renderReviewPage(page, sessionBuyerId) {
   currentReviewPage = page;
   const start = (page - 1) * REVIEWS_PER_PAGE;
@@ -690,6 +834,9 @@ function renderReviewPage(page, sessionBuyerId) {
   });
 }
 
+/**
+ * 페이지네이션 렌더링
+ */
 function renderPagination() {
   const totalPages = Math.ceil(allReviews.length / REVIEWS_PER_PAGE);
   const paginationEl = document.getElementById('reviewPagination');
@@ -714,7 +861,13 @@ function renderPagination() {
   });
 }
 
-// 수정/삭제 UX
+// ===== 리뷰 수정/삭제 =====
+
+/**
+ * 수정 모드 토글
+ * @param {HTMLElement} item - 리뷰 아이템
+ * @param {boolean} editing - 수정 모드 여부
+ */
 function toggleEditMode(item, editing) {
   const viewActions = item.querySelector('[data-role="actions-view"]');
   const editForm = item.querySelector('[data-role="actions-edit"]');
@@ -732,6 +885,10 @@ function toggleEditMode(item, editing) {
   }
 }
 
+/**
+ * 리뷰 수정 제출
+ * @param {HTMLElement} item - 리뷰 아이템
+ */
 async function submitEdit(item) {
   const id = item.getAttribute('data-id');
   const form = item.querySelector('.review-edit-form');
@@ -801,6 +958,10 @@ async function submitEdit(item) {
   toggleEditMode(item, false);
 }
 
+/**
+ * 리뷰 삭제
+ * @param {HTMLElement} item - 리뷰 아이템
+ */
 async function deleteReview(item) {
   const id = item.getAttribute('data-id');
   if (!confirm('해당 리뷰를 삭제하시겠습니까?')) return;

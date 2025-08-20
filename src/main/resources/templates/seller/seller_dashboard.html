@@ -4,107 +4,106 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>판매자 센터 - 대시보드</title>
+  
+  <!-- 외부 리소스 -->
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/seller/dashboard.css}">
 </head>
 <body>
-<!-- Navbar -->
-<header class="navbar-container">
-  <div class="navbar">
-    <a th:href="@{/home}" class="logo-container">
-      <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
-      <span class="brand-name">planT</span>
-    </a>
-    <div class="navbar-buttons">
-      <a th:if="${name != null}" th:href="@{/seller/myPage/{sid}(sid=${sellerId})}" style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
-        <span th:text="${name}">님</span>
+  <!-- 네비게이션 바 -->
+  <header class="navbar-container">
+    <div class="navbar">
+      <a th:href="@{/home}" class="logo-container">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
       </a>
-      <form th:action="@{/seller/logout}" method="post" style="display:inline;">
-        <button type="submit" class="btn-outline">로그아웃</button>
-      </form>
+      <div class="navbar-buttons">
+        <a th:if="${name != null}" 
+           th:href="@{/seller/myPage/{sid}(sid=${sellerId})}" 
+           style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
+          <span th:text="${name}">님</span>
+        </a>
+        <form th:action="@{/seller/logout}" method="post" style="display:inline;">
+          <button type="submit" class="btn-outline">로그아웃</button>
+        </form>
+      </div>
     </div>
-  </div>
-</header>
+  </header>
 
-<div class="dashboard-container">
-  <!-- 성공 메시지 표시 -->
-  <div th:if="${successMessage}" class="success-message" style="
-    background-color: #d4edda;
-    border: 1px solid #c3e6cb;
-    color: #155724;
-    padding: 16px;
-    margin-bottom: 20px;
-    border-radius: 8px;
-    font-size: 14px;
-    line-height: 1.5;
-    white-space: pre-line;">
-    <span th:text="${successMessage}"></span>
-  </div>
-  
-  <!-- 대시보드 헤더 -->
-  <div class="dashboard-header">
-    <h2>판매자 센터</h2>
-    <div class="actions">
-      <button th:onclick="|location.href='@{/seller/list/{sid}(sid=${sellerId})}'|">판매 목록</button>
-      <button th:onclick="|location.href='@{/seller/add/{sid}(sid=${sellerId})}'|">판매 상품 등록</button>
+  <!-- 대시보드 메인 컨테이너 -->
+  <div class="dashboard-container">
+    <!-- 성공 메시지 표시 -->
+    <div th:if="${successMessage}" class="success-message">
+      <span th:text="${successMessage}"></span>
     </div>
-  </div>
-
-  <!-- 판매 현황/정산 현황 카드 -->
-  <div class="dashboard-grid">
-
-    <!-- 판매 현황 카드 -->
-    <div class="dashboard-card sales-status">
-      <h3>판매 현황</h3>
-      <div class="count" th:text="${totalOrder.completedOrderCount}">0</div>
-      <p class="count-label">총 주문 건수</p>
-
-      <!-- 상품별 주문수 top3 -->
-      <div class="item-stats" style="margin-top: 24px;">
-        <h4>상품별 주문수 TOP 3</h4>
-        <ul class="item-list">
-          <li th:each="item : ${top3Order}">
-            <span class="item-name" th:text="${item.productTitle}">상품명</span>
-            <span class="item-value" th:text="${item.orderCount + '건'}">0건</span>
-          </li>
-        </ul>
+    
+    <!-- 대시보드 헤더 -->
+    <div class="dashboard-header">
+      <h2>판매자 센터</h2>
+      <div class="actions">
+        <button th:onclick="|location.href='@{/seller/list/{sid}(sid=${sellerId})}'|">판매 목록</button>
+        <button th:onclick="|location.href='@{/seller/add/{sid}(sid=${sellerId})}'|">판매 상품 등록</button>
       </div>
     </div>
 
-    <!-- 정산 현황 카드 -->
-    <div class="dashboard-card settlement-status">
-      <h3>주간 정산 현황</h3>
+    <!-- 판매 현황/정산 현황 카드 -->
+    <div class="dashboard-grid">
+      <!-- 판매 현황 카드 -->
+      <div class="dashboard-card sales-status">
+        <h3>판매 현황</h3>
+        <div class="count" th:text="${totalOrder.completedOrderCount}">0</div>
+        <p class="count-label">총 주문 건수</p>
 
-      <!-- 총 정산 금액 -->
-      <div class="settlement-total" style="margin-bottom: 32px; margin-top: 40px;">
-        <span style="font-size: 1.2rem;">이번 주 총 정산 금액</span><br>
-        <strong style="font-size: 2.2rem; color: var(--color-primary);"
-                th:text="'₩' + ${#numbers.formatInteger(totalPrice.totalSalesAmount, 0, 'COMMA')}">₩0</strong>
+        <!-- 상품별 주문수 top3 -->
+        <div class="item-stats">
+          <h4>상품별 주문수 TOP 3</h4>
+          <ul class="item-list">
+            <li th:each="item : ${top3Order}">
+              <span class="item-name" th:text="${item.productTitle}">상품명</span>
+              <span class="item-value" th:text="${item.orderCount + '건'}">0건</span>
+            </li>
+          </ul>
+        </div>
       </div>
 
-      <!-- 상품별 매출 top3 -->
-      <div class="item-stats">
-        <h4>상품별 매출 TOP 3</h4>
-        <ul class="item-list">
-          <li th:each="item : ${top3Price}">
-            <span class="item-name" th:text="${item.productTitle}">상품명</span>
-            <span class="item-value"
-                  th:text="'₩' + ${#numbers.formatInteger(item.totalSalesAmount, 0, 'COMMA')}">₩0</span>
-          </li>
-        </ul>
+      <!-- 정산 현황 카드 -->
+      <div class="dashboard-card settlement-status">
+        <h3>주간 정산 현황</h3>
+
+        <!-- 총 정산 금액 -->
+        <div class="settlement-total">
+          <span class="total-label">이번 주 총 정산 금액</span>
+          <strong class="total-amount" 
+                  th:text="'₩' + ${#numbers.formatInteger(totalPrice.totalSalesAmount, 0, 'COMMA')}">₩0</strong>
+        </div>
+
+        <!-- 상품별 매출 top3 -->
+        <div class="item-stats">
+          <h4>상품별 매출 TOP 3</h4>
+          <ul class="item-list">
+            <li th:each="item : ${top3Price}">
+              <span class="item-name" th:text="${item.productTitle}">상품명</span>
+              <span class="item-value"
+                    th:text="'₩' + ${#numbers.formatInteger(item.totalSalesAmount, 0, 'COMMA')}">₩0</span>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
 
+    <!-- Elasticsearch 대시보드 임베드 -->
+    <div class="dashboard-embed">
+      <iframe
+          src="http://localhost:5601/app/dashboards#/view/21289ded-7a0a-478d-bb5b-0ade0bfc8702?embed=true&hide-filter-bar=true&_g=(refreshInterval:(pause:!t,value:60000),time:(from:now-15m,to:now))"
+          height="600"
+          width="874"
+          frameborder="0"
+          title="판매 데이터 대시보드">
+      </iframe>
+    </div>
   </div>
 
-  <br>
-  <iframe
-      src="http://localhost:5601/app/dashboards#/view/21289ded-7a0a-478d-bb5b-0ade0bfc8702?embed=true&hide-filter-bar=true&_g=(refreshInterval:(pause:!t,value:60000),time:(from:now-15m,to:now))"
-      height="600"
-      width="874"
-      frameborder="0">
-  </iframe>
-</div>
-<script th:src="@{/js/seller/dashboard.js}"></script>
+  <!-- JavaScript 파일 로드 -->
+  <script th:src="@{/js/seller/dashboard.js}"></script>
 </body>
 </html> 

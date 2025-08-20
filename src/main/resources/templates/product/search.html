@@ -2,10 +2,11 @@
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
 <head>
   <meta charset="UTF-8">
-  <title>상품 검색 결과 - Parm UP</title>
+  <title>상품 검색 결과 - planT</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <meta name="description" content="농산물 직거래 플랫폼 상품 검색 결과">
-  <!-- Google Fonts: Cabin, Inter -->
+  
+  <!-- 외부 리소스 -->
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" th:href="@{/css/common/home.css}">
@@ -26,7 +27,9 @@
             <span th:text="${nickname}" style="font-weight: bold;"></span>
           </a>
           <a th:href="@{/buyer/cart/{bid}(bid=${buyerId})}" class="btn-outline">장바구니</a>
-          <a href="#" onclick="logout('buyer')" class="btn-filled">로그아웃</a>
+          <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn-filled" style="border:none; background:none; cursor:pointer;">로그아웃</button>
+          </form>
         </th:block>
         
         <!-- 판매자 로그인 상태 -->
@@ -35,7 +38,9 @@
             <span th:text="${nickname}" style="font-weight: bold;"></span>
           </a>
           <a th:href="@{/seller/main/{sid}(sid=${sellerId})}" class="btn-outline">대시보드</a>
-          <a href="#" onclick="logout('seller')" class="btn-filled">로그아웃</a>
+          <form th:action="@{/seller/logout}" method="post" style="display:inline;">
+            <button type="submit" class="btn-filled" style="border:none; background:none; cursor:pointer;">로그아웃</button>
+          </form>
         </th:block>
 
         <!-- 비로그인 상태 -->
@@ -47,14 +52,14 @@
     </div>
   </header>
 
-<!-- 동기화 실행 버튼 + 로그 -->
-<form id="syncForm">
-  <button type="submit" id="syncButton">동기화 실행</button>
-</form>
+  <!-- 동기화 실행 버튼 + 로그 -->
+  <form id="syncForm">
+    <button type="submit" id="syncButton">동기화 실행</button>
+  </form>
 
-<div id="syncLog" style="margin-top:10px; padding:10px; border:1px solid #ddd; display:none;">
-  <pre style="margin:0; white-space:pre-wrap; font-family:monospace;"></pre>
-</div>
+  <div id="syncLog" style="margin-top:10px; padding:10px; border:1px solid #ddd; display:none;">
+    <pre style="margin:0; white-space:pre-wrap; font-family:monospace;"></pre>
+  </div>
 
   <!-- 검색 헤더 섹션 -->
   <section class="search-header-section">
@@ -66,7 +71,9 @@
         <div class="search-form-container">
           <form action="/api/products/search" method="GET" class="search-form" id="searchForm">
             <div class="search-input-group">
-              <input type="text" name="keyword" class="search-input" 
+              <input type="text" 
+                     name="keyword" 
+                     class="search-input" 
                      th:value="${param.keyword}" 
                      placeholder="상품명을 입력하세요..." 
                      autocomplete="off"
@@ -147,7 +154,9 @@
         </div>
         
         <!-- 서버에서 렌더링된 초기 상품들 (JavaScript가 로드되기 전까지 표시) -->
-        <div th:if="${products != null and !#lists.isEmpty(products)}" class="server-rendered-products" style="display: none;">
+        <div th:if="${products != null and !#lists.isEmpty(products)}" 
+             class="server-rendered-products" 
+             style="display: none;">
           <a th:each="product : ${products}"
              th:href="@{/seller/product/{pid}(pid=${product.productId})}"
              class="product-card"
@@ -171,7 +180,9 @@
         </div>
         
         <!-- 검색 결과가 없을 때 (서버 렌더링) -->
-        <div th:if="${products != null and #lists.isEmpty(products)}" class="no-results" style="display: none;">
+        <div th:if="${products != null and #lists.isEmpty(products)}" 
+             class="no-results" 
+             style="display: none;">
           <i class="fas fa-search"></i>
           <h3>검색 결과가 없습니다</h3>
           <p>다른 검색어를 입력해보세요.</p>
@@ -224,6 +235,7 @@
     }
   </style>
 
+  <!-- JavaScript 파일 로드 -->
   <script th:src="@{/js/common/home.js}"></script>
   <script th:src="@{/js/product/search.js}"></script>
 </body>

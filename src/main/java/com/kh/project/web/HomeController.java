@@ -7,8 +7,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
 import com.kh.project.domain.entity.Product;
-import com.kh.project.domain.product.svc.ProductSVC;
 import com.kh.project.domain.popular.svc.PopularSVC;
+import com.kh.project.domain.product.svc.ProductSVC;
 import com.kh.project.web.buyer.LoginForm;
 import com.kh.project.web.seller.LoginSeller;
 

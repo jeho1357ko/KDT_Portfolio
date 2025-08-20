@@ -92,7 +92,11 @@ public class SellerController {
     }
     
     sellerSVC.save(seller);
-    return "redirect:/home";
+    
+    // 회원가입 성공 메시지 추가
+    redirectAttributes.addFlashAttribute("message", "회원가입이 완료되었습니다. 로그인해주세요!");
+    
+    return "redirect:/seller/login";
   }
 
   //판매자 로그인 페이지

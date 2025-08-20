@@ -1,6 +1,9 @@
+/* ===== 외부 폰트 import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap');
+
 /* ===== 검색 결과 페이지 스타일 ===== */
 
-/* 검색 헤더 섹션 */
+/* ===== 검색 헤더 섹션 ===== */
 .search-header-section {
   padding: 40px 0;
   background: var(--color-secondary-background);
@@ -26,13 +29,13 @@
   margin-right: 12px;
 }
 
-/* 검색 결과 섹션 */
+/* ===== 검색 결과 섹션 ===== */
 .search-results-section {
   padding: 40px 0;
   background: var(--color-background);
 }
 
-/* 검색 결과 헤더 */
+/* ===== 검색 결과 헤더 ===== */
 .search-results-header {
   display: flex;
   justify-content: space-between;
@@ -61,7 +64,7 @@
   margin: 0;
 }
 
-/* 필터 영역 */
+/* ===== 필터 영역 ===== */
 .search-filters {
   display: flex;
   gap: 16px;
@@ -98,20 +101,18 @@
   border-color: var(--color-primary);
 }
 
-
-
 .filter-select:focus {
   outline: none;
   border-color: var(--color-primary);
   box-shadow: 0 0 0 2px rgba(101, 131, 82, 0.1);
 }
 
-/* 검색 결과 그리드 */
+/* ===== 검색 결과 그리드 ===== */
 .search-results-grid {
   /* 그리드 레이아웃 제거 - 이제 줄 단위로 처리 */
 }
 
-/* 검색 결과 없음 */
+/* ===== 검색 결과 없음 ===== */
 .no-results {
   text-align: center;
   padding: 60px 20px;
@@ -142,23 +143,19 @@
   text-decoration: none;
 }
 
-/* 상품 카드 추가 스타일 */
+/* ===== 상품 카드 스타일 ===== */
 .product-card {
   position: relative;
   background: var(--color-white);
   border-radius: var(--layout-radius-card);
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  /* transition 제거 - 속도 개선 */
-  /* transition: var(--transition-default); */
   text-decoration: none;
   color: inherit;
   height: 320px; /* 고정 높이 설정 */
 }
 
 .product-card:hover {
-  /* 호버 애니메이션 제거 - 속도 개선 */
-  /* transform: translateY(-4px); */
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
@@ -166,13 +163,6 @@
   width: 100%;
   height: 200px;
   object-fit: cover;
-  /* transition 제거 - 속도 개선 */
-  /* transition: var(--transition-default); */
-}
-
-.product-card:hover .product-image {
-  /* 호버 애니메이션 제거 - 속도 개선 */
-  /* transform: scale(1.05); */
 }
 
 .product-info {
@@ -208,7 +198,7 @@
   display: inline-block;
 }
 
-/* 매진 오버레이 */
+/* ===== 매진 오버레이 ===== */
 .sold-out-overlay {
   position: absolute;
   top: 0;
@@ -231,7 +221,7 @@
   border-radius: 4px;
 }
 
-/* 페이지네이션 */
+/* ===== 페이지네이션 ===== */
 .pagination-container {
   display: flex;
   justify-content: center;
@@ -272,9 +262,10 @@
   color: var(--color-secondary-text);
   font-size: 0.9rem;
   font-weight: 500;
+  margin: 0 16px;
 }
 
-/* 페이지 번호 버튼들 */
+/* ===== 페이지 번호 버튼들 ===== */
 .pagination-numbers {
   display: flex;
   gap: 8px;
@@ -320,15 +311,7 @@
   pointer-events: none;
 }
 
-/* 페이지 정보 표시 */
-.pagination-info {
-  color: var(--color-secondary-text);
-  font-size: 0.9rem;
-  font-weight: 500;
-  margin: 0 16px;
-}
-
-/* YouTube 영상 섹션 */
+/* ===== YouTube 영상 섹션 ===== */
 .youtube-section {
   margin-top: 40px;
   padding: 20px 0;
@@ -363,20 +346,16 @@
   border-radius: var(--layout-radius-card);
   overflow: hidden;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  /* transition 제거 - 속도 개선 */
-  /* transition: var(--transition-default); */
   text-decoration: none;
   color: inherit;
   height: 320px; /* 고정 높이 설정 */
 }
 
 .youtube-card:hover {
-  /* 호버 애니메이션 제거 - 속도 개선 */
-  /* transform: translateY(-4px); */
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
 }
 
-/* 줄 단위 스타일 */
+/* ===== 줄 단위 스타일 ===== */
 .product-row {
   display: flex;
   flex-wrap: wrap;
@@ -421,7 +400,7 @@
   height: auto;
 }
 
-/* 섞인 YouTube 카드 스타일 */
+/* ===== 섞인 YouTube 카드 스타일 ===== */
 .youtube-card.mixed {
   border: 2px solid #FF0000;
   position: relative;
@@ -462,13 +441,6 @@
   color: white;
   font-size: 24px;
   opacity: 1; /* 항상 보이도록 변경 */
-  /* transition 제거 - 속도 개선 */
-  /* transition: var(--transition-default); */
-}
-
-.youtube-card:hover .youtube-play-button {
-  /* 호버 애니메이션 제거 - 속도 개선 */
-  /* opacity: 1; */
 }
 
 .youtube-info {
@@ -498,7 +470,7 @@
   font-size: 0.8rem;
 }
 
-/* 반응형 디자인 */
+/* ===== 반응형 디자인 ===== */
 @media(max-width: 991px) {
   .search-results-header {
     flex-direction: column;

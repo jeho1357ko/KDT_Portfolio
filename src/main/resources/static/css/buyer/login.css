@@ -1,369 +1,379 @@
+/* ===== 외부 폰트 import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap');
 
-    /* CSS 변수 정의 */
-    :root {
-      --color-primary: #658352;
-      --color-primary-light: #94A687;
-      --color-primary-dark: #4d683f;
-      --color-background: #FBF9EF;
-      --color-text: #1E2203;
-      --color-text-secondary: #666;
-      --color-border: #E9E7DE;
-      --color-white: #fff;
-      --color-error: #e74c3c;
-      --color-success: #27ae60;
-      --shadow-light: 0 2px 12px rgba(0,0,0,0.06);
-      --shadow-medium: 0 4px 16px rgba(0,0,0,0.08);
-      --shadow-heavy: 0 8px 32px rgba(0,0,0,0.12);
-      --border-radius: 12px;
-      --border-radius-large: 24px;
-      --transition: all 0.3s ease;
-    }
+/* ===== CSS 변수 정의 ===== */
+:root {
+  --color-primary: #658352;
+  --color-primary-light: #94A687;
+  --color-primary-dark: #4d683f;
+  --color-background: #FBF9EF;
+  --color-text: #1E2203;
+  --color-text-secondary: #666;
+  --color-border: #E9E7DE;
+  --color-white: #fff;
+  --color-error: #e74c3c;
+  --color-success: #27ae60;
+  --shadow-light: 0 2px 12px rgba(0,0,0,0.06);
+  --shadow-medium: 0 4px 16px rgba(0,0,0,0.08);
+  --shadow-heavy: 0 8px 32px rgba(0,0,0,0.12);
+  --border-radius: 12px;
+  --border-radius-large: 24px;
+  --transition: all 0.3s ease;
+}
 
-    /* 기본 스타일 */
-    * {
-      box-sizing: border-box;
-    }
+/* ===== 기본 스타일 ===== */
+* {
+  box-sizing: border-box;
+}
 
-    body {
-      font-family: 'Inter', 'Cabin', sans-serif;
-      background-color: var(--color-background);
-      color: var(--color-text);
-      margin: 0;
-      padding: 120px 20px 40px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
-      line-height: 1.6;
-    }
+body {
+  font-family: 'Inter', 'Cabin', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  margin: 0;
+  padding: 120px 20px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  line-height: 1.6;
+}
 
-    h1, h2 {
-      font-family: 'Cabin', sans-serif;
-      font-weight: 700;
-      color: var(--color-primary);
-      text-align: center;
-    }
+h1, h2 {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+}
 
-    /* 네비게이션 바 */
-    .navbar-container {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      z-index: 1000;
-      background: var(--color-white);
-      box-shadow: var(--shadow-light);
-    }
+/* ===== 네비게이션 바 ===== */
+.navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: var(--color-white);
+  box-shadow: var(--shadow-light);
+}
 
-    .navbar {
-      max-width: 1400px;
-      margin: 0 auto;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 48px;
-    }
+.navbar {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+}
 
-    .logo-container {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      text-decoration: none;
-      color: var(--color-text);
-      transition: var(--transition);
-    }
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition);
+}
 
-    .logo-container:hover {
-      transform: scale(1.02);
-    }
+.logo-container:hover {
+  transform: scale(1.02);
+}
 
-    .navbar-logo-img {
-      height: 3rem;
-      border-radius: 8px;
-      transition: var(--transition);
-    }
+.navbar-logo-img {
+  height: 3rem;
+  border-radius: 8px;
+  transition: var(--transition);
+}
 
-    .brand-name {
-      font-family: 'Cabin', sans-serif;
-      font-weight: 700;
-      font-size: 1.5rem;
-      color: var(--color-primary);
-      letter-spacing: 0.5px;
-      margin: 0;
-      line-height: 1;
-    }
+.brand-name {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  margin: 0;
+  line-height: 1;
+}
 
-    .navbar-buttons {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+.navbar-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
 
-    .btn-filled, .btn-outline {
-      display: flex;
-      align-items: center;
-      font-weight: 600;
-      padding: 10px 24px;
-      border-radius: var(--border-radius-large);
-      font-size: 1rem;
-      text-decoration: none;
-      transition: var(--transition);
-      cursor: pointer;
-      border: 2px solid var(--color-primary);
-    }
+/* ===== 버튼 스타일 ===== */
+.btn-filled, .btn-outline {
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  padding: 10px 24px;
+  border-radius: var(--border-radius-large);
+  font-size: 1rem;
+  text-decoration: none;
+  transition: var(--transition);
+  cursor: pointer;
+  border: 2px solid var(--color-primary);
+}
 
-    .btn-filled {
-      color: var(--color-white);
-      background: var(--color-primary);
-    }
+.btn-filled {
+  color: var(--color-white);
+  background: var(--color-primary);
+}
 
-    .btn-filled:hover {
-      background: var(--color-primary-dark);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-medium);
-    }
+.btn-filled:hover {
+  background: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
 
-    .btn-outline {
-      color: var(--color-primary);
-      background: transparent;
-    }
+.btn-outline {
+  color: var(--color-primary);
+  background: transparent;
+}
 
-    .btn-outline:hover {
-      background: rgba(101, 131, 82, 0.1);
-      transform: translateY(-2px);
-    }
+.btn-outline:hover {
+  background: rgba(101, 131, 82, 0.1);
+  transform: translateY(-2px);
+}
 
-    /* 로그인 컨테이너 */
-    .login-container {
-      width: 100%;
-      max-width: 450px;
-      text-align: center;
-      animation: fadeInUp 0.6s ease-out;
-    }
+/* ===== 로그인 컨테이너 ===== */
+.login-container {
+  width: 100%;
+  max-width: 450px;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
 
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    .login-container h1 {
-      font-size: 2.5rem;
-      color: var(--color-primary);
-      margin-bottom: 30px;
-      font-family: 'Cabin', sans-serif;
-      font-weight: 700;
-    }
+.login-container h1 {
+  font-size: 2.5rem;
+  color: var(--color-primary);
+  margin-bottom: 30px;
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+}
 
-    /* 로그인 폼 */
-    .login-form {
-      background-color: var(--color-white);
-      padding: 40px 50px;
-      border-radius: var(--border-radius);
-      box-shadow: var(--shadow-medium);
-      transition: var(--transition);
-    }
+/* ===== 로그인 폼 ===== */
+.login-form {
+  background-color: var(--color-white);
+  padding: 40px 50px;
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-medium);
+  transition: var(--transition);
+}
 
-    .login-form:hover {
-      box-shadow: var(--shadow-heavy);
-      transform: translateY(-2px);
-    }
+.login-form:hover {
+  box-shadow: var(--shadow-heavy);
+  transform: translateY(-2px);
+}
 
-    .form-group {
-      margin-bottom: 25px;
-      text-align: left;
-    }
+.form-group {
+  margin-bottom: 25px;
+  text-align: left;
+}
 
-    .form-group label {
-      display: block;
-      margin-bottom: 8px;
-      font-weight: 600;
-      font-size: 0.9rem;
-      color: var(--color-text);
-    }
+.form-group label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--color-text);
+}
 
-    .form-group input {
-      width: 100%;
-      padding: 14px 16px;
-      font-size: 1rem;
-      border: 2px solid var(--color-border);
-      border-radius: 8px;
-      transition: var(--transition);
-      background: var(--color-white);
-    }
+.form-group input {
+  width: 100%;
+  padding: 14px 16px;
+  font-size: 1rem;
+  border: 2px solid var(--color-border);
+  border-radius: 8px;
+  transition: var(--transition);
+  background: var(--color-white);
+}
 
-    .form-group input:focus {
-      outline: none;
-      border-color: var(--color-primary);
-      box-shadow: 0 0 0 3px rgba(101, 131, 82, 0.1);
-    }
+.form-group input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(101, 131, 82, 0.1);
+}
 
-    .form-group input.error {
-      border-color: var(--color-error);
-    }
+.form-group input.error {
+  border-color: var(--color-error);
+}
 
-    .form-group input.success {
-      border-color: var(--color-success);
-    }
+.form-group input.success {
+  border-color: var(--color-success);
+}
 
-    .error-message {
-      color: var(--color-error);
-      font-size: 0.85rem;
-      margin-top: 5px;
-      display: none;
-    }
+/* ===== 필수 입력 표시 ===== */
+.required-mark {
+  color: var(--color-error);
+  font-weight: bold;
+}
 
-    .error-message.show {
-      display: block;
-      animation: shake 0.5s ease-in-out;
-    }
+/* ===== 접근성 개선 ===== */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
 
-    @keyframes shake {
-      0%, 100% { transform: translateX(0); }
-      25% { transform: translateX(-5px); }
-      75% { transform: translateX(5px); }
-    }
+/* 포커스 표시 */
+.btn-filled:focus,
+.btn-outline:focus,
+.login-button:focus {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
 
-    /* 로그인 버튼 */
-    .login-button {
-      width: 100%;
-      padding: 15px;
-      font-size: 1.1rem;
-      font-weight: 700;
-      border-radius: var(--border-radius-large);
-      border: none;
-      background-color: var(--color-primary);
-      color: var(--color-white);
-      cursor: pointer;
-      transition: var(--transition);
-      margin-top: 10px;
-      position: relative;
-      overflow: hidden;
-    }
+/* ===== 에러 메시지 ===== */
+.error-message {
+  color: var(--color-error);
+  font-size: 0.85rem;
+  margin-top: 5px;
+  display: none;
+}
 
-    .login-button:hover {
-      background-color: var(--color-primary-dark);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-medium);
-    }
+.error-message.show {
+  display: block;
+  animation: shake 0.5s ease-in-out;
+}
 
-    .login-button:active {
-      transform: translateY(0);
-    }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
 
-    .login-button:disabled {
-      background-color: var(--color-border);
-      cursor: not-allowed;
-      transform: none;
-    }
+/* ===== 서버 에러 메시지 ===== */
+.server-error-message {
+  background-color: rgba(231, 76, 60, 0.1);
+  border: 2px solid var(--color-error);
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  color: var(--color-error);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-align: center;
+  animation: fadeInDown 0.5s ease-out;
+}
 
-    .login-button.loading {
-      pointer-events: none;
-    }
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-    .login-button.loading::after {
-      content: '';
-      position: absolute;
-      width: 20px;
-      height: 20px;
-      top: 50%;
-      left: 50%;
-      margin-left: -10px;
-      margin-top: -10px;
-      border: 2px solid transparent;
-      border-top: 2px solid var(--color-white);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
+/* ===== 로그인 버튼 ===== */
+.login-button {
+  width: 100%;
+  padding: 15px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border-radius: var(--border-radius-large);
+  border: none;
+  background-color: var(--color-primary);
+  color: var(--color-white);
+  cursor: pointer;
+  transition: var(--transition);
+  margin-top: 10px;
+  position: relative;
+  overflow: hidden;
+}
 
-    @keyframes spin {
-      0% { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+.login-button:hover {
+  background-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-medium);
+}
 
-    /* 반응형 디자인 */
-    @media (max-width: 768px) {
-      .navbar {
-        padding: 16px 20px;
-      }
+.login-button:active {
+  transform: translateY(0);
+}
 
-      .login-container {
-        max-width: 100%;
-        padding: 0 20px;
-      }
+.login-button:disabled {
+  background-color: var(--color-border);
+  cursor: not-allowed;
+  transform: none;
+}
 
-      .login-form {
-        padding: 30px 25px;
-      }
+.login-button.loading {
+  pointer-events: none;
+}
 
-      .login-container h1 {
-        font-size: 2rem;
-      }
-    }
+.login-button.loading::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  top: 50%;
+  left: 50%;
+  margin-left: -10px;
+  margin-top: -10px;
+  border: 2px solid transparent;
+  border-top: 2px solid var(--color-white);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
 
-    @media (max-width: 480px) {
-      body {
-        padding: 100px 15px 30px;
-      }
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
 
-      .login-form {
-        padding: 25px 20px;
-      }
+/* ===== 반응형 디자인 ===== */
+@media (max-width: 768px) {
+  .navbar {
+    padding: 16px 20px;
+  }
 
-      .btn-filled, .btn-outline {
-        padding: 8px 16px;
-        font-size: 0.9rem;
-      }
-    }
+  .login-container {
+    max-width: 100%;
+    padding: 0 20px;
+  }
 
-    /* 접근성 개선 */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
-    }
+  .login-form {
+    padding: 30px 25px;
+  }
 
-    /* 포커스 표시 */
-    .btn-filled:focus,
-    .btn-outline:focus,
-    .login-button:focus {
-      outline: 2px solid var(--color-primary);
-      outline-offset: 2px;
-    }
+  .login-container h1 {
+    font-size: 2rem;
+  }
+}
 
-    /* 서버 에러 메시지 */
-    .server-error-message {
-      background-color: rgba(231, 76, 60, 0.1);
-      border: 2px solid var(--color-error);
-      border-radius: 8px;
-      padding: 12px 16px;
-      margin-bottom: 20px;
-      color: var(--color-error);
-      font-size: 0.9rem;
-      font-weight: 600;
-      text-align: center;
-      animation: fadeInDown 0.5s ease-out;
-    }
+@media (max-width: 480px) {
+  body {
+    padding: 100px 15px 30px;
+  }
 
-    @keyframes fadeInDown {
-      from {
-        opacity: 0;
-        transform: translateY(-10px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
+  .login-form {
+    padding: 25px 20px;
+  }
+
+  .btn-filled, .btn-outline {
+    padding: 8px 16px;
+    font-size: 0.9rem;
+  }
+}
   

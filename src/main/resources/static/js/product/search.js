@@ -1,4 +1,18 @@
-// ===== 검색 결과 페이지 JavaScript =====
+/**
+ * 상품 검색 결과 페이지 JavaScript 모듈
+ * 검색 기능, 필터링, 페이지네이션, YouTube 영상 통합 기능을 담당
+ */
+
+// ===== 상수 정의 =====
+const API_ENDPOINTS = {
+  SEARCH: '/api/products/search',
+  SYNC: '/test/copy/db'
+};
+
+const ITEMS_PER_ROW = 4; // 한 줄에 표시할 아이템 수
+const PAGE_SIZE = 20; // 페이지당 상품 개수 (5줄 x 4개)
+
+// ===== 유틸리티 함수들 =====
 
 /**
  * URL에서 쿼리 파라미터 읽기
@@ -10,84 +24,12 @@ function getQueryParam(param) {
   return params.get(param);
 }
 
-
-document.getElementById("syncForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-
-  const logBox = document.getElementById("syncLog");
-  const logPre = logBox.querySelector("pre");
-  const button = document.getElementById("syncButton");
-
-  logBox.style.display = "block";
-  logPre.textContent = "🔄 동기화 시작...\n";
-  button.disabled = true;
-
-  fetch("/test/copy/db", { method: "POST" })
-    .then(res => res.text())
-    .then(text => {
-      logPre.textContent += text + "\n";
-    })
-    .catch(err => {
-      logPre.textContent += "❌ 오류 발생: " + err + "\n";
-    })
-    .finally(() => {
-      button.disabled = false;
-      logPre.textContent += "✅ 작업 완료";
-    });
-});
-
-/**
- * 검색 결과 표시
- * @param {Array} products - 상품 목록
- */
-function displayResults(products) {
-  const grid = document.getElementById('searchResultsGrid');
-  
-  if (!products || products.length === 0) {
-    grid.innerHTML = `
-      <div class="no-results" style="text-align: center; padding: 40px;">
-        <i class="fas fa-search"></i>
-        <h3>검색 결과가 없습니다</h3>
-        <p>다른 검색어를 입력해보세요.</p>
-        <a href="/home" class="btn-filled">홈으로 돌아가기</a>
-      </div>
-    `;
-  } else {
-    let html = '';
-    products.forEach(item => {
-      const price = item.price ? item.price.toLocaleString() : 'N/A';
-      const status = item.status || 'N/A';
-      const title = item.title || item.productName || 'N/A';
-      const thumbnail = item.thumbnail || '/images/default-product.jpg';
-      
-      html += `
-        <a href="/seller/product/${item.productId}" class="product-card" title="${title}">
-          <img src="${thumbnail}" alt="${title}" class="product-image" onerror="handleImageError(this)">
-          
-          ${status === '재고소진' ? `
-            <div class="sold-out-overlay">
-              <span class="sold-out-text">매진</span>
-            </div>
-          ` : ''}
-          
-          <div class="product-info">
-            <p class="product-title">${title}</p>
-            <p class="product-price">${price}원</p>
-            <p class="product-status">${status}</p>
-          </div>
-        </a>
-      `;
-    });
-    grid.innerHTML = html;
-  }
-}
-
 /**
  * 이미지 로드 실패 처리 함수
  * @param {HTMLImageElement} img - 이미지 요소
  */
 function handleImageError(img) {
-  // 기본 이미지로 대체 (CSS로 처리)
+  // 기본 이미지로 대체
   img.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTIwIiBoZWlnaHQ9IjEyMCIgdmlld0JveD0iMCAwIDEyMCAxMjAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjAiIGhlaWdodD0iMTIwIiBmaWxsPSIjRjhGOUZBIi8+CjxwYXRoIGQ9Ik02MCA0MEM2MCAzNS41ODE3IDY0LjU4MTcgMzEgNzAgMzFDNzUuNDE4MyAzMSA4MCAzNS41ODE3IDgwIDQwQzgwIDQ0LjQxODMgNzUuNDE4MyA0OSA3MCA0OUM2NC41ODE3IDQ5IDYwIDQ0LjQxODMgNjAgNDBaIiBmaWxsPSIjNkM3NTdEIi8+CjxwYXRoIGQ9Ik0zMCA4MEMzMCA3NS41ODE3IDM0LjU4MTcgNzEgNDAgNzFINDVINDVDNTAuNDE4MyA3MSA1NSA3NS41ODE3IDU1IDgwQzU1IDg0LjQxODMgNTAuNDE4MyA4OSA0NSA4OUg0MEMzNC41ODE3IDg5IDMwIDg0LjQxODMgMzAgODBaIiBmaWxsPSIjNkM3NTdEIi8+CjxwYXRoIGQ9Ik04MCA4MEM4MCA3NS41ODE3IDg0LjU4MTcgNzEgOTAgNzFDOTUuNDE4MyA3MSAxMDAgNzUuNTgxNyAxMDAgODBDMTAwIDg0LjQxODMgOTUuNDE4MyA4OSA5MCA4OUM4NC41ODE3IDg5IDgwIDg0LjQxODMgODAgODBaIiBmaWxsPSIjNkM3NTdEIi8+Cjwvc3ZnPgo=';
   img.alt = '상품 이미지';
   
@@ -141,6 +83,91 @@ function handleImageError(img) {
   }
 }
 
+// ===== API 응답 처리 함수들 =====
+
+/**
+ * API 응답에서 상품 목록 추출
+ * @param {Object} res - API 응답 객체
+ * @returns {Array} 상품 목록
+ */
+function getProductsFromApiResponse(res) {
+  if (!res) return [];
+  
+  // 레거시: 응답이 그냥 배열
+  if (Array.isArray(res)) return res;
+
+  // 표준: ApiResponse<SearchDTO>
+  if (res.body) {
+    if (Array.isArray(res.body)) return res.body;                 // (구버전) body가 곧 배열
+    if (Array.isArray(res.body.products)) return res.body.products; // ✅ 현재 케이스
+  }
+  
+  // 혹시 data로 내려오는 변형 대응
+  if (res.data) {
+    if (Array.isArray(res.data)) return res.data;
+    if (Array.isArray(res.data.products)) return res.data.products;
+  }
+  
+  // 아주 드물게 평평한 형태
+  if (Array.isArray(res.products)) return res.products;
+
+  return [];
+}
+
+/**
+ * API 응답에서 전체 개수 추출
+ * @param {Object} res - API 응답 객체
+ * @returns {number} 전체 개수
+ */
+function getTotalCountFromApiResponse(res) {
+  if (!res) return 0;
+  
+  // 표준: ApiResponse<SearchDTO>
+  if (res.body && res.body.totalCount !== undefined) {
+    return res.body.totalCount;
+  }
+  
+  // 혹시 data로 내려오는 변형 대응
+  if (res.data && res.data.totalCount !== undefined) {
+    return res.data.totalCount;
+  }
+  
+  // 아주 드물게 평평한 형태
+  if (res.totalCount !== undefined) {
+    return res.totalCount;
+  }
+
+  return 0;
+}
+
+/**
+ * API 응답에서 YouTube 목록 추출
+ * @param {Object} res - API 응답 객체
+ * @returns {Array} YouTube 목록
+ */
+function getYoutubeFromApiResponse(res) {
+  if (!res) return [];
+  
+  // 표준: ApiResponse<SearchDTO>
+  if (res.body && Array.isArray(res.body.youtubeList)) {
+    return res.body.youtubeList;
+  }
+  
+  // 혹시 data로 내려오는 변형 대응
+  if (res.data && Array.isArray(res.data.youtubeList)) {
+    return res.data.youtubeList;
+  }
+  
+  // 아주 드물게 평평한 형태
+  if (Array.isArray(res.youtubeList)) {
+    return res.youtubeList;
+  }
+
+  return [];
+}
+
+// ===== 검색 관련 함수들 =====
+
 /**
  * API 호출을 통한 검색 결과 가져오기
  * @param {Object} searchParams - 검색 파라미터
@@ -178,7 +205,7 @@ async function fetchSearchResults(searchParams) {
       queryParams.append('sortDate', searchParams.sortDate);
     }
     
-    const response = await fetch(`/api/products/search?${queryParams.toString()}`, {
+    const response = await fetch(`${API_ENDPOINTS.SEARCH}?${queryParams.toString()}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -197,6 +224,95 @@ async function fetchSearchResults(searchParams) {
     throw error;
   }
 }
+
+/**
+ * 검색 파라미터 파싱
+ * @returns {Object} 검색 파라미터 객체
+ */
+function parseSearchParams() {
+  const urlParams = new URLSearchParams(window.location.search);
+  const keyword = urlParams.get('keyword') || '';
+  const status = urlParams.get('status') || '';
+  const price = urlParams.get('price') || '';
+  const sort = urlParams.get('sort') || '';
+  const page = parseInt(urlParams.get('page') || '1');
+  
+  // 가격 범위 파싱
+  let minPrice = null;
+  let maxPrice = null;
+  if (price) {
+    const [min, max] = price.split('-');
+    minPrice = min ? parseInt(min) : null;
+    maxPrice = max ? parseInt(max) : null;
+  }
+  
+  // 정렬 파라미터 파싱
+  let sortScore = null;
+  let sortDate = null;
+  if (sort) {
+    if (sort.includes('price')) {
+      sortScore = sort.includes('desc') ? 'desc' : 'asc';
+    } else if (sort.includes('date')) {
+      sortDate = sort.includes('desc') ? 'desc' : 'asc';
+    }
+  }
+  
+  return {
+    keyword,
+    status,
+    minPrice,
+    maxPrice,
+    sortScore,
+    sortDate,
+    from: (page - 1) * PAGE_SIZE,
+    size: PAGE_SIZE,
+    page
+  };
+}
+
+/**
+ * 검색 실행
+ * @param {string} customKeyword - 직접 입력된 검색어 (선택사항)
+ */
+async function performSearch(customKeyword = null) {
+  try {
+    showLoading();
+
+    let searchParams = parseSearchParams();
+    if (customKeyword !== null) {
+      searchParams.keyword = customKeyword;
+    }
+
+    const response = await fetchSearchResults(searchParams);
+
+    // ✅ SearchDTO에서 products와 totalCount 안전하게 꺼내기
+    const products = getProductsFromApiResponse(response);
+    const totalCount = getTotalCountFromApiResponse(response);
+
+    // 성공 코드 체크(있을 때만)
+    if (response?.header && response.header.rtcd !== 'S00') {
+      throw new Error(response.header.rtmsg || '검색 중 오류가 발생했습니다.');
+    }
+
+    // YouTube 데이터 추출
+    const youtubeList = getYoutubeFromApiResponse(response);
+    console.log('API 응답에서 추출한 YouTube 목록:', youtubeList);
+    console.log('YouTube 목록 길이:', youtubeList ? youtubeList.length : 0);
+    
+    renderSearchResults(products, searchParams.keyword, youtubeList);
+    updateSearchCount(products.length);
+    updateSearchTitle(searchParams.keyword, totalCount);
+    
+    // 페이지네이션 업데이트
+    updatePagination(searchParams.page, totalCount, searchParams.size);
+
+  } catch (error) {
+    console.error('검색 실패:', error);
+    showErrorMessage('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
+  }
+}
+
+// ===== 렌더링 관련 함수들 =====
 
 /**
  * 검색 결과를 화면에 렌더링
@@ -262,9 +378,6 @@ function renderSearchResults(products, keyword, youtubeList = []) {
     highlightSearchTerm(keyword);
   }
   
-  // 애니메이션 제거 - 속도 개선
-  // animateSearchResults();
-  
   // 상품과 YouTube 영상을 섞어서 표시
   console.log('상품과 YouTube 영상 섞어서 렌더링 시작:', { products: products.length, youtube: youtubeList.length });
   if (youtubeList && youtubeList.length > 0) {
@@ -285,14 +398,13 @@ function renderSearchResults(products, keyword, youtubeList = []) {
  */
 function mixProductsAndVideos(products, youtubeList) {
   const rows = [];
-  const itemsPerRow = 4; // 한 줄에 4개씩
   
   // 상품을 4개씩 묶어서 처리
-  for (let i = 0; i < products.length; i += itemsPerRow) {
+  for (let i = 0; i < products.length; i += ITEMS_PER_ROW) {
     // 상품 줄 추가
     const productRow = {
       type: 'product-row',
-      items: products.slice(i, i + itemsPerRow)
+      items: products.slice(i, i + ITEMS_PER_ROW)
     };
     rows.push(productRow);
     
@@ -300,7 +412,7 @@ function mixProductsAndVideos(products, youtubeList) {
     if (youtubeList.length > 0) {
       const videoRow = {
         type: 'video-row',
-        items: youtubeList.splice(0, itemsPerRow)
+        items: youtubeList.splice(0, ITEMS_PER_ROW)
       };
       rows.push(videoRow);
     }
@@ -396,9 +508,6 @@ function renderMixedResults(rowGroups, keyword) {
     highlightSearchTerm(keyword);
   }
   
-  // 애니메이션 제거 - 속도 개선
-  // animateSearchResults();
-  
   // 기존 YouTube 섹션 숨기기 (이제 섞어서 표시하므로)
   hideYoutubeSection();
 }
@@ -485,6 +594,8 @@ function highlightSearchTerm(keyword) {
   });
 }
 
+// ===== UI 업데이트 함수들 =====
+
 /**
  * 검색 결과 카운트 업데이트
  * @param {number} count - 검색 결과 개수
@@ -518,151 +629,107 @@ function animateCount() {
 }
 
 /**
- * 검색 파라미터 파싱
- * @returns {Object} 검색 파라미터 객체
+ * 검색 결과 제목 업데이트
+ * @param {string} keyword - 검색 키워드
+ * @param {number} totalCount - 전체 결과 수 (선택사항)
  */
-function parseSearchParams() {
-  const urlParams = new URLSearchParams(window.location.search);
-  const keyword = urlParams.get('keyword') || '';
-  const status = urlParams.get('status') || '';
-  const price = urlParams.get('price') || '';
-  const sort = urlParams.get('sort') || '';
-  const page = parseInt(urlParams.get('page') || '1');
-  const size = 20; // 페이지당 상품 개수를 20개로 변경 (5줄 x 4개)
-  
-  // 가격 범위 파싱
-  let minPrice = null;
-  let maxPrice = null;
-  if (price) {
-    const [min, max] = price.split('-');
-    minPrice = min ? parseInt(min) : null;
-    maxPrice = max ? parseInt(max) : null;
-  }
-  
-  // 정렬 파라미터 파싱
-  let sortScore = null;
-  let sortDate = null;
-  if (sort) {
-    if (sort.includes('price')) {
-      sortScore = sort.includes('desc') ? 'desc' : 'asc';
-    } else if (sort.includes('date')) {
-      sortDate = sort.includes('desc') ? 'desc' : 'asc';
+function updateSearchTitle(keyword, totalCount = null) {
+  const titleElement = document.getElementById('searchResultsTitle');
+  if (titleElement) {
+    let titleText = '';
+    if (keyword) {
+      titleText = `"<span>${keyword}</span>" 검색 결과`;
+      if (totalCount !== null) {
+        titleText += ` (총 ${totalCount.toLocaleString()}개)`;
+      }
+    } else {
+      titleText = '전체 상품';
+      if (totalCount !== null) {
+        titleText += ` (총 ${totalCount.toLocaleString()}개)`;
+      }
     }
+    titleElement.innerHTML = titleText;
   }
-  
-  return {
-    keyword,
-    status,
-    minPrice,
-    maxPrice,
-    sortScore,
-    sortDate,
-    from: (page - 1) * size,
-    size,
-    page
-  };
 }
 
 /**
- * 검색 실행
- * @param {string} customKeyword - 직접 입력된 검색어 (선택사항)
+ * 에러 메시지 표시
+ * @param {string} message - 에러 메시지
  */
-async function performSearch(customKeyword = null) {
-  try {
-    showLoading();
-
-    let searchParams = parseSearchParams();
-    if (customKeyword !== null) {
-      searchParams.keyword = customKeyword;
-    }
-
-    const response = await fetchSearchResults(searchParams);
-
-    // ✅ SearchDTO에서 products와 totalCount 안전하게 꺼내기
-    const products = getProductsFromApiResponse(response);
-    const totalCount = getTotalCountFromApiResponse(response);
-
-    // 성공 코드 체크(있을 때만)
-    if (response?.header && response.header.rtcd !== 'S00') {
-      throw new Error(response.header.rtmsg || '검색 중 오류가 발생했습니다.');
-    }
-
-    // YouTube 데이터 추출
-    const youtubeList = getYoutubeFromApiResponse(response);
-    console.log('API 응답에서 추출한 YouTube 목록:', youtubeList);
-    console.log('YouTube 목록 길이:', youtubeList ? youtubeList.length : 0);
-    
-    renderSearchResults(products, searchParams.keyword, youtubeList);
-    updateSearchCount(products.length);
-    updateSearchTitle(searchParams.keyword, totalCount);
-    
-    // 페이지네이션 업데이트
-    updatePagination(searchParams.page, totalCount, searchParams.size);
-
-  } catch (error) {
-    console.error('검색 실패:', error);
-    showErrorMessage('검색 중 오류가 발생했습니다. 다시 시도해주세요.');
-  }
+function showErrorMessage(message) {
+  const searchResultsGrid = document.getElementById('searchResultsGrid');
+  searchResultsGrid.innerHTML = `
+    <div class="error-message" style="text-align: center; padding: 40px; color: #dc3545;">
+      <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px;"></i>
+      <h3>오류가 발생했습니다</h3>
+      <p>${message}</p>
+      <button onclick="performSearch()" class="btn-filled" style="margin-top: 16px;">
+        다시 시도
+      </button>
+    </div>
+  `;
 }
 
-function getProductsFromApiResponse(res) {
-  if (!res) return [];
-  // 레거시: 응답이 그냥 배열
-  if (Array.isArray(res)) return res;
-
-  // 표준: ApiResponse<SearchDTO>
-  if (res.body) {
-    if (Array.isArray(res.body)) return res.body;                 // (구버전) body가 곧 배열
-    if (Array.isArray(res.body.products)) return res.body.products; // ✅ 현재 케이스
-  }
-  // 혹시 data로 내려오는 변형 대응
-  if (res.data) {
-    if (Array.isArray(res.data)) return res.data;
-    if (Array.isArray(res.data.products)) return res.data.products;
-  }
-  // 아주 드물게 평평한 형태
-  if (Array.isArray(res.products)) return res.products;
-
-  return [];
-}
-
-function getTotalCountFromApiResponse(res) {
-  if (!res) return 0;
+/**
+ * 로딩 상태 표시
+ */
+function showLoading() {
+  const loadingHtml = `
+    <div class="loading-container" style="text-align: center; padding: 40px;">
+      <div class="loading-spinner" style="
+        width: 40px; 
+        height: 40px; 
+        border: 4px solid #f3f3f3; 
+        border-top: 4px solid #4CAF50; 
+        border-radius: 50%; 
+        animation: spin 1s linear infinite; 
+        margin: 0 auto 16px;">
+      </div>
+      <p style="color: #666;">검색 결과를 불러오는 중...</p>
+    </div>
+  `;
   
-  // 표준: ApiResponse<SearchDTO>
-  if (res.body && res.body.totalCount !== undefined) {
-    return res.body.totalCount;
+  const searchResultsGrid = document.getElementById('searchResultsGrid');
+  if (searchResultsGrid) {
+    searchResultsGrid.innerHTML = loadingHtml;
   }
-  // 혹시 data로 내려오는 변형 대응
-  if (res.data && res.data.totalCount !== undefined) {
-    return res.data.totalCount;
-  }
-  // 아주 드물게 평평한 형태
-  if (res.totalCount !== undefined) {
-    return res.totalCount;
-  }
-
-  return 0;
 }
 
-function getYoutubeFromApiResponse(res) {
-  if (!res) return [];
+/**
+ * Elasticsearch 검색 (향후 구현용)
+ * @param {string} keyword - 검색 키워드
+ */
+function searchElasticsearch(keyword) {
+  fetch(`/elasticsearch/search?query=${encodeURIComponent(keyword)}`)
+    .then(response => response.json())
+    .then(data => {
+      console.log('Elasticsearch 검색 결과:', data);
+      // TODO: Elasticsearch 검색 결과 렌더링 구현
+    })
+    .catch(error => {
+      console.error('Elasticsearch 검색 오류:', error);
+    });
+}
+
+/**
+ * 검색 결과 애니메이션
+ */
+function animateSearchResults() {
+  const productCards = document.querySelectorAll('.product-card');
   
-  // 표준: ApiResponse<SearchDTO>
-  if (res.body && Array.isArray(res.body.youtubeList)) {
-    return res.body.youtubeList;
-  }
-  // 혹시 data로 내려오는 변형 대응
-  if (res.data && Array.isArray(res.data.youtubeList)) {
-    return res.data.youtubeList;
-  }
-  // 아주 드물게 평평한 형태
-  if (Array.isArray(res.youtubeList)) {
-    return res.youtubeList;
-  }
-
-  return [];
+  productCards.forEach((card, index) => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    
+    setTimeout(() => {
+      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, index * 100);
+  });
 }
+
+// ===== 페이지네이션 관련 함수들 =====
 
 /**
  * 페이지네이션 업데이트
@@ -678,8 +745,6 @@ function updatePagination(currentPage, totalCount, pageSize) {
   const paginationNumbers = document.getElementById('paginationNumbers');
   
   console.log('페이지네이션 업데이트:', { currentPage, totalCount, totalPages, pageSize });
-  console.log('페이지네이션 컨테이너:', paginationContainer);
-  console.log('페이지 번호 컨테이너:', paginationNumbers);
   
   if (!paginationContainer) {
     console.error('페이지네이션 컨테이너를 찾을 수 없습니다.');
@@ -843,6 +908,8 @@ function goToPage(page) {
   performSearch();
 }
 
+// ===== 이벤트 리스너 설정 함수들 =====
+
 /**
  * 페이지네이션 이벤트 리스너 설정
  */
@@ -897,104 +964,35 @@ function setupKeyboardNavigation() {
 }
 
 /**
- * 검색 결과 제목 업데이트
- * @param {string} keyword - 검색 키워드
- * @param {number} totalCount - 전체 결과 수 (선택사항)
+ * Enter 키로 검색 실행
  */
-function updateSearchTitle(keyword, totalCount = null) {
-  const titleElement = document.getElementById('searchResultsTitle');
-  if (titleElement) {
-    let titleText = '';
-    if (keyword) {
-      titleText = `"<span>${keyword}</span>" 검색 결과`;
-      if (totalCount !== null) {
-        titleText += ` (총 ${totalCount.toLocaleString()}개)`;
+function setupEnterKeySearch() {
+  const searchKeyword = document.getElementById('searchKeyword');
+  if (searchKeyword) {
+    searchKeyword.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        e.stopPropagation();
+        const keyword = this.value.trim();
+        if (!keyword) {
+          alert('검색어를 입력해주세요.');
+          this.focus();
+          return;
+        }
+        
+        // URL 업데이트
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('keyword', keyword);
+        urlParams.delete('page'); // 페이지 초기화
+        
+        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        
+        // 검색 실행
+        performSearch(keyword);
       }
-    } else {
-      titleText = '전체 상품';
-      if (totalCount !== null) {
-        titleText += ` (총 ${totalCount.toLocaleString()}개)`;
-      }
-    }
-    titleElement.innerHTML = titleText;
-  }
-}
-
-/**
- * 에러 메시지 표시
- * @param {string} message - 에러 메시지
- */
-function showErrorMessage(message) {
-  const searchResultsGrid = document.getElementById('searchResultsGrid');
-  searchResultsGrid.innerHTML = `
-    <div class="error-message" style="text-align: center; padding: 40px; color: #dc3545;">
-      <i class="fas fa-exclamation-triangle" style="font-size: 48px; margin-bottom: 16px;"></i>
-      <h3>오류가 발생했습니다</h3>
-      <p>${message}</p>
-      <button onclick="performSearch()" class="btn-filled" style="margin-top: 16px;">
-        다시 시도
-      </button>
-    </div>
-  `;
-}
-
-/**
- * 로딩 상태 표시
- */
-function showLoading() {
-  const loadingHtml = `
-    <div class="loading-container" style="text-align: center; padding: 40px;">
-      <div class="loading-spinner" style="
-        width: 40px; 
-        height: 40px; 
-        border: 4px solid #f3f3f3; 
-        border-top: 4px solid #4CAF50; 
-        border-radius: 50%; 
-        animation: spin 1s linear infinite; 
-        margin: 0 auto 16px;">
-      </div>
-      <p style="color: #666;">검색 결과를 불러오는 중...</p>
-    </div>
-  `;
-  
-  const searchResultsGrid = document.getElementById('searchResultsGrid');
-  if (searchResultsGrid) {
-    searchResultsGrid.innerHTML = loadingHtml;
-  }
-}
-
-/**
- * Elasticsearch 검색 (향후 구현용)
- * @param {string} keyword - 검색 키워드
- */
-function searchElasticsearch(keyword) {
-  fetch(`/elasticsearch/search?query=${encodeURIComponent(keyword)}`)
-    .then(response => response.json())
-    .then(data => {
-      console.log('Elasticsearch 검색 결과:', data);
-      // TODO: Elasticsearch 검색 결과 렌더링 구현
-    })
-    .catch(error => {
-      console.error('Elasticsearch 검색 오류:', error);
     });
-}
-
-/**
- * 검색 결과 애니메이션
- */
-function animateSearchResults() {
-  const productCards = document.querySelectorAll('.product-card');
-  
-  productCards.forEach((card, index) => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
-    }, index * 100);
-  });
+  }
 }
 
 /**
@@ -1027,39 +1025,39 @@ function initializeSearchPage() {
   setupPaginationEventListeners();
 }
 
+// ===== 동기화 관련 함수들 =====
+
 /**
- * Enter 키로 검색 실행
+ * 동기화 실행
  */
-function setupEnterKeySearch() {
-  const searchKeyword = document.getElementById('searchKeyword');
-  if (searchKeyword) {
-    searchKeyword.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        e.stopPropagation();
-        const keyword = this.value.trim();
-        if (!keyword) {
-          alert('검색어를 입력해주세요.');
-          this.focus();
-          return;
-        }
-        
-        // URL 업데이트
-        const urlParams = new URLSearchParams(window.location.search);
-        urlParams.set('keyword', keyword);
-        urlParams.delete('page'); // 페이지 초기화
-        
-        const newUrl = `${window.location.pathname}?${urlParams.toString()}`;
-        window.history.pushState({}, '', newUrl);
-        
-        // 검색 실행
-        performSearch(keyword);
-      }
-    });
-  }
+function setupSyncForm() {
+  document.getElementById("syncForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const logBox = document.getElementById("syncLog");
+    const logPre = logBox.querySelector("pre");
+    const button = document.getElementById("syncButton");
+
+    logBox.style.display = "block";
+    logPre.textContent = "🔄 동기화 시작...\n";
+    button.disabled = true;
+
+    fetch(API_ENDPOINTS.SYNC, { method: "POST" })
+      .then(res => res.text())
+      .then(text => {
+        logPre.textContent += text + "\n";
+      })
+      .catch(err => {
+        logPre.textContent += "❌ 오류 발생: " + err + "\n";
+      })
+      .finally(() => {
+        button.disabled = false;
+        logPre.textContent += "✅ 작업 완료";
+      });
+  });
 }
 
-// DOM 로드 완료 시 실행
+// ===== DOM 로드 완료 시 실행 =====
 document.addEventListener('DOMContentLoaded', function() {
   // 필터 요소들
   const statusFilter = document.getElementById('statusFilter');
@@ -1168,8 +1166,6 @@ document.addEventListener('DOMContentLoaded', function() {
     sortFilter.addEventListener('change', applyFilters);
   }
   
-
-  
   // 검색 입력 필드 포커스 효과
   if (searchKeyword) {
     searchKeyword.addEventListener('focus', function() {
@@ -1199,8 +1195,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // 페이지 로드 시 필터 상태 복원
   restoreFilterState();
   
-  // 페이지네이션 이벤트 리스너는 setupPaginationEventListeners()에서 처리됨
-  
   // 페이지 로드 시 API 검색 실행
   const urlParams = new URLSearchParams(window.location.search);
   if (urlParams.get('keyword') || urlParams.get('status') || urlParams.get('price') || urlParams.get('sort')) {
@@ -1211,9 +1205,42 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeSearchPage();
   setupEnterKeySearch();
   setupKeyboardNavigation();
+  setupSyncForm();
 });
 
-// 스핀 애니메이션 CSS
+// ===== 동기화 관련 함수들 =====
+
+/**
+ * 동기화 실행
+ */
+function setupSyncForm() {
+  document.getElementById("syncForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+
+    const logBox = document.getElementById("syncLog");
+    const logPre = logBox.querySelector("pre");
+    const button = document.getElementById("syncButton");
+
+    logBox.style.display = "block";
+    logPre.textContent = "🔄 동기화 시작...\n";
+    button.disabled = true;
+
+    fetch(API_ENDPOINTS.SYNC, { method: "POST" })
+      .then(res => res.text())
+      .then(text => {
+        logPre.textContent += text + "\n";
+      })
+      .catch(err => {
+        logPre.textContent += "❌ 오류 발생: " + err + "\n";
+      })
+      .finally(() => {
+        button.disabled = false;
+        logPre.textContent += "✅ 작업 완료";
+      });
+  });
+}
+
+// ===== 스핀 애니메이션 CSS =====
 const style = document.createElement('style');
 style.textContent = `
   @keyframes spin {

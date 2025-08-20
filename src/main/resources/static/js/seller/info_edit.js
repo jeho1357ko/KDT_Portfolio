@@ -1,140 +1,255 @@
+/**
+ * 판매자 정보 수정 JavaScript 모듈
+ * 주소 검색, 폼 유효성 검사, 폼 제출 기능을 담당
+ */
 
-    // ===== 상수 정의 =====
-    const ADDRESS_FIELDS = {
-      POST_NUMBER: 'postNumber',
-      BASIC_ADDRESS: 'basicAddress',
-      DETAIL_ADDRESS: 'detailAddress',
-      SHOP_ADDRESS: 'shopAddress'
-  };
+// ===== 상수 정의 =====
+const ADDRESS_FIELDS = {
+    POST_NUMBER: 'postNumber',
+    BASIC_ADDRESS: 'basicAddress',
+    DETAIL_ADDRESS: 'detailAddress',
+    SHOP_ADDRESS: 'shopAddress'
+};
 
-  // ===== 클래스 정의 =====
-  class AddressManager {
-      constructor() {
-          this.postNumberInput = document.getElementById(ADDRESS_FIELDS.POST_NUMBER);
-          this.basicAddressInput = document.getElementById(ADDRESS_FIELDS.BASIC_ADDRESS);
-          this.detailAddressInput = document.getElementById(ADDRESS_FIELDS.DETAIL_ADDRESS);
-          this.shopAddressInput = document.getElementById(ADDRESS_FIELDS.SHOP_ADDRESS);
-          this.searchButton = document.getElementById('btn-postNumber');
-          this.form = document.getElementById('sellerEditForm');
-          
-          this.init();
-      }
+// ===== 주소 관리 클래스 =====
+class AddressManager {
+    /**
+     * 주소 관리자 생성
+     */
+    constructor() {
+        this.initializeElements();
+        this.init();
+    }
 
-      init() {
-          this.bindEvents();
-          this.initializeAddressFields();
-      }
+    /**
+     * DOM 요소 초기화
+     */
+    initializeElements() {
+        this.postNumberInput = document.getElementById(ADDRESS_FIELDS.POST_NUMBER);
+        this.basicAddressInput = document.getElementById(ADDRESS_FIELDS.BASIC_ADDRESS);
+        this.detailAddressInput = document.getElementById(ADDRESS_FIELDS.DETAIL_ADDRESS);
+        this.shopAddressInput = document.getElementById(ADDRESS_FIELDS.SHOP_ADDRESS);
+        this.searchButton = document.getElementById('btn-postNumber');
+        this.form = document.getElementById('sellerEditForm');
+        
+        this.validateElements();
+    }
 
-      bindEvents() {
-          // 주소 검색 버튼 클릭
-          this.searchButton.addEventListener('click', () => this.openAddressSearch());
-          
-          // 폼 제출 전 주소 합치기
-          this.form.addEventListener('submit', (event) => this.handleFormSubmit(event));
-          
-          // 상세주소 입력 시 엔터키 처리
-          this.detailAddressInput.addEventListener('keyup', (e) => {
-              if (e.key === 'Enter') {
-                  this.form.requestSubmit();
-              }
-          });
-      }
+    /**
+     * 필수 DOM 요소 존재 여부 검증
+     */
+    validateElements() {
+        const requiredElements = [
+            this.postNumberInput,
+            this.basicAddressInput,
+            this.detailAddressInput,
+            this.shopAddressInput,
+            this.searchButton,
+            this.form
+        ];
 
-      initializeAddressFields() {
-          // 기존 주소 데이터가 있다면 필드에 설정
-          const currentAddress = this.shopAddressInput.value;
-          if (currentAddress) {
-              this.parseAndSetAddress(currentAddress);
-          }
-      }
+        for (const element of requiredElements) {
+            if (!element) {
+                throw new Error('필수 DOM 요소를 찾을 수 없습니다.');
+            }
+        }
+    }
 
-      openAddressSearch() {
-          new daum.Postcode({
-              oncomplete: (data) => {
-                  this.postNumberInput.value = data.zonecode;
-                  this.basicAddressInput.value = data.roadAddress || data.jibunAddress;
-                  this.detailAddressInput.focus();
-              },
-              onclose: () => {
-                  // 주소 검색이 취소된 경우 처리
-                  if (!this.postNumberInput.value) {
-                      this.detailAddressInput.focus();
-                  }
-              }
-          }).open();
-      }
+    /**
+     * 초기화
+     */
+    init() {
+        this.bindEvents();
+        this.initializeAddressFields();
+    }
 
-      parseAndSetAddress(fullAddress) {
-          // 주소 문자열을 파싱하여 각 필드에 설정
-          const addressParts = fullAddress.split(' ');
-          if (addressParts.length >= 3) {
-              this.postNumberInput.value = addressParts[0];
-              this.basicAddressInput.value = addressParts.slice(1, -1).join(' ');
-              this.detailAddressInput.value = addressParts[addressParts.length - 1];
-          }
-      }
+    /**
+     * 이벤트 바인딩
+     */
+    bindEvents() {
+        this.bindAddressSearchEvent();
+        this.bindFormSubmitEvent();
+        this.bindKeyboardEvents();
+    }
 
-      handleFormSubmit(event) {
-          // 폼 유효성 검사
-          if (!this.validateForm()) {
-              event.preventDefault();
-              return;
-          }
+    /**
+     * 주소 검색 이벤트 바인딩
+     */
+    bindAddressSearchEvent() {
+        this.searchButton.addEventListener('click', () => this.openAddressSearch());
+    }
 
-          // 주소 필드 합치기
-          this.combineAddress();
-          
-          // 로딩 상태 표시
-          this.showLoading();
-      }
+    /**
+     * 폼 제출 이벤트 바인딩
+     */
+    bindFormSubmitEvent() {
+        this.form.addEventListener('submit', (event) => this.handleFormSubmit(event));
+    }
 
-      validateForm() {
-          const requiredFields = [
-              { element: this.postNumberInput, name: '우편번호' },
-              { element: this.basicAddressInput, name: '주소' },
-              { element: this.detailAddressInput, name: '상세주소' }
-          ];
+    /**
+     * 키보드 이벤트 바인딩
+     */
+    bindKeyboardEvents() {
+        this.detailAddressInput.addEventListener('keyup', (e) => {
+            if (e.key === 'Enter') {
+                this.form.requestSubmit();
+            }
+        });
+    }
 
-          for (const field of requiredFields) {
-              if (!field.element.value.trim()) {
-                  this.showError(`${field.name}을(를) 입력해주세요.`, field.element);
-                  field.element.focus();
-                  return false;
-              }
-          }
+    /**
+     * 주소 필드 초기화
+     */
+    initializeAddressFields() {
+        const currentAddress = this.shopAddressInput.value;
+        if (currentAddress) {
+            this.parseAndSetAddress(currentAddress);
+        }
+    }
 
-          return true;
-      }
+    /**
+     * 주소 검색 팝업 열기
+     */
+    openAddressSearch() {
+        new daum.Postcode({
+            oncomplete: (data) => this.handleAddressSearchComplete(data),
+            onclose: () => this.handleAddressSearchClose()
+        }).open();
+    }
 
-      combineAddress() {
-          const postNumber = this.postNumberInput.value.trim();
-          const basicAddress = this.basicAddressInput.value.trim();
-          const detailAddress = this.detailAddressInput.value.trim();
+    /**
+     * 주소 검색 완료 처리
+     * @param {Object} data - 주소 검색 결과 데이터
+     */
+    handleAddressSearchComplete(data) {
+        this.postNumberInput.value = data.zonecode;
+        this.basicAddressInput.value = data.roadAddress || data.jibunAddress;
+        this.detailAddressInput.focus();
+    }
 
-          const fullAddress = `${postNumber} ${basicAddress} ${detailAddress}`;
-          this.shopAddressInput.value = fullAddress;
-      }
+    /**
+     * 주소 검색 취소 처리
+     */
+    handleAddressSearchClose() {
+        if (!this.postNumberInput.value) {
+            this.detailAddressInput.focus();
+        }
+    }
 
-      showError(message, element = null) {
-          // 에러 메시지 표시 로직
-          console.error(message);
-          if (element) {
-              element.style.borderColor = 'var(--color-danger)';
-              setTimeout(() => {
-                  element.style.borderColor = '';
-              }, 3000);
-          }
-      }
+    /**
+     * 주소 문자열 파싱 및 필드 설정
+     * @param {string} fullAddress - 전체 주소 문자열
+     */
+    parseAndSetAddress(fullAddress) {
+        const addressParts = fullAddress.split(' ');
+        if (addressParts.length >= 3) {
+            this.postNumberInput.value = addressParts[0];
+            this.basicAddressInput.value = addressParts.slice(1, -1).join(' ');
+            this.detailAddressInput.value = addressParts[addressParts.length - 1];
+        }
+    }
 
-      showLoading() {
-          const submitButton = document.getElementById('update-btn');
-          submitButton.disabled = true;
-          submitButton.textContent = '수정 중...';
-          submitButton.classList.add('loading');
-      }
-  }
+    /**
+     * 폼 제출 처리
+     * @param {Event} event - 폼 제출 이벤트
+     */
+    handleFormSubmit(event) {
+        if (!this.validateForm()) {
+            event.preventDefault();
+            return;
+        }
 
-  // ===== 초기화 =====
-  document.addEventListener('DOMContentLoaded', () => {
-      new AddressManager();
-  });
+        this.combineAddress();
+        this.showLoading();
+    }
+
+    /**
+     * 폼 유효성 검사
+     * @returns {boolean} 유효성 검사 통과 여부
+     */
+    validateForm() {
+        const requiredFields = [
+            { element: this.postNumberInput, name: '우편번호' },
+            { element: this.basicAddressInput, name: '주소' },
+            { element: this.detailAddressInput, name: '상세주소' }
+        ];
+
+        for (const field of requiredFields) {
+            if (!this.validateRequiredField(field)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * 필수 필드 유효성 검사
+     * @param {Object} field - 검사할 필드 정보
+     * @returns {boolean} 유효성 검사 통과 여부
+     */
+    validateRequiredField(field) {
+        if (!field.element.value.trim()) {
+            this.showError(`${field.name}을(를) 입력해주세요.`, field.element);
+            field.element.focus();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 주소 필드 합치기
+     */
+    combineAddress() {
+        const postNumber = this.postNumberInput.value.trim();
+        const basicAddress = this.basicAddressInput.value.trim();
+        const detailAddress = this.detailAddressInput.value.trim();
+
+        const fullAddress = `${postNumber} ${basicAddress} ${detailAddress}`;
+        this.shopAddressInput.value = fullAddress;
+    }
+
+    /**
+     * 에러 메시지 표시
+     * @param {string} message - 표시할 에러 메시지
+     * @param {HTMLElement} element - 에러가 발생한 요소
+     */
+    showError(message, element = null) {
+        console.error(message);
+        if (element) {
+            this.highlightErrorElement(element);
+        }
+    }
+
+    /**
+     * 에러 요소 하이라이트
+     * @param {HTMLElement} element - 하이라이트할 요소
+     */
+    highlightErrorElement(element) {
+        element.style.borderColor = 'var(--color-danger)';
+        setTimeout(() => {
+            element.style.borderColor = '';
+        }, 3000);
+    }
+
+    /**
+     * 로딩 상태 표시
+     */
+    showLoading() {
+        const submitButton = document.getElementById('update-btn');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.textContent = '수정 중...';
+            submitButton.classList.add('loading');
+        }
+    }
+}
+
+// ===== 초기화 =====
+document.addEventListener('DOMContentLoaded', () => {
+    try {
+        new AddressManager();
+    } catch (error) {
+        console.error('AddressManager 초기화 실패:', error);
+    }
+});
