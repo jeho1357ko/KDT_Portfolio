@@ -37,7 +37,7 @@ class DashboardManager {
     loadDashboardData() {
         // 현재는 서버에서 렌더링된 데이터를 사용
         // 향후 AJAX로 실시간 데이터 업데이트 가능
-        console.log('대시보드 데이터 로드 완료');
+      
         
         // 데이터 로드 완료 후 추가 처리
         this.updateDashboardStats();
@@ -50,7 +50,7 @@ class DashboardManager {
         // 통계 데이터가 있는 경우 추가 처리
         const countElements = document.querySelectorAll('.count, .total-amount');
         if (countElements.length > 0) {
-            console.log('대시보드 통계 업데이트 완료');
+    
         }
     }
 
@@ -91,7 +91,7 @@ class DashboardManager {
      * 판매 목록 버튼 클릭 처리
      */
     handleSalesListClick() {
-        console.log('판매 목록 페이지로 이동');
+  
         // 추가 로직이 필요한 경우 여기에 구현
     }
 
@@ -99,7 +99,7 @@ class DashboardManager {
      * 판매 상품 등록 버튼 클릭 처리
      */
     handleAddProductClick() {
-        console.log('판매 상품 등록 페이지로 이동');
+  
         // 추가 로직이 필요한 경우 여기에 구현
     }
 
@@ -119,7 +119,7 @@ class DashboardManager {
      * 페이지 조회 통계 수집
      */
     trackPageView() {
-        console.log('판매자 대시보드 페이지 조회');
+
         // Google Analytics나 다른 분석 도구 연동 가능
         this.sendAnalyticsData();
     }
@@ -136,14 +136,14 @@ class DashboardManager {
             userAgent: navigator.userAgent
         };
         
-        console.log('분석 데이터:', pageData);
+
     }
 
     /**
      * 실시간 데이터 새로고침
      */
     refreshData() {
-        console.log('대시보드 데이터 새로고침');
+
         // AJAX를 통한 실시간 데이터 업데이트
         // this.loadDashboardData();
     }
@@ -193,7 +193,7 @@ let dashboardManager;
 document.addEventListener('DOMContentLoaded', () => {
     try {
         dashboardManager = new DashboardManager();
-        console.log('판매자 대시보드 페이지 로드됨');
+    
     } catch (error) {
         console.error('DashboardManager 초기화 실패:', error);
     }

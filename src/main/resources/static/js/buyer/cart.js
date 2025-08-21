@@ -1,4 +1,97 @@
 /**
+ * 장바구니 페이지 JavaScript 모듈
+ * 장바구니 관리, 상품 선택, 주문 처리 기능을 담당
+ */
+
+// ===== 상수 정의 =====
+const API_ENDPOINTS = {
+  CART_ITEMS: '/api/cart',
+  CHECK_STOCK: '/api/cart/check-stock',
+  UPDATE_QUANTITY: '/api/cart/quantity',
+  DELETE_ITEM: '/api/cart/delete',
+  DELETE_COMPLETED: '/api/cart/delete-completed'
+};
+
+const SELECTORS = {
+  BUYER_ID: '#buyerId',
+  SELECT_ALL: '#selectAllCheckbox',
+  CART_LIST: '#cartList',
+  SUBTOTAL: '#subtotal',
+  DELIVERY_FEE: '#deliveryFee',
+  TOTAL_AMOUNT: '#totalAmount'
+};
+
+const MESSAGES = {
+  LOAD_ERROR: '데이터 로드 중 오류 발생.',
+  UPDATE_FAILED: '수량 업데이트 실패',
+  QUANTITY_ERROR: '수량 변경 중 오류 발생',
+  DELETE_CONFIRM: '이 상품을 장바구니에서 삭제하시겠습니까?',
+  DELETE_SUCCESS: '상품이 삭제되었습니다.',
+  NO_SELECTION: '주문할 상품을 선택해주세요.',
+  EMPTY_CART: '장바구니에 상품이 없습니다.',
+  LOGIN_REQUIRED: '로그인 정보가 없습니다.',
+  DELETE_COMPLETED_CONFIRM: '결제가 완료된 상품들을 장바구니에서 삭제하시겠습니까?',
+  DELETE_COMPLETED_SUCCESS: '상품이 삭제되었습니다.',
+  DELETE_COMPLETED_ERROR: '삭제 중 오류가 발생했습니다.'
+};
+
+// ===== 유틸리티 함수 =====
+const Utils = {
+  /**
+   * 숫자를 천 단위로 포맷팅합니다.
+   * @param {number} num - 포맷팅할 숫자
+   * @returns {string} 포맷팅된 문자열
+   */
+  formatNumber(num) {
+    return num.toLocaleString();
+  },
+
+  /**
+   * 메시지를 표시합니다.
+   * @param {string} message - 표시할 메시지
+   * @param {string} type - 메시지 타입 ('success' 또는 'error')
+   * @param {HTMLElement} container - 메시지를 표시할 컨테이너
+   */
+  showMessage(message, type, container) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `${type}-message`;
+    messageDiv.textContent = message;
+    messageDiv.setAttribute('role', 'alert');
+    messageDiv.setAttribute('aria-live', 'polite');
+    
+    container.insertBefore(messageDiv, container.firstChild);
+    
+    // 5초 후 자동 제거
+    setTimeout(() => {
+      messageDiv.remove();
+    }, 5000);
+  },
+
+  /**
+   * API 요청을 수행합니다.
+   * @param {string} url - 요청 URL
+   * @param {Object} options - 요청 옵션
+   * @returns {Promise<Object>} 응답 데이터
+   */
+  async fetchAPI(url, options = {}) {
+    const response = await fetch(url, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+      },
+      ...options
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    return await response.json();
+  }
+};
+
+// ===== 이미지 에러 처리 =====
+/**
  * 이미지 로드 실패 처리 함수
  * @param {HTMLImageElement} img - 이미지 요소
  */
@@ -61,6 +154,7 @@ function handleImageError(img) {
 class CartManager {
   constructor() {
     this.cartItems = [];
+    this.soldOutProducts = [];
     this.subtotal = 0;
     this.totalDeliveryFee = 0;
     this.total = 0;
@@ -71,21 +165,16 @@ class CartManager {
 
   // ===== 초기화 =====
   initialize() {
-    console.log('=== 장바구니 페이지 초기화 ===');
-    
     this.loadBuyerId();
     this.bindEvents();
     this.loadCartItems();
-    
-    console.log('장바구니 페이지 초기화 완료');
   }
 
   // ===== buyerId 로드 =====
   loadBuyerId() {
-    const buyerIdElement = document.getElementById('buyerId');
+    const buyerIdElement = document.querySelector(SELECTORS.BUYER_ID);
     if (!buyerIdElement || !buyerIdElement.value) {
-      console.error('buyerId not found or empty');
-      this.showErrorMessage('buyerId가 없습니다. 로그인을 확인하세요.');
+      this.showMessage(MESSAGES.LOGIN_REQUIRED, 'error');
       return;
     }
     this.buyerId = buyerIdElement.value;
@@ -94,23 +183,18 @@ class CartManager {
   // ===== 이벤트 바인딩 =====
   bindEvents() {
     // 전체 선택 체크박스 이벤트
-    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const selectAllCheckbox = document.querySelector(SELECTORS.SELECT_ALL);
     if (selectAllCheckbox) {
       selectAllCheckbox.addEventListener('change', (e) => {
         this.handleSelectAll(e.target.checked);
       });
-    } else {
-      console.error('selectAllCheckbox not found');
     }
   }
 
   // ===== 장바구니 아이템 로드 =====
   async loadCartItems() {
     try {
-      const response = await fetch(`/api/cart/${this.buyerId}`);
-      const data = await response.json();
-      
-      console.log('API Response:', data);
+      const data = await Utils.fetchAPI(`${API_ENDPOINTS.CART_ITEMS}/${this.buyerId}`);
       
       if (data.header && data.header.rtcd === 'S00' && data.body && data.body.length > 0) {
         this.cartItems = data.body;
@@ -121,8 +205,7 @@ class CartManager {
         this.showEmptyCart();
       }
     } catch (error) {
-      console.error('Fetch Error:', error);
-      this.showErrorMessage('데이터 로드 중 오류 발생.');
+      this.showMessage(MESSAGES.LOAD_ERROR, 'error');
     }
   }
 
@@ -133,31 +216,24 @@ class CartManager {
     const productIds = this.cartItems.map(item => item.productId);
     
     try {
-      const response = await fetch('/api/cart/check-stock', {
+      const data = await Utils.fetchAPI(API_ENDPOINTS.CHECK_STOCK, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
         body: JSON.stringify(productIds)
       });
-      
-      const data = await response.json();
       
       if (data.header && data.header.rtcd === 'S00') {
         this.soldOutProducts = data.body || [];
       } else {
-        console.error('매진 상품 체크 실패:', data);
         this.soldOutProducts = [];
       }
     } catch (error) {
-      console.error('매진 상품 체크 중 오류:', error);
       this.soldOutProducts = [];
     }
   }
 
   // ===== 장바구니 아이템 렌더링 =====
   renderCartItems() {
-    const cartList = document.getElementById('cartList');
+    const cartList = document.querySelector(SELECTORS.CART_LIST);
     cartList.innerHTML = '';
     
     this.cartItems.forEach(item => {
@@ -206,8 +282,8 @@ class CartManager {
           ${isSoldOut ? '<span class="status-badge status-sold-out">매진</span>' : ''}
           ${isOrdered ? '<span class="status-badge status-ordered">주문완료</span>' : ''}
         </p>
-        <p class="price">${this.formatNumber(item.productPrice)}원</p>
-        <p class="delivery-fee">배송비: ${this.formatNumber(deliveryFee)}원</p>
+        <p class="price">${Utils.formatNumber(item.productPrice)}원</p>
+        <p class="delivery-fee">배송비: ${Utils.formatNumber(deliveryFee)}원</p>
       </div>
       <div class="quantity-selector">
         <button class="minus-btn" 
@@ -224,7 +300,7 @@ class CartManager {
                 onclick="cartManager.changeQuantity(${item.cartId}, 'increase')"
                 aria-label="수량 증가">+</button>
       </div>
-      <div class="item-total-price">${this.formatNumber(itemTotal + deliveryFee)}원</div>
+      <div class="item-total-price">${Utils.formatNumber(itemTotal + deliveryFee)}원</div>
       <button class="item-delete-btn" 
               onclick="cartManager.deleteItem(${item.cartId})"
               aria-label="상품 삭제">×</button>
@@ -245,7 +321,6 @@ class CartManager {
   async changeQuantity(cartId, action) {
     const item = this.cartItems.find(i => i.cartId === cartId);
     if (!item) {
-      console.error('Item not found for cartId:', cartId);
       return;
     }
     
@@ -260,26 +335,21 @@ class CartManager {
     }
 
     try {
-      const response = await fetch('/api/cart/quantity', {
+      const data = await Utils.fetchAPI(API_ENDPOINTS.UPDATE_QUANTITY, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cartId: cartId, quantity: item.quantity })
       });
-      
-      const data = await response.json();
       
       if (data.header && data.header.rtcd === 'S00') {
         this.updateItemDisplay(item);
         this.updateSummary();
       } else {
-        console.error('Update failed:', data);
         item.quantity = oldQuantity; // 롤백
-        this.showErrorMessage('수량 업데이트 실패');
+        this.showMessage(MESSAGES.UPDATE_FAILED, 'error');
       }
     } catch (error) {
-      console.error('Fetch Error:', error);
       item.quantity = oldQuantity; // 롤백
-      this.showErrorMessage('수량 변경 중 오류 발생');
+      this.showMessage(MESSAGES.QUANTITY_ERROR, 'error');
     }
   }
 
@@ -291,13 +361,13 @@ class CartManager {
       itemElement.querySelector('.quantity-input').value = item.quantity;
       const deliveryFee = parseInt(itemElement.dataset.deliveryFee);
       const itemTotal = item.productPrice * item.quantity;
-      itemElement.querySelector('.item-total-price').textContent = `${this.formatNumber(itemTotal + deliveryFee)}원`;
+      itemElement.querySelector('.item-total-price').textContent = `${Utils.formatNumber(itemTotal + deliveryFee)}원`;
     }
   }
 
   // ===== 아이템 삭제 =====
   async deleteItem(cartId) {
-    if (!confirm('이 상품을 장바구니에서 삭제하시겠습니까?')) {
+    if (!confirm(MESSAGES.DELETE_CONFIRM)) {
       return;
     }
 
@@ -310,23 +380,18 @@ class CartManager {
     this.updateSummary();
 
     try {
-      const response = await fetch('/api/cart/delete', {
+      const data = await Utils.fetchAPI(API_ENDPOINTS.DELETE_ITEM, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ cartId: cartId })
       });
       
-      const data = await response.json();
-      
       if (data.header && data.header.rtcd === 'S00') {
-        this.showSuccessMessage('상품이 삭제되었습니다.');
+        this.showMessage(MESSAGES.DELETE_SUCCESS, 'success');
         location.reload();
       } else {
-        console.error('Delete failed:', data);
         location.reload(); // 실패 시 새로고침
       }
     } catch (error) {
-      console.error('Delete Error:', error);
       location.reload(); // 실패 시 새로고침
     }
   }
@@ -353,13 +418,13 @@ class CartManager {
 
   // ===== 요약 표시 업데이트 =====
   updateSummaryDisplay() {
-    const summaryRows = document.querySelectorAll('.summary-row');
+    const subtotalElement = document.querySelector(SELECTORS.SUBTOTAL);
+    const deliveryFeeElement = document.querySelector(SELECTORS.DELIVERY_FEE);
+    const totalElement = document.querySelector(SELECTORS.TOTAL_AMOUNT);
     
-    if (summaryRows.length >= 3) {
-      summaryRows[0].querySelector('span:nth-child(2)').textContent = `${this.formatNumber(this.subtotal)}원`;
-      summaryRows[1].querySelector('span:nth-child(2)').textContent = `${this.formatNumber(this.totalDeliveryFee)}원`;
-      summaryRows[2].querySelector('span:nth-child(2)').textContent = `${this.formatNumber(this.total)}원`;
-    }
+    if (subtotalElement) subtotalElement.textContent = `${Utils.formatNumber(this.subtotal)}원`;
+    if (deliveryFeeElement) deliveryFeeElement.textContent = `${Utils.formatNumber(this.totalDeliveryFee)}원`;
+    if (totalElement) totalElement.textContent = `${Utils.formatNumber(this.total)}원`;
   }
 
   // ===== 선택 상품 주문 =====
@@ -380,7 +445,7 @@ class CartManager {
     });
     
     if (selectedItems.length === 0) {
-      this.showErrorMessage('주문할 상품을 선택해주세요.');
+      this.showMessage(MESSAGES.NO_SELECTION, 'error');
       return;
     }
     
@@ -390,7 +455,7 @@ class CartManager {
   // ===== 전체 상품 주문 =====
   async orderAll() {
     if (this.cartItems.length === 0) {
-      this.showErrorMessage('장바구니에 상품이 없습니다.');
+      this.showMessage(MESSAGES.EMPTY_CART, 'error');
       return;
     }
     
@@ -422,96 +487,21 @@ class CartManager {
     window.location.href = '/buyer/payment';
   }
 
-  // ===== 결제 완료된 상품 삭제 =====
-  async deleteCompletedItems() {
-    if (!this.buyerId) {
-      this.showErrorMessage('로그인 정보가 없습니다.');
-      return;
-    }
-
-    if (!confirm('결제가 완료된 상품들을 장바구니에서 삭제하시겠습니까?')) {
-      return;
-    }
-
-    try {
-      const response = await fetch('/api/cart/delete-completed', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(parseInt(this.buyerId))
-      });
-
-      const data = await response.json();
-      
-      if (data.header && data.header.rtcd === 'S00') {
-        this.showSuccessMessage('상품이 삭제되었습니다.');
-        location.reload();
-      } else {
-        this.showErrorMessage('삭제 실패: ' + (data.body || '알 수 없는 오류'));
-      }
-    } catch (error) {
-      console.error('결제 완료 상품 삭제 중 오류:', error);
-      this.showErrorMessage('삭제 중 오류가 발생했습니다.');
-    }
-  }
-
   // ===== 빈 장바구니 표시 =====
   showEmptyCart() {
-    const cartList = document.getElementById('cartList');
+    const cartList = document.querySelector(SELECTORS.CART_LIST);
     cartList.innerHTML = '<div class="empty-cart"><p>장바구니에 담긴 상품이 없습니다.</p></div>';
   }
 
-  // ===== 성공 메시지 표시 =====
-  showSuccessMessage(message) {
-    this.showMessage(message, 'success');
-  }
 
-  // ===== 에러 메시지 표시 =====
-  showErrorMessage(message) {
-    this.showMessage(message, 'error');
-  }
 
   // ===== 메시지 표시 =====
   showMessage(message, type) {
-    const messageDiv = document.createElement('div');
-    messageDiv.className = `${type}-message`;
-    messageDiv.textContent = message;
-    messageDiv.setAttribute('role', 'alert');
-    messageDiv.setAttribute('aria-live', 'polite');
-    
     const cartContainer = document.querySelector('.cart-container');
-    cartContainer.insertBefore(messageDiv, cartContainer.firstChild);
-    
-    // 5초 후 자동 제거
-    setTimeout(() => {
-      messageDiv.remove();
-    }, 5000);
+    Utils.showMessage(message, type, cartContainer);
   }
 
-  // ===== 숫자 포맷 =====
-  formatNumber(num) {
-    return num.toLocaleString();
-  }
 
-  // ===== 페이지 통계 수집 =====
-  trackPageView() {
-    console.log('장바구니 페이지 조회');
-    // Google Analytics나 다른 분석 도구 연동 가능
-  }
-}
-
-// ===== 전역 함수들 =====
-function goToMyPage() {
-  window.location.href = '/buyer/info';
-}
-
-function goToOrderHistory() {
-  window.location.href = '/buyer/orders';
-}
-
-function goToCart() {
-  window.location.href = '/buyer/cart';
 }
 
 // ===== 초기화 =====
@@ -519,9 +509,4 @@ let cartManager;
 
 document.addEventListener('DOMContentLoaded', () => {
   cartManager = new CartManager();
-  
-  // 페이지 통계 수집
-  setTimeout(() => {
-    cartManager.trackPageView();
-  }, 1000);
 }); 

@@ -3,7 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>장바구니</title>
+  <title>장바구니 - planT</title>
+  <meta name="description" content="농산물 직거래 플랫폼 planT의 장바구니 페이지입니다.">
+  
+  <!-- 외부 리소스 -->
   <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <link th:href="@{/css/buyer/cart.css}" rel="stylesheet">
 </head>
@@ -12,64 +15,95 @@
   <input type="hidden" id="buyerId" th:value="${session.loginBuyer?.buyerId}">
   
   <!-- 네비게이션 바 -->
-  <header class="navbar-container">
+  <header class="navbar-container" role="banner">
     <div class="navbar">
-      <a th:href="@{/home}" class="logo-container" aria-label="홈으로 이동">
-        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+      <a th:href="@{/home}" 
+         class="logo-container" 
+         aria-label="홈으로 이동">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" 
+             alt="planT 로고" 
+             class="navbar-logo-img"/>
         <span class="brand-name">planT</span>
       </a>
       <div class="navbar-buttons">
         <th:block th:if="${session.loginBuyer != null}">
-          <a th:href="@{/buyer/info}" class="user-name" th:text="${session.loginBuyer.nickname}" aria-label="내 정보"></a>
-          <a th:href="@{/buyer/cart/{bid}(bid=${session.loginBuyer.buyerId})}" class="btn-outline">장바구니</a>
+          <a th:href="@{/buyer/info}" 
+             class="user-name" 
+             th:text="${session.loginBuyer.nickname}" 
+             aria-label="내 정보"></a>
+          <a th:href="@{/buyer/cart/{bid}(bid=${session.loginBuyer.buyerId})}" 
+             class="btn-outline"
+             aria-label="장바구니">장바구니</a>
         </th:block>
-        <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
-          <button type="submit" class="btn-filled">로그아웃</button>
+        <form th:action="@{/buyer/logout}" 
+              method="post" 
+              style="display:inline;">
+          <button type="submit" 
+                  class="btn-filled"
+                  aria-label="로그아웃">로그아웃</button>
         </form>
       </div>
     </div>
   </header>
 
   <!-- 메인 컨텐츠 -->
-  <main class="cart-container">
-    <h1>장바구니</h1>
+  <main class="cart-container" role="main" aria-labelledby="cartTitle">
+    <h1 id="cartTitle">장바구니</h1>
     
     <div class="cart-layout">
       <!-- 사이드 패널 -->
       <aside class="order-panel" role="navigation" aria-label="구매자 메뉴">
-        <button class="panel-button" th:onclick="|location.href='@{/buyer/info}'|" aria-label="마이페이지로 이동">마이페이지</button>
-        <button class="panel-button" th:onclick="|location.href='@{/buyer/orders}'|" aria-label="주문내역으로 이동">주문내역</button>
-        <button class="panel-button" th:onclick="|location.href='@{/buyer/cart/{bid}(bid=${session.loginBuyer.buyerId})}'|" aria-label="장바구니로 이동">장바구니</button>
+        <button class="panel-button" 
+                th:onclick="|location.href='@{/buyer/info}'|" 
+                aria-label="마이페이지로 이동">마이페이지</button>
+        <button class="panel-button" 
+                th:onclick="|location.href='@{/buyer/orders}'|" 
+                aria-label="주문내역으로 이동">주문내역</button>
+        <button class="panel-button active" 
+                th:onclick="|location.href='@{/buyer/cart/{bid}(bid=${session.loginBuyer.buyerId})}'|" 
+                aria-label="장바구니로 이동">장바구니</button>
       </aside>
       
       <!-- 장바구니 아이템 영역 -->
-      <section class="cart-items" role="main" aria-label="장바구니 상품 목록">
+      <section class="cart-items" role="region" aria-label="장바구니 상품 목록">
         <div class="cart-header">
-          <input type="checkbox" id="selectAllCheckbox" checked aria-label="전체 상품 선택">
+          <input type="checkbox" 
+                 id="selectAllCheckbox" 
+                 checked 
+                 aria-label="전체 상품 선택">
           <label for="selectAllCheckbox">전체선택</label>
         </div>
-        <div id="cartList" role="region" aria-label="장바구니 상품 목록"></div>
+        <div id="cartList" 
+             class="cart-list" 
+             role="list" 
+             aria-label="장바구니 상품 목록"></div>
       </section>
       
       <!-- 주문 요약 -->
       <aside class="order-summary" role="complementary" aria-label="결제 정보">
         <h2 class="summary-title">결제 정보</h2>
-        <div class="summary-row">
-          <span>총 상품 금액</span>
-          <span>0원</span>
-        </div>
-        <div class="summary-row">
-          <span>배송비 합계</span>
-          <span>0원</span>
-        </div>
-        <hr>
-        <div class="summary-row total">
-          <span>결제 예정 금액</span>
-          <span>0원</span>
+        <div class="summary-content">
+          <div class="summary-row">
+            <span>총 상품 금액</span>
+            <span id="subtotal">0원</span>
+          </div>
+          <div class="summary-row">
+            <span>배송비 합계</span>
+            <span id="deliveryFee">0원</span>
+          </div>
+          <hr class="summary-divider">
+          <div class="summary-row total">
+            <span>결제 예정 금액</span>
+            <span id="totalAmount">0원</span>
+          </div>
         </div>
         <div class="order-buttons" role="group" aria-label="주문 버튼">
-          <button onclick="cartManager.orderSelected()" class="btn-selected" aria-label="선택한 상품 주문하기">선택 상품 주문하기</button>
-          <button onclick="cartManager.orderAll()" class="btn-all" aria-label="전체 상품 주문하기">전체 상품 주문하기</button>
+          <button onclick="cartManager.orderSelected()" 
+                  class="btn-selected" 
+                  aria-label="선택한 상품 주문하기">선택 상품 주문하기</button>
+          <button onclick="cartManager.orderAll()" 
+                  class="btn-all" 
+                  aria-label="전체 상품 주문하기">전체 상품 주문하기</button>
         </div>
       </aside>
     </div>

@@ -1,19 +1,20 @@
 package com.kh.project.test;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import co.elastic.clients.elasticsearch._types.analysis.CustomAnalyzer;
-import co.elastic.clients.elasticsearch.core.BulkRequest;
-import com.kh.project.domain.entity.Product;
-import com.kh.project.domain.product.svc.ProductSVC;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import java.io.IOException;
+import java.util.List;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
-import java.util.List;
+import com.kh.project.domain.entity.Product;
+import com.kh.project.domain.product.svc.ProductSVC;
+
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
+import co.elastic.clients.elasticsearch._types.analysis.CustomAnalyzer;
+import co.elastic.clients.elasticsearch.core.BulkRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor

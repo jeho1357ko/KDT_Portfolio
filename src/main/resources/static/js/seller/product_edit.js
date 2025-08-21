@@ -114,7 +114,7 @@ class ProductEditManager {
       }
     });
     
-    console.log('상품 수정 폼이 초기화되었습니다.');
+
   }
 
   /**
@@ -425,7 +425,7 @@ class ProductEditManager {
     const match = url.match(/\/seller\/product\/\d+\/edit/);
     if (match) {
       // URL에서 상품 ID를 추출하고, 판매자 ID는 세션이나 다른 방법으로 가져와야 함
-      // 임시로 빈 문자열 반환
+      
       return '';
     }
     return '';
@@ -511,7 +511,7 @@ let productEditManager;
 document.addEventListener('DOMContentLoaded', () => {
   try {
     productEditManager = new ProductEditManager();
-    console.log('상품 수정 폼 관리자 초기화 완료');
+
   } catch (error) {
     console.error('ProductEditManager 초기화 실패:', error);
   }

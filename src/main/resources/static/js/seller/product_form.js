@@ -418,7 +418,7 @@ let productFormManager;
 document.addEventListener('DOMContentLoaded', () => {
   try {
     productFormManager = new ProductFormManager();
-    console.log('상품 등록 폼 관리자 초기화 완료');
+    
   } catch (error) {
     console.error('ProductFormManager 초기화 실패:', error);
   }

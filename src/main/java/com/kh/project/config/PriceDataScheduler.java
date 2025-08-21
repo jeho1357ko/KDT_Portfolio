@@ -1,14 +1,15 @@
 package com.kh.project.config;
 
-import com.kh.project.domain.svc.PriceComparisonService;
-import com.kh.project.test.ProductCopy;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import com.kh.project.domain.svc.PriceComparisonService;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
@@ -17,8 +18,7 @@ public class PriceDataScheduler {
     @Autowired
     private PriceComparisonService priceComparisonService;
     
-    @Autowired
-    private ProductCopy productCopy;
+
     
     // 매일 새벽 2시에 가격 데이터 동기화
     @Scheduled(cron = "0 0 2 * * ?")
@@ -35,48 +35,9 @@ public class PriceDataScheduler {
         }
     }
     
-    // 테스트용: 1분마다 실행 (개발 중에만 사용)
-    @Scheduled(fixedRate = 6000000) // 1분 = 60,000ms
-    public void syncPriceDataTest() {
-        try {
-            String today = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-            log.info("🔄 테스트용 가격 데이터 동기화 시작: {}", today);
-            
-            priceComparisonService.syncPublicData(today);
-            
-            log.info("✅ 테스트용 가격 데이터 동기화 완료: {}", today);
-        } catch (Exception e) {
-            log.error("❌ 테스트용 가격 데이터 동기화 중 오류: {}", e.getMessage(), e);
-        }
-    }
+
     
-    // 매시간 정각에 상품 데이터 동기화 (Elasticsearch)
-    @Scheduled(cron = "0 0 * * * ?")
-    public void syncProductDataHourly() {
-        try {
-            log.info("🔄 매시간 상품 데이터 동기화 시작");
-            
-            String result = productCopy.copyAndReindex();
-            log.info("✅ 매시간 상품 데이터 동기화 완료: {}", result);
-            
-        } catch (Exception e) {
-            log.error("❌ 매시간 상품 데이터 동기화 중 오류: {}", e.getMessage(), e);
-        }
-    }
-    
-    // 매일 새벽 3시에 전체 상품 데이터 동기화 (더 안정적인 시간대)
-    @Scheduled(cron = "0 0 3 * * ?")
-    public void syncProductDataDaily() {
-        try {
-            log.info("🔄 일일 전체 상품 데이터 동기화 시작");
-            
-            String result = productCopy.copyAndReindex();
-            log.info("✅ 일일 전체 상품 데이터 동기화 완료: {}", result);
-            
-        } catch (Exception e) {
-            log.error("❌ 일일 전체 상품 데이터 동기화 중 오류: {}", e.getMessage(), e);
-        }
-    }
+
     
     // 매주 일요일 새벽 4시에 전체 데이터 정리 및 백업
     @Scheduled(cron = "0 0 4 ? * SUN")

@@ -14,11 +14,10 @@ let isPageActive = true;
  * 이벤트 리스너 등록 및 페이지 상태 설정
  */
 function initializePage() {
-  console.log('페이지 초기화 시작');
+
   
   // 이미 초기화되었으면 중복 실행 방지
   if (isInitialized && isPageActive) {
-    console.log('이미 초기화됨, 중복 실행 방지');
     return;
   }
   
@@ -41,7 +40,7 @@ function initializePage() {
     // 탭 인덱스 설정
     card.tabIndex = 0;
     
-    console.log(`카드 ${index + 1} 이벤트 리스너 등록 완료`);
+    
   });
 
   // 페이지 가시성 변경 시 처리
@@ -50,7 +49,7 @@ function initializePage() {
   // 히스토리 상태 설정
   setupHistoryState();
   
-  console.log('페이지 초기화 완료');
+
 }
 
 /**
@@ -133,11 +132,10 @@ function handleCardClick(e) {
   
   // 중복 클릭 방지
   if (this.dataset.clicked === 'true' || this.classList.contains('loading')) {
-    console.log('중복 클릭 방지');
     return;
   }
   
-  console.log('카드 클릭됨');
+  
   this.dataset.clicked = 'true';
   showLoading(this);
   
@@ -150,7 +148,7 @@ function handleCardClick(e) {
  */
 function handleVisibilityChange() {
   if (document.visibilityState === 'visible') {
-    console.log('회원가입 선택 페이지가 활성화되었습니다.');
+
     // 페이지가 다시 보일 때 완전 초기화
     setTimeout(() => {
       isInitialized = false;
@@ -158,7 +156,7 @@ function handleVisibilityChange() {
       initializePage();
     }, 200);
   } else {
-    console.log('회원가입 선택 페이지가 비활성화되었습니다.');
+
     isPageActive = false;
   }
 }
@@ -175,7 +173,7 @@ function showLoading(card) {
     return;
   }
   
-  console.log('이동 시작');
+  
   card.classList.add('loading');
   card.style.opacity = '0.7';
   card.style.pointerEvents = 'none';
@@ -194,7 +192,7 @@ function showLoading(card) {
  * 이벤트 리스너 제거 및 상태 초기화
  */
 function cleanup() {
-  console.log('페이지 정리 시작');
+  
   isInitialized = false;
   isPageActive = false;
   
@@ -208,7 +206,7 @@ function cleanup() {
   });
   
   document.removeEventListener('visibilitychange', handleVisibilityChange);
-  console.log('페이지 정리 완료');
+  
 }
 
 /**
@@ -227,7 +225,7 @@ function removeCardEventListeners(card) {
  * 디버깅 및 복구용 함수
  */
 function forceReset() {
-  console.log('강제 페이지 리셋');
+  
   cleanup();
   setTimeout(() => {
     isInitialized = false;
@@ -253,7 +251,7 @@ window.addEventListener('unload', cleanup);
 
 // 브라우저 뒤로가기/앞으로가기 처리
 window.addEventListener('popstate', function(event) {
-  console.log('popstate 이벤트 발생', event);
+  
   // 페이지 상태 변경 시 강제 리셋
   setTimeout(() => {
     forceReset();
@@ -262,7 +260,7 @@ window.addEventListener('popstate', function(event) {
 
 // 페이지 포커스/블러 처리
 window.addEventListener('focus', function() {
-  console.log('윈도우 포커스');
+  
   if (!isPageActive) {
     setTimeout(() => {
       forceReset();
@@ -271,7 +269,7 @@ window.addEventListener('focus', function() {
 });
 
 window.addEventListener('blur', function() {
-  console.log('윈도우 블러');
+  
   isPageActive = false;
 });
 

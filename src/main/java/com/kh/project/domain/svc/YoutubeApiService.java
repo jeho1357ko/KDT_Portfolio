@@ -81,7 +81,7 @@ public class YoutubeApiService {
                         if (isRelevantVideo(youtube.getTitle())) {
                             youtubeList.add(youtube);
                         } else {
-                            log.debug("관련성 없는 영상 제외: {}", youtube.getTitle());
+                    
                         }
                     }
                 } catch (Exception e) {
@@ -257,7 +257,7 @@ public class YoutubeApiService {
         // 농수산물 키워드가 있는지 확인
         for (String foodKeyword : foodKeywords) {
             if (lowerTitle.contains(foodKeyword)) {
-                log.debug("농수산물 키워드 발견: {} in {}", foodKeyword, title);
+                
                 return true;
             }
         }
@@ -265,7 +265,7 @@ public class YoutubeApiService {
         // "고르는 방법" 관련 키워드가 있는지 확인
         for (String methodKeyword : methodKeywords) {
             if (lowerTitle.contains(methodKeyword)) {
-                log.debug("고르는 방법 키워드 발견: {} in {}", methodKeyword, title);
+                
                 return true;
             }
         }
@@ -273,12 +273,12 @@ public class YoutubeApiService {
         // "세척하는 방법" 관련 키워드가 있는지 확인
         for (String washKeyword : washKeywords) {
             if (lowerTitle.contains(washKeyword)) {
-                log.debug("세척 방법 키워드 발견: {} in {}", washKeyword, title);
+                
                 return true;
             }
         }
         
-        log.debug("관련 키워드 없음 - 제외: {}", title);
+        
         return false;
     }
 } 

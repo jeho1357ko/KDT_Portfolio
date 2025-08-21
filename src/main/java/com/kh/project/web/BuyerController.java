@@ -145,19 +145,16 @@ public class BuyerController {
 
 
     if (!buyer.getPassword().equals(loginForm.getPassword())) {
-      System.out.println("비밀번호 불일치");
       model.addAttribute("error", "비밀번호가 일치하지 않습니다.");
       return "buyer/buyer_login";
     }
 
     if ("비활성화".equals(buyer.getStatus())) {
-      System.out.println("계정 비활성화 상태");
       model.addAttribute("error", "계정이 비활성화 상태입니다.");
       return "buyer/buyer_login";
     }
 
     if ("정지".equals(buyer.getStatus())) {
-      System.out.println("계정 정지 상태");
       model.addAttribute("error", "계정이 정지 상태입니다.");
       return "buyer/buyer_login";
     }
@@ -177,7 +174,6 @@ public class BuyerController {
     );
 
     session.setAttribute("loginBuyer", loginForm2);
-    System.out.println("세션에 저장된 닉네임: " + loginForm2.getNickname());
 
     return "redirect:/home";
   }
@@ -416,9 +412,6 @@ public class BuyerController {
     Buyer buyer = optionalBuyer.get();
 
     boolean match = buyer.getPassword().equals(inputPassword);
-    System.out.println("입력값: " + inputPassword);
-    System.out.println("DB값: " + buyer.getPassword());
-    System.out.println("일치 여부: " + match);
 
     return Map.of("success", match);
   }

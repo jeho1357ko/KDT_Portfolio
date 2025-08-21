@@ -224,7 +224,7 @@ function processErrorByType(errorText, serverError) {
 function setupVisibilityChange() {
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') {
-      console.log('판매자 로그인 페이지가 활성화되었습니다.');
+  
     }
   });
 }

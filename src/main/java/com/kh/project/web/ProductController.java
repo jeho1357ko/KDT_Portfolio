@@ -538,7 +538,7 @@ public class ProductController {
       return "seller/product_edit";  // 요 뷰 이름으로 페이지를 보여줄 거임!
     } else {
       // 🔥 상품 정보 못 찾으면 에러 페이지나 목록으로 리다이렉트
-      return "error/404"; // 임시 에러 페이지 또는 "redirect:/seller/{sid}" 등으로 처리
+              return "error/404";
     }
   }
 

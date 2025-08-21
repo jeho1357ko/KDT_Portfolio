@@ -178,10 +178,9 @@ public class OrderController {
       for (OrderItem item : items) {
         Optional<Product> product = productSVC.findById(item.getProductId());
         if (product.isPresent()) {
-          // OrderItem에 상품 정보 추가 (임시로 다른 필드에 저장)
-          // 실제로는 별도의 DTO를 만들어야 하지만, 간단히 처리
-          item.setDeliveryCompany(product.get().getTitle()); // 임시로 title을 deliveryCompany에 저장
-          item.setTrackingNumber(product.get().getThumbnail()); // 임시로 thumbnail을 trackingNumber에 저장
+                  // OrderItem에 상품 정보 추가
+        item.setDeliveryCompany(product.get().getTitle());
+        item.setTrackingNumber(product.get().getThumbnail());
         }
       }
 

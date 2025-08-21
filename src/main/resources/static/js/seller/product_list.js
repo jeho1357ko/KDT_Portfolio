@@ -217,14 +217,14 @@ class ProductListManager {
   bindCheckboxEvents() {
     // 전체 선택 체크박스
     this.selectAllCheckbox.addEventListener('change', (event) => {
-      console.log('전체 선택 체크박스 변경됨:', event.target.checked);
+      
       this.handleSelectAll();
     });
     
     // 개별 체크박스 변경 시 전체 선택 상태 업데이트
     this.productCheckboxes.forEach(checkbox => {
       checkbox.addEventListener('change', () => {
-        console.log('개별 체크박스 변경됨');
+
         this.updateSelectAllState();
       });
     });
@@ -235,7 +235,7 @@ class ProductListManager {
    */
   bindBulkStatusEvents() {
     this.bulkStatusSelect.addEventListener('change', (event) => {
-      console.log('상태 변경 드롭다운 변경됨:', event.target.value);
+      
       this.handleBulkStatusChange(event.target.value);
     });
   }
@@ -245,7 +245,7 @@ class ProductListManager {
    */
   handleSelectAll() {
     const isChecked = this.selectAllCheckbox.checked;
-    console.log('전체 선택 처리:', isChecked);
+    
     
     this.productCheckboxes.forEach(checkbox => {
       checkbox.checked = isChecked;
@@ -253,8 +253,7 @@ class ProductListManager {
     
     this.updateSelectAllState();
     
-    console.log('전체 선택 완료, 체크된 상품 개수:', 
-      this.getCheckedCount());
+
   }
 
   /**
@@ -283,7 +282,7 @@ class ProductListManager {
    */
   updateBulkStatusSelectState() {
     const checkedCount = this.getCheckedCount();
-    console.log('체크된 상품 개수:', checkedCount);
+
     this.bulkStatusSelect.disabled = checkedCount === 0;
   }
 
@@ -294,10 +293,7 @@ class ProductListManager {
   handleBulkStatusChange(selectedValue) {
     const checkedCount = this.getCheckedCount();
     
-    console.log('상태 변경 드롭다운 변경:', { selectedValue, checkedCount });
-    
     if (selectedValue && checkedCount > 0) {
-      console.log('일괄 상태 변경 시작:', selectedValue);
       this.performBulkStatusChange(selectedValue);
     } else if (selectedValue && checkedCount === 0) {
       alert('선택된 상품이 없습니다. 상품을 선택한 후 다시 시도해주세요.');
@@ -317,7 +313,7 @@ class ProductListManager {
     const checkedCheckboxes = Array.from(this.productCheckboxes).filter(cb => cb.checked);
     const productIds = checkedCheckboxes.map(cb => Number(cb.value));
     
-    console.log('일괄 상태 변경 처리:', { newStatus, productIds });
+
     
     if (productIds.length === 0) {
       alert('선택된 상품이 없습니다.');
@@ -361,7 +357,7 @@ class ProductListManager {
       status: newStatus
     };
 
-    console.log('API 요청 데이터:', requestData);
+    
 
     const response = await fetch(API_ENDPOINTS.BULK_STATUS, {
       method: 'POST',
@@ -371,9 +367,7 @@ class ProductListManager {
       body: JSON.stringify(requestData)
     });
 
-    console.log('API 응답 상태:', response.status);
-    const result = await response.json();
-    console.log('API 응답 데이터:', result);
+      const result = await response.json();
 
     if (result.header && result.header.rtcd === 'S00') {
       return { success: true };
@@ -437,7 +431,7 @@ async function updateProductStatus(selectElement) {
   const newStatus = selectElement.value;
   const originalStatus = selectElement.getAttribute('data-original-status') || newStatus;
   
-  console.log('상품 상태 업데이트 시작:', { productId, newStatus, originalStatus });
+  
   
   showProductStatusLoading(selectElement);
   
@@ -446,7 +440,7 @@ async function updateProductStatus(selectElement) {
     
     if (result.success) {
       updateProductStatusUI(selectElement, newStatus);
-      console.log('상품 상태가 성공적으로 업데이트되었습니다.');
+
     } else {
       handleProductStatusError(selectElement, originalStatus, result.errorMessage);
     }
@@ -470,7 +464,7 @@ async function sendProductStatusRequest(productId, newStatus) {
     status: newStatus
   };
   
-  console.log('요청 데이터:', requestData);
+  
   
   const response = await fetch(API_ENDPOINTS.PRODUCT_STATUS, {
     method: 'POST',
@@ -482,9 +476,7 @@ async function sendProductStatusRequest(productId, newStatus) {
     body: JSON.stringify(requestData)
   });
   
-  console.log('API 응답 상태:', response.status);
   const result = await response.json();
-  console.log('API 응답 데이터:', result);
   
   if (result.header && result.header.rtcd === 'S00') {
     return { success: true };
@@ -541,7 +533,7 @@ let productListManager;
 document.addEventListener('DOMContentLoaded', () => {
   try {
     productListManager = new ProductListManager();
-    console.log('상품 목록 관리자 초기화 완료');
+
   } catch (error) {
     console.error('ProductListManager 초기화 실패:', error);
   }

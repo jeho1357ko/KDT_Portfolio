@@ -135,7 +135,7 @@ public class CartController {
     }
     
     List<CartItemDTO> cartItems = cartList.stream().map(cart -> {
-      log.debug("Cart 처리 중: cartId={}, productId={}", cart.getCartId(), cart.getProductId());
+      
       
       Product product = productSVC.findById(cart.getProductId()).orElseThrow();
       CartItemDTO dto = new CartItemDTO();
@@ -148,7 +148,7 @@ public class CartController {
       dto.setProductPrice(product.getPrice());
       dto.setDeliveryFee(product.getDeliveryFee());
       
-      log.debug("DTO 생성 완료: cartId={}, productTitle={}", dto.getCartId(), dto.getProductTitle());
+      
       return dto;
     }).toList();
     

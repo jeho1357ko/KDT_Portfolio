@@ -246,7 +246,7 @@ public class ProductSearchDAO {
     if (!response.failures().isEmpty()) {
       System.err.println("Elasticsearch updateByQuery 일부 실패: " + response.failures());
     } else {
-      System.out.println("수정 완료: " + response.updated() + "건");
+  
     }
 
   } catch (

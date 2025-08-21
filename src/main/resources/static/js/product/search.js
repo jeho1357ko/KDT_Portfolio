@@ -296,8 +296,6 @@ async function performSearch(customKeyword = null) {
 
     // YouTube 데이터 추출
     const youtubeList = getYoutubeFromApiResponse(response);
-    console.log('API 응답에서 추출한 YouTube 목록:', youtubeList);
-    console.log('YouTube 목록 길이:', youtubeList ? youtubeList.length : 0);
     
     renderSearchResults(products, searchParams.keyword, youtubeList);
     updateSearchCount(products.length);
@@ -338,54 +336,54 @@ function renderSearchResults(products, keyword, youtubeList = []) {
     return;
   }
   
-  const productsHTML = products.map(product => {
-    const priceFormatted = new Intl.NumberFormat('ko-KR').format(product.price);
-    const soldOutOverlay = product.status === '재고소진' ? 
-      '<div class="sold-out-overlay"><span class="sold-out-text">매진</span></div>' : '';
-    
-    return `
-      <a href="/seller/product/${product.productId}" 
-         class="product-card" 
-         title="${product.title}">
-        <img src="${product.thumbnail || '/images/default-product.jpg'}" 
-             alt="${product.title}"
-             class="product-image"
-             onerror="handleImageError(this)">
-        
-        ${soldOutOverlay}
-        
-        <div class="product-info">
-          <p class="product-title">${product.title}</p>
-          <p class="product-price">${priceFormatted}원</p>
-          <p class="product-status">${product.status}</p>
-        </div>
-      </a>
-    `;
-  }).join('');
-  
-  searchResultsGrid.innerHTML = productsHTML;
-  
-  // 이미지 에러 이벤트 리스너 다시 등록
-  const images = searchResultsGrid.querySelectorAll('.product-image');
-  images.forEach(img => {
-    img.addEventListener('error', function() {
-      handleImageError(this);
-    });
-  });
-  
-  // 검색어 하이라이트
-  if (keyword) {
-    highlightSearchTerm(keyword);
-  }
-  
-  // 상품과 YouTube 영상을 섞어서 표시
-  console.log('상품과 YouTube 영상 섞어서 렌더링 시작:', { products: products.length, youtube: youtubeList.length });
+  // YouTube 영상이 있으면 섞어서 표시
   if (youtubeList && youtubeList.length > 0) {
     const mixedResults = mixProductsAndVideos(products, youtubeList);
     renderMixedResults(mixedResults, keyword);
   } else {
-    console.log('YouTube 영상 없음 - 상품만 표시');
-    // 기존 YouTube 섹션 숨기기
+    // YouTube 영상이 없으면 상품만 표시
+    
+    const productsHTML = products.map(product => {
+      const priceFormatted = new Intl.NumberFormat('ko-KR').format(product.price);
+      const soldOutOverlay = product.status === '재고소진' ? 
+        '<div class="sold-out-overlay"><span class="sold-out-text">매진</span></div>' : '';
+      
+      return `
+        <a href="/seller/product/${product.productId}" 
+           class="product-card" 
+           title="${product.title}">
+          <img src="${product.thumbnail || '/images/default-product.jpg'}" 
+               alt="${product.title}"
+               class="product-image"
+               onerror="handleImageError(this)">
+          
+          ${soldOutOverlay}
+          
+          <div class="product-info">
+            <p class="product-title">${product.title}</p>
+            <p class="product-price">${priceFormatted}원</p>
+            <p class="product-status">${product.status}</p>
+          </div>
+        </a>
+      `;
+    }).join('');
+    
+    searchResultsGrid.innerHTML = productsHTML;
+    
+    // 이미지 에러 이벤트 리스너 다시 등록
+    const images = searchResultsGrid.querySelectorAll('.product-image');
+    images.forEach(img => {
+      img.addEventListener('error', function() {
+        handleImageError(this);
+      });
+    });
+    
+    // 검색어 하이라이트
+    if (keyword) {
+      highlightSearchTerm(keyword);
+    }
+    
+    // YouTube 섹션 숨기기
     hideYoutubeSection();
   }
 }
@@ -418,11 +416,7 @@ function mixProductsAndVideos(products, youtubeList) {
     }
   }
   
-  console.log('줄 단위 그룹 결과:', { 
-    rows: rows.length, 
-    products: products.length, 
-    videos: youtubeList.length 
-  });
+
   return rows;
 }
 
@@ -510,48 +504,6 @@ function renderMixedResults(rowGroups, keyword) {
   
   // 기존 YouTube 섹션 숨기기 (이제 섞어서 표시하므로)
   hideYoutubeSection();
-}
-
-/**
- * YouTube 영상 렌더링
- * @param {Array} youtubeList - YouTube 영상 목록
- */
-function renderYoutubeVideos(youtubeList) {
-  const youtubeSection = document.getElementById('youtubeSection');
-  const youtubeGrid = document.getElementById('youtubeGrid');
-  
-  if (!youtubeSection || !youtubeGrid) {
-    console.error('YouTube 섹션을 찾을 수 없습니다.');
-    return;
-  }
-  
-  const youtubeHTML = youtubeList.map(video => {
-    const uploadDate = video.uploadDate ? new Date(video.uploadDate).toLocaleDateString('ko-KR') : '';
-    
-    return `
-      <a href="${video.url}" target="_blank" class="youtube-card" title="${video.title}">
-        <div class="youtube-thumbnail-container">
-          <img src="${video.thumbnail || '/images/default-youtube.jpg'}" 
-               alt="${video.title}"
-               class="youtube-thumbnail"
-               onerror="this.src='/images/default-youtube.jpg'">
-          <div class="youtube-play-button">
-            <i class="fas fa-play"></i>
-          </div>
-        </div>
-        <div class="youtube-info">
-          <p class="youtube-video-title">${video.title}</p>
-          <p class="youtube-channel">${video.channelName || '알 수 없음'}</p>
-          ${uploadDate ? `<p class="youtube-upload-date">${uploadDate}</p>` : ''}
-        </div>
-      </a>
-    `;
-  }).join('');
-  
-  youtubeGrid.innerHTML = youtubeHTML;
-  youtubeSection.style.display = 'block';
-  
-  console.log('YouTube 영상 렌더링 완료:', youtubeList.length);
 }
 
 /**
@@ -695,39 +647,7 @@ function showLoading() {
   }
 }
 
-/**
- * Elasticsearch 검색 (향후 구현용)
- * @param {string} keyword - 검색 키워드
- */
-function searchElasticsearch(keyword) {
-  fetch(`/elasticsearch/search?query=${encodeURIComponent(keyword)}`)
-    .then(response => response.json())
-    .then(data => {
-      console.log('Elasticsearch 검색 결과:', data);
-      // TODO: Elasticsearch 검색 결과 렌더링 구현
-    })
-    .catch(error => {
-      console.error('Elasticsearch 검색 오류:', error);
-    });
-}
 
-/**
- * 검색 결과 애니메이션
- */
-function animateSearchResults() {
-  const productCards = document.querySelectorAll('.product-card');
-  
-  productCards.forEach((card, index) => {
-    card.style.opacity = '0';
-    card.style.transform = 'translateY(20px)';
-    
-    setTimeout(() => {
-      card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-      card.style.opacity = '1';
-      card.style.transform = 'translateY(0)';
-    }, index * 100);
-  });
-}
 
 // ===== 페이지네이션 관련 함수들 =====
 
@@ -744,7 +664,7 @@ function updatePagination(currentPage, totalCount, pageSize) {
   const nextPageBtn = document.getElementById('nextPageBtn');
   const paginationNumbers = document.getElementById('paginationNumbers');
   
-  console.log('페이지네이션 업데이트:', { currentPage, totalCount, totalPages, pageSize });
+
   
   if (!paginationContainer) {
     console.error('페이지네이션 컨테이너를 찾을 수 없습니다.');
@@ -753,13 +673,11 @@ function updatePagination(currentPage, totalCount, pageSize) {
   
   if (totalPages <= 1) {
     paginationContainer.style.display = 'none';
-    console.log('페이지가 1개 이하이므로 페이지네이션 숨김');
     return;
   }
   
   // 페이지네이션 컨테이너 표시
   paginationContainer.style.display = 'block';
-  console.log('페이지네이션 표시됨');
   
   // 페이지 정보 업데이트
   const currentPageSpan = document.getElementById('currentPage');
@@ -781,7 +699,6 @@ function updatePagination(currentPage, totalCount, pageSize) {
   // 페이지 번호 버튼 생성
   if (paginationNumbers) {
     generatePageNumberButtons(currentPage, totalPages, paginationNumbers);
-    console.log('페이지 번호 버튼 생성 완료');
   } else {
     console.error('페이지 번호 컨테이너를 찾을 수 없습니다.');
   }
@@ -794,7 +711,6 @@ function updatePagination(currentPage, totalCount, pageSize) {
  * @param {HTMLElement} container - 버튼을 추가할 컨테이너
  */
 function generatePageNumberButtons(currentPage, totalPages, container) {
-  console.log('페이지 번호 버튼 생성 시작:', { currentPage, totalPages, container });
   
   if (!container) {
     console.error('컨테이너가 없습니다.');
@@ -802,7 +718,6 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
   }
   
   container.innerHTML = '';
-  console.log('컨테이너 초기화 완료');
   
   // 표시할 페이지 번호 범위 계산
   const maxVisiblePages = 7; // 최대 7개 페이지 번호 표시
@@ -829,7 +744,6 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
       ellipsis.textContent = '...';
       ellipsis.style.cssText = 'color: var(--color-secondary-text); margin: 0 4px;';
       container.appendChild(ellipsis);
-      console.log('첫 번째 생략 부호 추가');
     }
   }
   
@@ -837,7 +751,6 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
   for (let i = startPage; i <= endPage; i++) {
     const pageBtn = createPageNumberButton(i, currentPage, totalPages);
     container.appendChild(pageBtn);
-    console.log('페이지 버튼 추가:', i);
   }
   
   // 마지막 페이지 버튼 (마지막 페이지가 표시 범위에 없을 때)
@@ -849,15 +762,13 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
       ellipsis.textContent = '...';
       ellipsis.style.cssText = 'color: var(--color-secondary-text); margin: 0 4px;';
       container.appendChild(ellipsis);
-      console.log('두 번째 생략 부호 추가');
     }
     
     const lastPageBtn = createPageNumberButton(totalPages, currentPage, totalPages);
     container.appendChild(lastPageBtn);
-    console.log('마지막 페이지 버튼 추가:', totalPages);
   }
   
-  console.log('페이지 번호 버튼 생성 완료. 총 버튼 수:', container.children.length);
+
 }
 
 /**
@@ -868,7 +779,6 @@ function generatePageNumberButtons(currentPage, totalPages, container) {
  * @returns {HTMLElement} 생성된 버튼 요소
  */
 function createPageNumberButton(pageNum, currentPage, totalPages) {
-  console.log('페이지 버튼 생성:', { pageNum, currentPage, totalPages });
   
   const button = document.createElement('a');
   button.href = '#';
@@ -878,19 +788,15 @@ function createPageNumberButton(pageNum, currentPage, totalPages) {
   // 현재 페이지인 경우 active 클래스 추가
   if (pageNum === currentPage) {
     button.classList.add('active');
-    console.log('현재 페이지 버튼 활성화:', pageNum);
   }
   
   // 클릭 이벤트 추가
   button.addEventListener('click', function(e) {
     e.preventDefault();
-    console.log('페이지 버튼 클릭:', pageNum);
     if (pageNum !== currentPage) {
       goToPage(pageNum);
     }
   });
-  
-  console.log('페이지 버튼 생성 완료:', pageNum);
   return button;
 }
 
@@ -1011,10 +917,9 @@ function initializeSearchPage() {
     paginationContainer.style.display = 'none';
   }
 
-  if (keyword) {
-    console.log('페이지 로드 시 검색어:', keyword);
-    performSearch();
-  } else {
+      if (keyword) {
+      performSearch();
+    } else {
     // 검색어가 없으면 페이지네이션 숨김
     if (paginationContainer) {
       paginationContainer.style.display = 'none';
@@ -1023,38 +928,6 @@ function initializeSearchPage() {
   
   // 페이지네이션 버튼 이벤트 리스너 재설정
   setupPaginationEventListeners();
-}
-
-// ===== 동기화 관련 함수들 =====
-
-/**
- * 동기화 실행
- */
-function setupSyncForm() {
-  document.getElementById("syncForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-
-    const logBox = document.getElementById("syncLog");
-    const logPre = logBox.querySelector("pre");
-    const button = document.getElementById("syncButton");
-
-    logBox.style.display = "block";
-    logPre.textContent = "🔄 동기화 시작...\n";
-    button.disabled = true;
-
-    fetch(API_ENDPOINTS.SYNC, { method: "POST" })
-      .then(res => res.text())
-      .then(text => {
-        logPre.textContent += text + "\n";
-      })
-      .catch(err => {
-        logPre.textContent += "❌ 오류 발생: " + err + "\n";
-      })
-      .finally(() => {
-        button.disabled = false;
-        logPre.textContent += "✅ 작업 완료";
-      });
-  });
 }
 
 // ===== DOM 로드 완료 시 실행 =====
