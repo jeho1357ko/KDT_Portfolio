@@ -147,7 +147,7 @@ public class SellerController {
     );
 
     session.setAttribute("loginSeller", loginSeller);
-    return "redirect:/seller/main/" + seller.getSellerId();
+    return "redirect:/seller/main/" + seller.getSellerId() + "?clearRecent=1";
   }
 
   // 로그인 후 화면
@@ -201,7 +201,7 @@ public class SellerController {
     }
 
     // 3) 로그아웃 후 로그인 페이지로 리다이렉트
-    return "redirect:/home"; //
+    return "redirect:/home?clearRecent=1"; //
   }
 
   //회원 정보  조회

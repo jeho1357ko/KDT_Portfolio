@@ -168,8 +168,7 @@ class ProductEditManager {
     // 가격 입력 시 자동 포맷팅
     const priceField = this.form.querySelector('#price');
     if (priceField) {
-      priceField.addEventListener('input', (e) => this.formatPrice(e));
-      priceField.addEventListener('input', (e) => this.limitInputLength(e, 10));
+      priceField.addEventListener('input', (e) => this.limitPriceDigitsAndFormat(e, 10));
     }
 
     // 수량 입력 시 자동 포맷팅
@@ -284,7 +283,7 @@ class ProductEditManager {
 
     // 숫자 필드 검사
     if (field.type === 'number') {
-      const numValue = Number(value);
+      const numValue = Number(value.replace(/,/g, ''));
       if (rule.min !== undefined && numValue < rule.min) {
         this.showFieldError(field, rule.message);
         return false;
@@ -372,7 +371,16 @@ class ProductEditManager {
    * @returns {FormData} 폼 데이터
    */
   collectFormData() {
-    return new FormData(this.form);
+    const formData = new FormData(this.form);
+    // 숫자 필드는 제출 전에 숫자만 남기기
+    ['price', 'quantity', 'deliveryFee'].forEach((name) => {
+      const field = this.form.querySelector(`[name="${name}"]`);
+      if (field) {
+        const digitsOnly = field.value.replace(/\D/g, '');
+        formData.set(name, digitsOnly);
+      }
+    });
+    return formData;
   }
 
   /**
@@ -462,15 +470,17 @@ class ProductEditManager {
   }
 
   /**
-   * 가격 포맷팅
+   * 가격 입력 자릿수 제한(숫자 기준) + 포맷팅
    * @param {Event} e - 입력 이벤트
+   * @param {number} maxDigits - 허용할 최대 숫자 자릿수
    */
-  formatPrice(e) {
-    let value = e.target.value.replace(/[^\d]/g, '');
-    if (value) {
-      value = parseInt(value).toLocaleString();
-      e.target.value = value;
+  limitPriceDigitsAndFormat(e, maxDigits) {
+    let raw = e.target.value.replace(/\D/g, '');
+    if (raw.length > maxDigits) {
+      raw = raw.slice(0, maxDigits);
     }
+    // number input에 쉼표를 넣지 않고 숫자만 유지
+    e.target.value = raw;
   }
 
   /**

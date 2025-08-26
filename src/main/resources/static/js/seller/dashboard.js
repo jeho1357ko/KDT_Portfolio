@@ -26,6 +26,7 @@ class DashboardManager {
      * 초기화
      */
     init() {
+        this.clearRecentIfRequested();
         this.loadDashboardData();
         this.setupEventListeners();
         this.trackPageView();
@@ -122,6 +123,23 @@ class DashboardManager {
 
         // Google Analytics나 다른 분석 도구 연동 가능
         this.sendAnalyticsData();
+    }
+
+    /**
+     * URL 파라미터로 전달된 최근 본 목록 초기화 플래그 처리
+     */
+    clearRecentIfRequested() {
+        try {
+            const params = new URLSearchParams(window.location.search);
+            if (params.has('clearRecent')) {
+                localStorage.removeItem('recentProducts');
+                // URL 정리
+                const url = window.location.origin + window.location.pathname + window.location.hash;
+                window.history.replaceState({}, document.title, url);
+            }
+        } catch (e) {
+            console.warn('최근 본 목록 초기화 중 오류:', e);
+        }
     }
 
     /**

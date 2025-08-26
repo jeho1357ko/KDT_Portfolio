@@ -175,7 +175,7 @@ public class BuyerController {
 
     session.setAttribute("loginBuyer", loginForm2);
 
-    return "redirect:/home";
+    return "redirect:/home?clearRecent=1";
   }
 
 
@@ -196,7 +196,7 @@ public class BuyerController {
     }
 
     // 3) 로그아웃 후 로그인 페이지로 리다이렉트
-    return "redirect:/home"; //
+    return "redirect:/home?clearRecent=1"; //
   }
 
   // 구매자 로그아웃 (home 페이지용)
@@ -212,7 +212,7 @@ public class BuyerController {
     }
 
     // 3) 로그아웃 후 로그인 페이지로 리다이렉트
-    return "redirect:/home"; //
+    return "redirect:/home?clearRecent=1"; //
   }
 
   // 회원 정보 조회 페이지

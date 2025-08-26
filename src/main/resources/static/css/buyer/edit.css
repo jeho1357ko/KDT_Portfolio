@@ -166,6 +166,13 @@ label {
     color: var(--color-text);
 }
 
+/* ===== 필수 입력란 라벨 ===== */
+label.required::after {
+    content: ' *';
+    color: var(--color-danger);
+    font-weight: bold;
+}
+
 .input-col {
     flex: 1;
     display: flex;
@@ -190,6 +197,17 @@ input:focus, select:focus, textarea:focus {
     box-shadow: 0 0 0 3px rgba(101, 131, 82, 0.1);
 }
 
+/* ===== 에러 상태 입력 필드 ===== */
+input.error, select.error, textarea.error {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
+}
+
+input.error:focus, select.error:focus, textarea.error:focus {
+    border-color: var(--color-danger);
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
+}
+
 input[readonly] {
     background-color: var(--color-disabled);
     cursor: not-allowed;
@@ -203,6 +221,17 @@ input[readonly] {
     min-height: 1.2em;
     margin-top: 6px;
     font-weight: 500;
+    display: none;
+}
+
+.error-msg.show {
+    display: block;
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* ===== 주소 검색 ===== */

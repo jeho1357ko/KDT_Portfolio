@@ -43,7 +43,7 @@
     <div class="form-container">
       <h2 id="editTitle">구매자 정보 수정</h2>
 
-      <form th:action="@{/buyer/edit}" method="post" th:object="${buyerEditForm}" novalidate>
+      <form th:action="@{/buyer/edit}" method="post" th:object="${buyerEditForm}" novalidate class="edit-form">
         <!-- 전역 오류 메시지 표시 -->
         <div th:if="${#fields.hasGlobalErrors()}" class="error-msg" role="alert" aria-live="polite">
           <div th:each="error : ${#fields.globalErrors()}" th:text="${error}"></div>
@@ -85,23 +85,25 @@
 
         <!-- 성별 -->
         <div class="form-row">
-          <label for="gender">성별</label>
+          <label for="gender" class="required">성별</label>
           <div class="input-col">
-            <select id="gender" th:field="*{gender}" aria-describedby="gender-error">
+            <select id="gender" th:field="*{gender}" required aria-describedby="gender-error">
               <option value="">선택해주세요</option>
               <option value="남성">남성</option>
               <option value="여성">여성</option>
             </select>
             <div th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" id="gender-error" class="error-msg" role="alert" aria-live="polite"></div>
+            <div id="gender-error" class="error-msg" role="alert" aria-live="polite"></div>
           </div>
         </div>
 
         <!-- 생년월일 -->
         <div class="form-row">
-          <label for="birth">생년월일</label>
+          <label for="birth" class="required">생년월일</label>
           <div class="input-col">
-            <input type="date" id="birth" th:field="*{birth}" aria-describedby="birth-error">
+            <input type="date" id="birth" th:field="*{birth}" required aria-describedby="birth-error">
             <div th:if="${#fields.hasErrors('birth')}" th:errors="*{birth}" id="birth-error" class="error-msg" role="alert" aria-live="polite"></div>
+            <div id="birth-error" class="error-msg" role="alert" aria-live="polite"></div>
           </div>
         </div>
 
@@ -111,7 +113,7 @@
           <div class="input-col">
             <div class="address-search-container">
               <input type="text" id="postNumber" th:field="*{postNumber}" placeholder="우편번호" readonly>
-              <button type="button" id="searchPostcodeBtn" onclick="addressManager.openAddressPopup()" class="address-search-btn" aria-label="주소 검색">주소 검색</button>
+              <button type="button" id="searchPostcodeBtn" onclick="openBuyerAddressPopup()" class="address-search-btn" aria-label="주소 검색">주소 검색</button>
             </div>
             <input type="text" id="address" placeholder="주소" readonly>
             <input type="text" id="detailAddress" placeholder="상세주소">

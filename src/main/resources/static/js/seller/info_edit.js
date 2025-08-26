@@ -31,6 +31,7 @@ class AddressManager {
         this.shopAddressInput = document.getElementById(ADDRESS_FIELDS.SHOP_ADDRESS);
         this.searchButton = document.getElementById('btn-postNumber');
         this.form = document.getElementById('sellerEditForm');
+        this.telInput = document.querySelector('input[name="tel"]');
         
         this.validateElements();
     }
@@ -45,7 +46,8 @@ class AddressManager {
             this.detailAddressInput,
             this.shopAddressInput,
             this.searchButton,
-            this.form
+            this.form,
+            this.telInput
         ];
 
         for (const element of requiredElements) {
@@ -70,6 +72,7 @@ class AddressManager {
         this.bindAddressSearchEvent();
         this.bindFormSubmitEvent();
         this.bindKeyboardEvents();
+        this.bindPhoneFormatEvents();
     }
 
     /**
@@ -95,6 +98,41 @@ class AddressManager {
                 this.form.requestSubmit();
             }
         });
+    }
+
+    /**
+     * 전화번호 입력 자동 하이픈 처리 이벤트 바인딩
+     */
+    bindPhoneFormatEvents() {
+        if (!this.telInput) return;
+        const handler = () => {
+            const formatted = this.formatPhoneNumber(this.telInput.value);
+            this.telInput.value = formatted;
+        };
+        this.telInput.addEventListener('input', handler);
+        this.telInput.addEventListener('blur', handler);
+        this.telInput.addEventListener('paste', (e) => {
+            setTimeout(handler, 0);
+        });
+    }
+
+    /**
+     * 전화번호 형식으로 하이픈 자동 삽입 (국번 02 예외 처리 포함)
+     * @param {string} value - 원본 입력 값
+     * @returns {string} 포맷된 값
+     */
+    formatPhoneNumber(value) {
+        let digits = (value || '').replace(/\D/g, '').slice(0, 11);
+        if (digits.startsWith('02')) {
+            if (digits.length <= 2) return digits;
+            if (digits.length <= 5) return digits.replace(/(\d{2})(\d{1,3})/, '$1-$2');
+            if (digits.length <= 9) return digits.replace(/(\d{2})(\d{3})(\d{1,4})/, '$1-$2-$3');
+            return digits.replace(/(\d{2})(\d{4})(\d{4})/, '$1-$2-$3');
+        } else {
+            if (digits.length <= 3) return digits;
+            if (digits.length <= 7) return digits.replace(/(\d{3})(\d{1,4})/, '$1-$2');
+            return digits.replace(/(\d{3})(\d{3,4})(\d{4})/, '$1-$2-$3');
+        }
     }
 
     /**

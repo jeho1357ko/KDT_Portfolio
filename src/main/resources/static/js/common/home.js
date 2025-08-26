@@ -154,6 +154,21 @@ function setupSearchEvents() {
  * 페이지 로드 시 초기화
  */
 document.addEventListener('DOMContentLoaded', function() {
+  // 로그인/로그아웃 후 최근 본 목록 초기화 플래그 처리
+  try {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('clearRecent')) {
+      localStorage.removeItem('recentProducts');
+      if (typeof updateRecentProductsDisplay === 'function') {
+        updateRecentProductsDisplay();
+      }
+      // URL 정리
+      const url = window.location.origin + window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, url);
+    }
+  } catch (e) {
+    console.warn('최근 본 목록 초기화 중 오류:', e);
+  }
   // 최근 본 상품 표시 초기화
   if (typeof updateRecentProductsDisplay === 'function') {
     updateRecentProductsDisplay();

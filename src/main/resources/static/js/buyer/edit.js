@@ -15,8 +15,11 @@ const VALIDATION_RULES = {
     required: true,
     pattern: /^010-\d{4}-\d{4}$/
   },
+  gender: {
+    required: true
+  },
   birth: {
-    required: false,
+    required: true,
     pattern: /^\d{4}-\d{2}-\d{2}$/
   }
 };
@@ -31,7 +34,7 @@ const SELECTORS = {
   ADDRESS_INPUT: '#address',
   POST_NUMBER_INPUT: '#postNumber',
   FULL_ADDRESS_INPUT: '#fullAddress',
-  SAVE_BTN: '.save-btn',
+  SAVE_BTN: '.update-btn',
   CANCEL_BTN: '.cancel-btn'
 };
 
@@ -80,6 +83,7 @@ const Utils = {
    * @param {boolean} isLoading - 로딩 상태 여부
    */
   setLoadingState(button, isLoading) {
+    if (!button) return; // 버튼이 없을 경우 안전하게 무시
     if (isLoading) {
       button.disabled = true;
       button.textContent = '저장 중...';
@@ -113,13 +117,15 @@ class FormValidator {
   validateForm() {
     const nickname = document.getElementById('nickname').value;
     const phone = document.getElementById('tel').value;
+    const gender = document.getElementById('gender').value;
     const birth = document.getElementById('birth').value;
     
     const nicknameResult = this.validateNickname(nickname);
     const phoneResult = this.validatePhone(phone);
+    const genderResult = this.validateGender(gender);
     const birthResult = this.validateBirth(birth);
     
-    return nicknameResult && phoneResult && birthResult;
+    return nicknameResult && phoneResult && genderResult && birthResult;
   }
 
   /**
@@ -182,9 +188,12 @@ class FormValidator {
    * @returns {boolean} 검증 결과
    */
   validateBirth(value) {
-    if (!value) return true; // 선택사항
-    
     const rules = VALIDATION_RULES.birth;
+    
+    if (rules.required && !value.trim()) {
+      this.showFieldError('birth', '생년월일을 입력해주세요.');
+      return false;
+    }
     
     if (!rules.pattern.test(value)) {
       this.showFieldError('birth', '올바른 날짜 형식으로 입력해주세요.');
@@ -204,6 +213,23 @@ class FormValidator {
   }
 
   /**
+   * 성별을 검증합니다.
+   * @param {string} value - 검증할 성별
+   * @returns {boolean} 검증 결과
+   */
+  validateGender(value) {
+    const rules = VALIDATION_RULES.gender;
+    
+    if (rules.required && !value.trim()) {
+      this.showFieldError('gender', '성별을 선택해주세요.');
+      return false;
+    }
+    
+    this.clearFieldError('gender');
+    return true;
+  }
+
+  /**
    * 필드 에러를 표시합니다.
    * @param {string} fieldId - 필드 ID
    * @param {string} message - 에러 메시지
@@ -212,12 +238,16 @@ class FormValidator {
     const field = document.getElementById(fieldId);
     const errorDiv = document.getElementById(`${fieldId}-error`);
     
-    if (errorDiv) {
-      errorDiv.textContent = message;
-      errorDiv.style.display = 'block';
+    // 필드에 에러 클래스 추가
+    if (field) {
+      field.classList.add('error');
     }
     
-    field.classList.add('error');
+    // 에러 메시지 표시
+    if (errorDiv) {
+      errorDiv.textContent = message;
+      errorDiv.classList.add('show');
+    }
   }
 
   /**
@@ -228,12 +258,16 @@ class FormValidator {
     const field = document.getElementById(fieldId);
     const errorDiv = document.getElementById(`${fieldId}-error`);
     
-    if (errorDiv) {
-      errorDiv.textContent = '';
-      errorDiv.style.display = 'none';
+    // 필드에서 에러 클래스 제거
+    if (field) {
+      field.classList.remove('error');
     }
     
-    field.classList.remove('error');
+    // 에러 메시지 숨김
+    if (errorDiv) {
+      errorDiv.textContent = '';
+      errorDiv.classList.remove('show');
+    }
   }
 }
 
@@ -248,7 +282,52 @@ class AddressManager {
       searchBtn: document.getElementById('searchPostcodeBtn')
     };
     
+    this.initializeAddressFields();
     this.bindEvents();
+  }
+
+  /**
+   * 기존 주소 정보를 파싱하여 각 필드에 설정
+   */
+  initializeAddressFields() {
+    const fullAddress = this.elements.fullAddress.value;
+    if (fullAddress && fullAddress.trim()) {
+      this.parseAndSetAddress(fullAddress);
+    }
+  }
+
+  /**
+   * 전체 주소 문자열을 파싱하여 개별 필드에 설정
+   * @param {string} fullAddress - 전체 주소 문자열
+   */
+  parseAndSetAddress(fullAddress) {
+    const addressParts = fullAddress.trim().split(' ');
+    if (addressParts.length >= 3) {
+      // 첫 번째 부분이 우편번호일 가능성이 높음 (숫자로 시작하는 경우)
+      if (/^\d{5,6}$/.test(addressParts[0])) {
+        this.elements.postNumber.value = addressParts[0];
+        // 나머지 부분을 주소와 상세주소로 분리
+        const remainingParts = addressParts.slice(1);
+        if (remainingParts.length >= 2) {
+          // 마지막 부분을 상세주소로, 나머지를 기본주소로
+          this.elements.address.value = remainingParts.slice(0, -1).join(' ');
+          this.elements.detailAddress.value = remainingParts[remainingParts.length - 1];
+        } else {
+          this.elements.address.value = remainingParts[0];
+        }
+      } else {
+        // 우편번호가 없는 경우, 마지막 부분을 상세주소로
+        this.elements.address.value = addressParts.slice(0, -1).join(' ');
+        this.elements.detailAddress.value = addressParts[addressParts.length - 1];
+      }
+    } else if (addressParts.length === 2) {
+      // 주소가 2개 부분으로만 구성된 경우
+      this.elements.address.value = addressParts[0];
+      this.elements.detailAddress.value = addressParts[1];
+    } else if (addressParts.length === 1) {
+      // 주소가 1개 부분으로만 구성된 경우
+      this.elements.address.value = addressParts[0];
+    }
   }
 
   /**
@@ -307,7 +386,7 @@ class AddressManager {
   updateFullAddress() {
     const baseAddr = this.elements.address.value.trim();
     const detail = this.elements.detailAddress.value.trim();
-    const fullAddress = baseAddr + ' ' + detail;
+    const fullAddress = baseAddr + (detail ? ' ' + detail : '');
     
     this.elements.fullAddress.value = fullAddress;
   }
@@ -321,16 +400,14 @@ class AddressManager {
     const address = this.elements.address.value.trim();
     const detailAddress = this.elements.detailAddress.value.trim();
     
-    if (!postNumber) {
-      return { isValid: false, message: '우편번호를 검색해주세요.' };
+    // 주소 필드가 모두 비어있으면 기존 주소 유지 (수정하지 않음)
+    if (!postNumber && !address && !detailAddress) {
+      return { isValid: true, preserveExisting: true };
     }
     
+    // 일부만 입력된 경우 검증
     if (!address) {
-      return { isValid: false, message: '주소를 검색해주세요.' };
-    }
-    
-    if (!detailAddress) {
-      return { isValid: false, message: '상세주소를 입력해주세요.' };
+      return { isValid: false, message: '주소를 입력해주세요.' };
     }
     
     return { isValid: true };
@@ -426,10 +503,14 @@ class BuyerEditManager {
       const response = await this.submitForm(formData);
       
       if (response.success) {
-        Utils.showMessage('정보가 성공적으로 수정되었습니다.', 'success', this.elements.form);
-        setTimeout(() => {
-          window.location.href = '/buyer/info';
-        }, 1500);
+        if (response.redirectUrl) {
+          window.location.href = response.redirectUrl;
+        } else {
+          Utils.showMessage('정보가 성공적으로 수정되었습니다.', 'success', this.elements.form);
+          setTimeout(() => {
+            window.location.href = '/buyer/info';
+          }, 500);
+        }
       } else {
         Utils.showMessage(response.message || '정보 수정에 실패했습니다.', 'error', this.elements.form);
       }
@@ -448,12 +529,20 @@ class BuyerEditManager {
   collectFormData() {
     const formData = new FormData(this.elements.form);
     
-    // 주소 정보 결합
-    const baseAddr = this.elements.addressInput.value.trim();
-    const detail = this.elements.detailAddressInput.value.trim();
-    const fullAddress = baseAddr + ' ' + detail;
+    // 주소 유효성 검사
+    const addressValidation = this.addressManager.validateAddress();
     
-    formData.set('address', fullAddress);
+    if (addressValidation.preserveExisting) {
+      // 주소 필드가 모두 비어있으면 기존 주소 유지 (address 필드 제거)
+      formData.delete('address');
+    } else {
+      // 주소 정보 결합
+      const baseAddr = this.elements.addressInput.value.trim();
+      const detail = this.elements.detailAddressInput.value.trim();
+      const fullAddress = baseAddr + (detail ? ' ' + detail : '');
+      
+      formData.set('address', fullAddress);
+    }
     
     return formData;
   }
@@ -473,7 +562,19 @@ class BuyerEditManager {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    return await response.json();
+    // 서버가 리다이렉트 응답을 주는 경우 처리
+    if (response.redirected) {
+      return { success: true, redirectUrl: response.url };
+    }
+
+    // JSON 응답 시 처리 (백엔드가 JSON을 주는 경우 대비)
+    try {
+      const data = await response.json();
+      return data;
+    } catch (_) {
+      // JSON이 아니면 성공으로 간주하고 기본 리다이렉트 적용
+      return { success: true, redirectUrl: '/buyer/info' };
+    }
   }
 
   /**
@@ -504,17 +605,34 @@ class BuyerEditManager {
    * 실시간 유효성 검사를 설정합니다.
    */
   setupRealTimeValidation() {
-    // 닉네임 검사
+    // 닉네임 실시간 검사
+    this.elements.nicknameInput.addEventListener('input', () => {
+      this.formValidator.clearFieldError('nickname');
+    });
     this.elements.nicknameInput.addEventListener('blur', () => {
       this.formValidator.validateNickname(this.elements.nicknameInput.value);
     });
 
-    // 전화번호 검사
+    // 전화번호 실시간 검사
+    this.elements.telInput.addEventListener('input', () => {
+      this.formValidator.clearFieldError('tel');
+    });
     this.elements.telInput.addEventListener('blur', () => {
       this.formValidator.validatePhone(this.elements.telInput.value);
     });
 
-    // 생년월일 검사
+    // 성별 실시간 검사
+    this.elements.genderSelect.addEventListener('change', () => {
+      this.formValidator.clearFieldError('gender');
+    });
+    this.elements.genderSelect.addEventListener('blur', () => {
+      this.formValidator.validateGender(this.elements.genderSelect.value);
+    });
+
+    // 생년월일 실시간 검사
+    this.elements.birthInput.addEventListener('input', () => {
+      this.formValidator.clearFieldError('birth');
+    });
     this.elements.birthInput.addEventListener('blur', () => {
       this.formValidator.validateBirth(this.elements.birthInput.value);
     });
@@ -572,12 +690,29 @@ function goToHome() {
   window.location.href = '/home';
 }
 
+/**
+ * 주소 검색 팝업을 전역에서 호출할 수 있도록 노출
+ */
+function openBuyerAddressPopup() {
+  try {
+    // 페이지 초기화 이전에 호출될 수 있으므로 방어적으로 재사용
+    if (!window.__buyerAddressManager) {
+      window.__buyerAddressManager = new AddressManager();
+    }
+    window.__buyerAddressManager.openAddressPopup();
+  } catch (e) {
+    console.error('주소 검색 팝업 열기 실패:', e);
+  }
+}
+
 // ===== 페이지 초기화 =====
 /**
  * 페이지 초기화를 수행합니다.
  */
 function initializePage() {
   const buyerEditManager = new BuyerEditManager();
+  // 전역 참조 저장 (주소 검색 버튼에서 사용 가능)
+  window.__buyerAddressManager = buyerEditManager.addressManager;
   
   // 페이지 통계 수집
   setTimeout(() => {

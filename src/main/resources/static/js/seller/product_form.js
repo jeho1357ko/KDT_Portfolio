@@ -151,7 +151,7 @@ class ProductFormManager {
    */
   setupRealTimeValidation() {
     // 필수 필드들에 대한 실시간 검증
-    const requiredFields = ['productName', 'title', 'content', 'countryOfOrigin', 'price', 'quantity', 'status', 'deliveryFee'];
+    const requiredFields = ['productName', 'title', 'content', 'countryOfOrigin', 'price', 'quantity', 'status', 'deliveryFee', 'deliveryMethod', 'deliveryInformation'];
     
     requiredFields.forEach(fieldName => {
       const field = this.form.querySelector(`[name="${fieldName}"]`);
@@ -168,7 +168,7 @@ class ProductFormManager {
    */
   async handleFormSubmit() {
     if (!this.validateForm()) {
-      this.showFormError('필수 항목을 모두 입력해주세요.');
+      this.showFormError('필수입력란을 전부 작성하셔야 합니다');
       return;
     }
 
@@ -200,7 +200,7 @@ class ProductFormManager {
    */
   validateForm() {
     let isValid = true;
-    const requiredFields = ['productName', 'title', 'content', 'countryOfOrigin', 'price', 'quantity', 'status', 'deliveryFee'];
+    const requiredFields = ['productName', 'title', 'content', 'countryOfOrigin', 'price', 'quantity', 'status', 'deliveryFee', 'deliveryMethod', 'deliveryInformation'];
     
     requiredFields.forEach(fieldName => {
       const field = this.form.querySelector(`[name="${fieldName}"]`);
