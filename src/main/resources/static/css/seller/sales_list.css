@@ -1,0 +1,175 @@
+/* ===== 외부 폰트 import ===== */
+@import url('https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap');
+
+/* ===== CSS 변수 정의 ===== */
+:root {
+  --color-primary: #658352;
+  --color-primary-hover: #94A687;
+  --color-white: #ffffff;
+  --color-background: #FBF9EF;
+  --color-text: #1E2203;
+  --color-border: #E9E7DE;
+  --color-secondary-background: #F5F4ED;
+  --color-success: #2a7c3e;
+  --color-warning: #b0822b;
+  --color-danger: #b82a0b;
+  --color-muted: #666;
+  --layout-max-width: 1400px;
+  --layout-radius-card: 20px;
+  --layout-radius-button: 12px;
+  --layout-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+  --transition-default: all 0.2s ease;
+}
+
+/* ===== 기본 스타일 ===== */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Cabin', sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  padding-top: 80px;
+  line-height: 1.6;
+}
+
+h2 {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  color: var(--color-primary);
+  text-align: center;
+  font-size: 2.0rem;
+  margin: 0 0 24px 0;
+}
+
+/* ===== 네비게이션 바 ===== */
+.navbar-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  background: var(--color-white);
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,0.06);
+}
+
+.navbar {
+  width: 100%;
+  max-width: var(--layout-max-width);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 48px;
+}
+
+.logo-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--color-text);
+  transition: var(--transition-default);
+}
+.logo-container:hover { transform: scale(1.02); }
+
+.navbar-logo-img {
+  height: 3rem;
+  border-radius: 8px;
+  transition: var(--transition-default);
+}
+
+.brand-name {
+  font-family: 'Cabin', sans-serif;
+  font-weight: 700;
+  font-size: 1.5rem;
+  color: var(--color-primary);
+  letter-spacing: 0.5px;
+  margin: 0;
+  line-height: 1;
+}
+
+.navbar-buttons { display: flex; align-items: center; gap: 16px; }
+
+/* ===== 버튼 ===== */
+.btn-filled, .btn-outline {
+  display: inline-flex;
+  align-items: center;
+  font-weight: bold;
+  padding: 10px 20px;
+  border-radius: var(--layout-radius-button);
+  font-size: 1rem;
+  text-decoration: none;
+  transition: var(--transition-default);
+  cursor: pointer;
+  border: 1px solid var(--color-primary);
+  white-space: nowrap;
+}
+.btn-filled { color: var(--color-white); background: var(--color-primary); }
+.btn-filled:hover { background: var(--color-primary-hover); transform: translateY(-1px); }
+.btn-outline { color: var(--color-primary); background: transparent; }
+.btn-outline:hover { background: rgba(101,131,82,0.1); transform: translateY(-1px); }
+
+/* ===== 컨테이너 ===== */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.list-container {
+  background-color: var(--color-white);
+  padding: 28px 32px;
+  border-radius: var(--layout-radius-card);
+  box-shadow: var(--layout-shadow);
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.header-buttons { display: flex; gap: 12px; }
+
+/* ===== 테이블 ===== */
+.product-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+ .product-table th, .product-table td { padding: 14px 8px; border-bottom: 1px solid var(--color-border); text-align: center; }
+.product-table th { background: var(--color-secondary-background); font-weight: 700; }
+.product-table tbody tr:hover { background: rgba(101,131,82,0.05); }
+
+.title-col { text-align: left; }
+.text-right { text-align: right; }
+
+/* ===== 상태 뱃지 ===== */
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 16px;
+  font-weight: bold;
+  font-size: 0.85rem;
+  display: inline-block;
+}
+.status-badge.결제완료 { background: #e0f0e3; color: var(--color-success); }
+.status-badge.배송중 { background: #fff3cd; color: #856404; }
+.status-badge.배송완료 { background: #e8f4ff; color: #0b5ba8; }
+.status-badge.주문취소 { background: #fdecea; color: var(--color-danger); }
+
+/* ===== 빈 데이터 ===== */
+.empty-message { padding: 40px; text-align: center; color: var(--color-muted); font-size: 1.05rem; }
+
+/* ===== 반응형 ===== */
+@media screen and (max-width: 768px) {
+  .container { padding: 0 16px; }
+  .list-container { padding: 20px; }
+  .navbar { padding: 16px 20px; }
+  .product-table { display: block; overflow-x: auto; font-size: 0.9rem; }
+  .btn-filled, .btn-outline { padding: 8px 16px; font-size: 0.9rem; }
+} 

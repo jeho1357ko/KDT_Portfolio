@@ -13,7 +13,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import com.kh.project.domain.entity.Youtube;
 import com.kh.project.web.api.YoutubeApiResponse;
 
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -33,19 +32,6 @@ public class YoutubeApiService {
     @Value("${youtube.api.region-code:KR}")
     private String regionCode;
     
-    /**
-     * 초기화 시 API 키 상태 확인
-     */
-    @PostConstruct
-    public void init() {
-        log.info("=== YouTube API 설정 확인 ===");
-        log.info("API 키 설정 여부: {}", apiKey != null && !apiKey.isEmpty() ? "설정됨" : "설정되지 않음");
-        log.info("API 키 길이: {}", apiKey != null ? apiKey.length() : 0);
-        log.info("API 키 (처음 10자): {}", apiKey != null && apiKey.length() > 10 ? apiKey.substring(0, 10) + "..." : apiKey);
-        log.info("최대 결과 수: {}", maxResults);
-        log.info("지역 코드: {}", regionCode);
-        log.info("================================");
-    }
     
     /**
      * 키워드로 YouTube 영상 검색 (개선된 API 방식)

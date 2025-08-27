@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.kh.project.domain.entity.Seller;
+import com.kh.project.domain.entity.SellerOrderItem;
 import com.kh.project.domain.entity.SellerSales;
 import com.kh.project.domain.product.svc.ProductSVC;
 import com.kh.project.domain.seller.svc.SellerSVC;
@@ -177,16 +178,15 @@ public class SellerController {
     SellerSales sellerSales2 = sellerSalesSVC.totalPrice(sid);
     List<SellerSales> list1 = sellerSalesSVC.top3Order(sid);
     List<SellerSales> list2 = sellerSalesSVC.top3Price(sid);
+    Long totalSoldItems = sellerSalesSVC.totalSoldItemsCount(sid);
     model.addAttribute("totalOrder",sellerSales1);
     model.addAttribute("totalPrice",sellerSales2);
     model.addAttribute("top3Order",list1);
     model.addAttribute("top3Price",list2);
+    model.addAttribute("totalSoldItems", totalSoldItems);
     model.addAttribute("sellerId",sid);
     return "seller/seller_dashboard";
   }
-
-
-
 
   // 로그아웃
   @PostMapping("/seller/logout") // POST http://localhost:9080/logout
@@ -334,4 +334,30 @@ public class SellerController {
     }
   }
 
+  // 판매자 판매 목록 페이지 (페이징)
+  @GetMapping("/seller/sales/{sid}")
+  public String sellerSalesList(
+      @PathVariable("sid") Long sid,
+      @RequestParam(value = "page", required = false, defaultValue = "1") Long page,
+      HttpSession session, Model model) {
+    LoginSeller loginSeller = (LoginSeller) session.getAttribute("loginSeller");
+    if (loginSeller == null || !loginSeller.getSellerId().equals(sid)) {
+      return "redirect:/seller/login";
+    }
+
+    Long size = 20L;
+    List<SellerOrderItem> soldItems = sellerSalesSVC.findSoldItemsBySellerIdPaged(sid, page, size);
+    Long totalCount = sellerSalesSVC.countSoldItemsBySellerId(sid);
+    Long totalPages = (totalCount + size - 1) / size;
+
+    model.addAttribute("soldItems", soldItems);
+    model.addAttribute("sellerId", sid);
+    model.addAttribute("name", loginSeller.getName());
+    model.addAttribute("currentPage", page);
+    model.addAttribute("totalPages", totalPages);
+    model.addAttribute("pageSize", size);
+    model.addAttribute("totalCount", totalCount);
+
+    return "seller/seller_sales_list";
+  }
 }

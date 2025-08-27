@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.stereotype.Repository;
 
+import com.kh.project.domain.entity.SellerOrderItem;
 import com.kh.project.domain.entity.SellerSales;
 
 import lombok.RequiredArgsConstructor;
@@ -95,5 +96,96 @@ public class SellerSalesDAOImpl implements SellerSalesDAO {
     SqlParameterSource param = new MapSqlParameterSource().addValue("sellerId", sellerId);
 
     return template.query(sql.toString(), param, BeanPropertyRowMapper.newInstance(SellerSales.class));
+  }
+
+  // 판매자 기준 판매된 주문 상품 전체 목록
+  @Override
+  public List<SellerOrderItem> findSoldItemsBySellerId(Long sellerId) {
+    StringBuffer sql = new StringBuffer();
+    sql.append(" SELECT ");
+    sql.append("   p.seller_id AS seller_id, ");
+    sql.append("   bo.order_id AS order_id, ");
+    sql.append("   bo.order_number AS order_number, ");
+    sql.append("   bo.order_date AS order_date, ");
+    sql.append("   bo.order_status AS order_status, ");
+    sql.append("   oi.order_item_id AS order_item_id, ");
+    sql.append("   p.product_id AS product_id, ");
+    sql.append("   p.title AS product_title, ");
+    sql.append("   oi.quantity AS quantity, ");
+    sql.append("   oi.unit_price AS unit_price, ");
+    sql.append("   oi.total_price AS total_price ");
+    sql.append(" FROM product p ");
+    sql.append(" JOIN order_item oi ON p.product_id = oi.product_id ");
+    sql.append(" JOIN buyer_order bo ON oi.order_id = bo.order_id ");
+    sql.append(" WHERE p.seller_id = :sellerId AND bo.order_status = '결제완료' ");
+    sql.append(" ORDER BY bo.order_date DESC, bo.order_number DESC ");
+
+    SqlParameterSource param = new MapSqlParameterSource().addValue("sellerId", sellerId);
+
+    return template.query(sql.toString(), param, BeanPropertyRowMapper.newInstance(SellerOrderItem.class));
+  }
+
+  // 판매자 기준 판매된 주문 상품 페이징 목록
+  @Override
+  public List<SellerOrderItem> findSoldItemsBySellerIdPaged(Long sellerId, Long startRow, Long endRow) {
+    StringBuffer sql = new StringBuffer();
+    sql.append(" SELECT * FROM ( ");
+    sql.append("   SELECT inner_query.*, ROWNUM AS rn FROM ( ");
+    sql.append("     SELECT ");
+    sql.append("       p.seller_id AS seller_id, ");
+    sql.append("       bo.order_id AS order_id, ");
+    sql.append("       bo.order_number AS order_number, ");
+    sql.append("       bo.order_date AS order_date, ");
+    sql.append("       bo.order_status AS order_status, ");
+    sql.append("       oi.order_item_id AS order_item_id, ");
+    sql.append("       p.product_id AS product_id, ");
+    sql.append("       p.title AS product_title, ");
+    sql.append("       oi.quantity AS quantity, ");
+    sql.append("       oi.unit_price AS unit_price, ");
+    sql.append("       oi.total_price AS total_price ");
+    sql.append("     FROM product p ");
+    sql.append("     JOIN order_item oi ON p.product_id = oi.product_id ");
+    sql.append("     JOIN buyer_order bo ON oi.order_id = bo.order_id ");
+    sql.append("     WHERE p.seller_id = :sellerId AND bo.order_status = '결제완료' ");
+    sql.append("     ORDER BY bo.order_date DESC, bo.order_number DESC ");
+    sql.append("   ) inner_query ");
+    sql.append("   WHERE ROWNUM <= :endRow ");
+    sql.append(" ) ");
+    sql.append(" WHERE rn >= :startRow ");
+
+    MapSqlParameterSource param = new MapSqlParameterSource()
+        .addValue("sellerId", sellerId)
+        .addValue("startRow", startRow)
+        .addValue("endRow", endRow);
+
+    return template.query(sql.toString(), param, BeanPropertyRowMapper.newInstance(SellerOrderItem.class));
+  }
+
+  // 판매자 기준 판매된 주문 상품 총 개수 (행 수)
+  @Override
+  public Long countSoldItemsBySellerId(Long sellerId) {
+    StringBuffer sql = new StringBuffer();
+    sql.append(" SELECT COUNT(*) FROM order_item oi ");
+    sql.append(" JOIN product p ON p.product_id = oi.product_id ");
+    sql.append(" JOIN buyer_order bo ON bo.order_id = oi.order_id ");
+    sql.append(" WHERE p.seller_id = :sellerId AND bo.order_status = '결제완료' ");
+
+    SqlParameterSource param = new MapSqlParameterSource().addValue("sellerId", sellerId);
+
+    return template.queryForObject(sql.toString(), param, Long.class);
+  }
+
+  // 판매자 기준 총 판매 상품 건수 (order_item 행 수)
+  @Override
+  public Long totalSoldItemsCount(Long sellerId) {
+    StringBuffer sql = new StringBuffer();
+    sql.append(" SELECT COUNT(oi.order_item_id) FROM order_item oi ");
+    sql.append(" JOIN product p ON p.product_id = oi.product_id ");
+    sql.append(" JOIN buyer_order bo ON bo.order_id = oi.order_id ");
+    sql.append(" WHERE p.seller_id = :sellerId AND bo.order_status = '결제완료' ");
+
+    SqlParameterSource param = new MapSqlParameterSource().addValue("sellerId", sellerId);
+
+    return template.queryForObject(sql.toString(), param, Long.class);
   }
 }

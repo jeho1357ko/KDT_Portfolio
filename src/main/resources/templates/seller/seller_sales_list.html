@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>판매자 센터 - 판매 목록</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cabin:wght@600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" th:href="@{/css/seller/sales_list.css}">
+</head>
+<body>
+  <header class="navbar-container">
+    <div class="navbar">
+      <a th:href="@{/home}" class="logo-container">
+        <img th:src="@{/images/free-icon-sprout-7101338.png}" alt="로고" class="navbar-logo-img"/>
+        <span class="brand-name">planT</span>
+      </a>
+      <div class="navbar-buttons">
+        <a th:if="${name != null}" th:href="@{/seller/myPage/{sid}(sid=${sellerId})}" style="margin-right: 12px; font-weight: bold; text-decoration: none; color: var(--color-primary);">
+          <span th:text="${name}">님</span>
+        </a>
+        <form th:action="@{/seller/logout}" method="post" style="display:inline;">
+          <button type="submit" class="btn-outline">로그아웃</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="list-header">
+      <h2>판매된 상품 목록</h2>
+      <div class="header-buttons">
+        <a th:href="@{/seller/main/{sid}(sid=${sellerId})}" class="btn-outline">대시보드</a>
+      </div>
+    </div>
+
+    <div th:if="${#lists.isEmpty(soldItems)}" class="empty-message">판매된 상품이 없습니다.</div>
+
+    <div class="list-container" th:if="${!#lists.isEmpty(soldItems)}">
+      <table class="product-table">
+        <thead>
+          <tr>
+            <th>주문일시</th>
+            <th>주문번호</th>
+            <th class="title-col">상품명</th>
+            <th>수량</th>
+            <th>단가</th>
+            <th>총액</th>
+            <th>상태</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="item : ${soldItems}">
+            <td th:text="${#temporals.format(item.orderDate, 'yyyy-MM-dd HH:mm')}">2025-01-01 12:00</td>
+            <td th:text="${item.orderNumber}">1000001</td>
+            <td class="title-col" th:text="${item.productTitle}">상품 제목</td>
+            <td th:text="${item.quantity}">1</td>
+            <td th:text="${#numbers.formatInteger(item.unitPrice, 0, 'COMMA')}">0</td>
+            <td th:text="${#numbers.formatInteger(item.totalPrice, 0, 'COMMA')}">0</td>
+            <td><span class="status-badge" th:text="${item.orderStatus}" th:classappend=" ' ' + ${item.orderStatus}">결제완료</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- 페이지네이션 -->
+      <div style="display:flex; gap:8px; justify-content:center; align-items:center; margin-top:16px;">
+        <a class="btn-outline" th:if="${currentPage > 1}" th:href="@{/seller/sales/{sid}(sid=${sellerId}, page=1)}">« 처음</a>
+        <a class="btn-outline" th:if="${currentPage > 1}" th:href="@{/seller/sales/{sid}(sid=${sellerId}, page=${currentPage - 1})}">‹ 이전</a>
+        <span th:text="${currentPage + ' / ' + totalPages}" style="min-width:80px; text-align:center;"></span>
+        <a class="btn-outline" th:if="${currentPage < totalPages}" th:href="@{/seller/sales/{sid}(sid=${sellerId}, page=${currentPage + 1})}">다음 ›</a>
+        <a class="btn-outline" th:if="${currentPage < totalPages}" th:href="@{/seller/sales/{sid}(sid=${sellerId}, page=${totalPages})}">끝 »</a>
+      </div>
+    </div>
+  </div>
+</body>
+</html> 

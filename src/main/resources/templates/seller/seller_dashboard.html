@@ -51,8 +51,8 @@
       <!-- 판매 현황 카드 -->
       <div class="dashboard-card sales-status">
         <h3>판매 현황</h3>
-        <div class="count" th:text="${totalOrder.completedOrderCount}">0</div>
-        <p class="count-label">총 주문 건수</p>
+        <a class="count" th:href="@{/seller/sales/{sid}(sid=${sellerId})}" th:text="${totalSoldItems}" style="cursor:pointer; text-decoration:none;">0</a>
+        <p class="count-label">총 판매 상품 건수</p>
 
         <!-- 상품별 주문수 top3 -->
         <div class="item-stats">

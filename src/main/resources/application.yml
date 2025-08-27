@@ -23,7 +23,6 @@ server:
 logging:
   level:
     root: info
-    com.kh.project.domain.svc.YoutubeApiService: debug
 
 elasticsearch:
   host: ${ES_HOST:localhost}
