@@ -217,10 +217,6 @@ body {
   transition: box-shadow var(--transition-normal);
 }
 
-.order-panel:hover {
-  box-shadow: var(--shadow-heavy);
-}
-
 .panel-button {
   width: 150px;
   padding: var(--spacing-sm) 0;
@@ -256,10 +252,6 @@ body {
   border-radius: var(--border-radius);
   box-shadow: var(--shadow-medium);
   transition: box-shadow var(--transition-normal);
-}
-
-.cart-items:hover {
-  box-shadow: var(--shadow-heavy);
 }
 
 /* ===== 장바구니 헤더 ===== */
@@ -451,10 +443,6 @@ body {
   position: sticky;
   top: 120px;
   transition: box-shadow var(--transition-normal);
-}
-
-.order-summary:hover {
-  box-shadow: var(--shadow-heavy);
 }
 
 .summary-title {

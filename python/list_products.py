@@ -1,7 +1,12 @@
 import pandas as pd
+import os
 
-# CSV 파일 읽기
-df = pd.read_csv('market_price_data_unlimited_processed.csv', header=None)
+# 스크립트 기준 디렉터리 (python/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# CSV 파일 읽기 (python/ 폴더 내)
+csv_path = os.path.join(SCRIPT_DIR, 'market_price_data_unlimited_processed.csv')
+df = pd.read_csv(csv_path, header=None)
 df.columns = ['AVG', 'ROWNO', 'PREAVG_2', 'MM_0', 'PUM_NAME', 'PREAVG_1', 'MM_1', 'UNIT_NAME', 'MM_2', 'GRADE_NAME']
 
 print('사용 가능한 상품명 목록:')

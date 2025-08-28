@@ -32,6 +32,9 @@ public interface ProductSVC {
   
   // 매칭 가능한 상품명 검색
   List<String> findMatchingProductNames(String searchTerm);
+  
+  // 재고 차감 (재고가 충분한 경우에만 차감)
+  boolean decreaseQuantity(Long productId, Long quantity);
 
 }
 

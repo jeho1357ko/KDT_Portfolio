@@ -231,4 +231,49 @@ public class ProductDAOImpl implements ProductDAO{
     int i = template.update(sql.toString(), param);
     return i;
   }
+  
+  /**
+   * 재고 차감 (재고가 충분한지 조건부로 차감)
+   * @param productId 상품 ID
+   * @param quantity 차감할 수량
+   * @return 1이면 성공, 0이면 재고 부족/미차감
+   */
+  @Override
+  public int decreaseQuantity(Long productId, Long quantity) {
+    StringBuffer sql = new StringBuffer();
+    sql.append(" UPDATE product SET ");
+    sql.append(" quantity = quantity - :quantity, ");
+    sql.append(" udate = SYSTIMESTAMP ");
+    sql.append(" WHERE product_id = :productId ");
+    sql.append(" AND status = '판매중' ");
+    sql.append(" AND quantity >= :quantity ");
+
+    MapSqlParameterSource param = new MapSqlParameterSource();
+    param.addValue("productId", productId);
+    param.addValue("quantity", quantity);
+
+    int updated = template.update(sql.toString(), param);
+
+    if (updated > 0) {
+      updateStatusIfOutOfStock(productId);
+    }
+
+    return updated;
+  }
+
+  /**
+   * 재고가 0이면 상태를 '재고소진'으로 변경
+   */
+  private void updateStatusIfOutOfStock(Long productId) {
+    StringBuffer sql = new StringBuffer();
+    sql.append(" UPDATE product SET ");
+    sql.append(" status = '재고소진', ");
+    sql.append(" udate = SYSTIMESTAMP ");
+    sql.append(" WHERE product_id = :productId ");
+    sql.append(" AND quantity = 0 ");
+    sql.append(" AND status = '판매중' ");
+
+    SqlParameterSource param = new MapSqlParameterSource().addValue("productId", productId);
+    template.update(sql.toString(), param);
+  }
 }

@@ -211,10 +211,6 @@ body {
   transition: box-shadow var(--transition-normal);
 }
 
-.section-box:hover {
-  box-shadow: var(--shadow-medium);
-}
-
 .section-box h2 {
   font-size: var(--font-size-2xl);
   margin-top: 0;
@@ -545,10 +541,6 @@ body {
   position: sticky;
   top: 40px;
   transition: box-shadow var(--transition-normal);
-}
-
-.summary-box:hover {
-  box-shadow: var(--shadow-medium);
 }
 
 .summary-row {

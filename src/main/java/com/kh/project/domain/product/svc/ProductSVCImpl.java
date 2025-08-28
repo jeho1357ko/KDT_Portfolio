@@ -1,14 +1,13 @@
 package com.kh.project.domain.product.svc;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.ArrayList;
 import java.util.Set;
-import java.util.HashSet;
-import java.util.Collections;
 
-import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +16,7 @@ import com.kh.project.domain.entity.ProductPrice;
 import com.kh.project.domain.product.dao.ProductDAO;
 import com.kh.project.domain.svc.PublicDataService;
 
+import co.elastic.clients.elasticsearch.ElasticsearchClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,7 +80,7 @@ public class ProductSVCImpl implements ProductSVC{
             }
             
             if (price.getProductName() == null || price.getProductName().isEmpty()) {
-              log.error("가격 데이터 상품명이 null입니다: ID={}", price.getId());
+              log.error("가격 데이터 상품명이 null입니다: ID= {}", price.getId());
               continue;
             }
             
@@ -322,5 +322,39 @@ public class ProductSVCImpl implements ProductSVC{
     }
     
     return matchingProducts;
+  }
+  
+  // 재고 차감 (재고가 충분한 경우에만 차감)
+  @Override
+  public boolean decreaseQuantity(Long productId, Long quantity) {
+    try {
+      if (productId == null || quantity == null || quantity <= 0) {
+        log.error("decreaseQuantity: 잘못된 입력 값 productId={}, quantity={}", productId, quantity);
+        return false;
+      }
+
+      Optional<Product> productOpt = productDAO.findById(productId);
+      if (productOpt.isEmpty()) {
+        log.error("decreaseQuantity: 상품이 존재하지 않습니다. productId={}", productId);
+        return false;
+      }
+
+      Product product = productOpt.get();
+      if (!"판매중".equals(product.getStatus())) {
+        log.error("decreaseQuantity: 판매 중이 아닌 상품입니다. status={}", product.getStatus());
+        return false;
+      }
+
+      if (product.getQuantity() < quantity) {
+        log.error("decreaseQuantity: 재고 부족. 현재={}, 요청={}", product.getQuantity(), quantity);
+        return false;
+      }
+
+      int updated = productDAO.decreaseQuantity(productId, quantity);
+      return updated > 0;
+    } catch (Exception e) {
+      log.error("decreaseQuantity: 예외 발생 productId={}, quantity={}, error={}", productId, quantity, e.getMessage());
+      return false;
+    }
   }
 }

@@ -2,10 +2,6 @@ import requests
 import pandas as pd
 import json
 import csv
-import os
-
-# ✅ 스크립트 기준 디렉터리
-SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # ✅ API URL + 파라미터
 url = "http://www.garak.co.kr/homepage/publicdata/dataJsonOpen.do"
@@ -40,16 +36,14 @@ df = pd.DataFrame(items)
 print(f"DataFrame 크기: {df.shape}")
 print(f"DataFrame 컬럼: {list(df.columns)}")
 
-# ✅ 모든 컬럼 CSV로 저장 (python/ 하위)
-out_path = os.path.join(SCRIPT_DIR, "garak_data_all_columns.csv")
-df.to_csv(out_path, index=False, encoding="utf-8-sig")
+# ✅ 모든 컬럼 CSV로 저장
+df.to_csv("garak_data_all_columns.csv", index=False, encoding="utf-8-sig")
 
-print(f"✅ CSV 저장 완료: {out_path}")
+print("✅ CSV 저장 완료: garak_data_all_columns.csv")
 
 # 데이터 유무 확인 로직을 좀 더 직관적으로 변경
 if len(items) == 0: # items 리스트의 길이로 직접 확인
     print("❌ 데이터가 없습니다.")
 else:
     print("✅ 데이터 수:", len(items)) # items의 길이 출력
-
 

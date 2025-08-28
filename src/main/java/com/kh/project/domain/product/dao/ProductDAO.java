@@ -29,5 +29,8 @@ public interface ProductDAO {
 
   // 판매자 ID로 상품들 비활성화
   int deactivateBySellerId(Long sellerId);
+  
+  // 재고 차감 (재고가 충분한 경우에만 차감)
+  int decreaseQuantity(Long productId, Long quantity);
 
 }

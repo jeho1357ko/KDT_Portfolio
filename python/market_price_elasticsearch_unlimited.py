@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import os
 import time
+from datetime import date
 
 # Elasticsearch 연결 설정
 es = Elasticsearch(['http://localhost:9200'])
@@ -21,6 +22,9 @@ base_params = {
     "s_deal": "211",
     "p_pos_gubun": "3"
 }
+
+# 스크립트 기준 디렉터리 (python/)
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 제한 없이 모든 데이터를 가져오는 함수
 def download_unlimited_market_data():
@@ -93,8 +97,8 @@ def download_unlimited_market_data():
         # DataFrame으로 변환
         df = pd.DataFrame(all_items)
         
-        # 원본 CSV 파일 저장
-        original_csv_path = 'market_price_data_unlimited_original.csv'
+        # 원본 CSV 파일 저장 (python/ 하위 경로)
+        original_csv_path = os.path.join(SCRIPT_DIR, 'market_price_data_unlimited_original.csv')
         df.to_csv(original_csv_path, index=False, encoding='utf-8-sig')
         print(f"원본 데이터가 '{original_csv_path}'에 저장되었습니다.")
         
@@ -125,8 +129,8 @@ def process_csv_data(csv_path):
         if 'PREAVG_2' in df.columns:
             df['PREAVG_2'] = df['PREAVG_2'].astype(str).str.replace(',', '')
         
-        # 가공된 CSV 파일 저장
-        processed_csv_path = 'market_price_data_unlimited_processed.csv'
+        # 가공된 CSV 파일 저장 (python/ 하위 경로)
+        processed_csv_path = os.path.join(SCRIPT_DIR, 'market_price_data_unlimited_processed.csv')
         df.to_csv(processed_csv_path, index=False, encoding='utf-8-sig')
         
         print(f"전처리 완료: {len(df)}개 데이터")
@@ -378,6 +382,113 @@ def get_index_stats():
     except Exception as e:
         print(f"인덱스 통계 조회 중 오류 발생: {e}")
 
+# 가공된 CSV를 Spring 애플리케이션이 조회하는 'product_prices' 스키마로 업서트
+def ensure_product_prices_index():
+    """product_prices 인덱스가 없으면 생성(필드 타입은 자바 엔티티에 맞춤)"""
+    index_name = 'product_prices'
+    try:
+        if es.indices.exists(index=index_name):
+            print(f"인덱스 '{index_name}'가 이미 존재합니다.")
+            return
+        mapping = {
+            "mappings": {
+                "properties": {
+                    "productName": {"type": "text", "analyzer": "standard"},
+                    "grade": {"type": "text"},
+                    "unit": {"type": "text"},
+                    "currentPrice": {"type": "double"},
+                    "previousMonthPrice": {"type": "double"},
+                    "twoMonthsAgoPrice": {"type": "double"},
+                    "priceDate": {"type": "date", "format": "yyyy-MM-dd"},
+                    "source": {"type": "text"},
+                    "marketType": {"type": "text"},
+                    "category": {"type": "text"}
+                }
+            }
+        }
+        es.indices.create(index=index_name, body=mapping)
+        print(f"인덱스 '{index_name}'를 생성했습니다.")
+    except Exception as e:
+        print(f"product_prices 인덱스 생성 중 오류: {e}")
+
+
+def transform_row_to_product_price(row: dict) -> dict:
+    """원본 CSV/DF 한 행(dict)을 product_prices 도큐먼트로 변환"""
+    # 필드 추출 (누락 대비)
+    pum = str(row.get('PUM_NAME', '')).strip()
+    grade = str(row.get('GRADE_NAME', '')).strip()
+    unit = str(row.get('UNIT_NAME', '')).strip()
+
+    def to_float(v, default=0.0):
+        try:
+            if v is None or (isinstance(v, float) and pd.isna(v)):
+                return default
+            s = str(v).replace(',', '').strip()
+            return float(s) if s != '' else default
+        except Exception:
+            return default
+
+    avg = to_float(row.get('AVG'))
+    pre1 = to_float(row.get('PREAVG_1'))
+    pre2 = to_float(row.get('PREAVG_2'))
+
+    # MM_0: YYYYMM → yyyy-MM-01
+    mm0 = str(row.get('MM_0', '')).strip()
+    price_date = None
+    try:
+        if len(mm0) >= 6:
+            y = int(mm0[:4]); m = int(mm0[4:6])
+            price_date = date(y, m, 1).strftime('%Y-%m-%d')
+    except Exception:
+        price_date = None
+
+    doc = {
+        'productName': pum,
+        'grade': grade,
+        'unit': unit,
+        'currentPrice': avg,
+        'previousMonthPrice': pre1,
+        'twoMonthsAgoPrice': pre2,
+        'priceDate': price_date,
+        'source': '공공데이터',
+        'marketType': '가락',
+        'category': '청과'
+    }
+    # 고유 ID: 상품명_등급_단위_YYYYMM
+    uid = f"{pum}_{grade}_{unit}_{mm0}"
+    return uid, doc
+
+
+def upsert_csv_to_product_prices(csv_path):
+    """가공된 CSV를 읽어 product_prices 인덱스로 벌크 업서트"""
+    try:
+        ensure_product_prices_index()
+        print(f"'{csv_path}' 를 product_prices 인덱스로 업서트 중...")
+        df = pd.read_csv(csv_path, encoding='utf-8-sig')
+        records = df.to_dict('records')
+
+        actions = []
+        for rec in records:
+            _id, _doc = transform_row_to_product_price(rec)
+            if not _doc.get('productName') or not _doc.get('priceDate'):
+                continue
+            actions.append({
+                '_index': 'product_prices',
+                '_id': _id,
+                '_source': _doc
+            })
+        if not actions:
+            print('업서트할 문서가 없습니다.')
+            return
+
+        ok, errors = bulk(es, actions, chunk_size=1000, request_timeout=60)
+        print(f"product_prices 업서트 완료: 성공 {ok}건, 에러 {len(errors) if isinstance(errors, list) else 0}건")
+        es.indices.refresh(index='product_prices')
+        cnt = es.count(index='product_prices')
+        print(f"현재 product_prices 문서 수: {cnt['count']}건")
+    except Exception as e:
+        print(f"product_prices 업서트 중 오류: {e}")
+
 # 메인 함수
 def main():
     """메인 함수"""
@@ -417,6 +528,10 @@ def main():
     # 4단계: 가공된 CSV를 Elasticsearch에 저장
     print("\n[4단계] Elasticsearch에 데이터 저장")
     load_csv_to_elasticsearch(processed_csv_path)
+
+    # 4-1단계: 자바 서비스가 사용하는 'product_prices' 인덱스로도 동시 업서트
+    print("\n[4-1단계] product_prices 인덱스로 업서트")
+    upsert_csv_to_product_prices(processed_csv_path)
     
     # 5단계: 인덱스 통계 확인
     print("\n[5단계] 인덱스 통계 확인")

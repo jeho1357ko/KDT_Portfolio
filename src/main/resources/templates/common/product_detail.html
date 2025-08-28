@@ -131,6 +131,15 @@
             <dd th:text="${product.deliveryInformation}"></dd>
           </dl>
           
+          <!-- 재고 수량 표시 -->
+          <dl th:if="${product.status == '판매중'}">
+            <dt>재고</dt>
+            <dd>
+              <span th:text="${#numbers.formatInteger(product.quantity, 0, 'COMMA')} + '개'"></span>
+              <span th:if="${product.quantity <= 5}" class="low-stock-warning">(재고 부족)</span>
+            </dd>
+          </dl>
+          
           <!-- 매진 상태 표시 -->
           <dl th:if="${product.status == '재고소진'}" class="stock-out">
             <dt>상품 상태</dt>
@@ -305,6 +314,7 @@
       title: /*[[${product.title}]]*/ '',
       productName: /*[[${product.productName}]]*/ '',
       price: /*[[${product.price}]]*/ 0,
+      quantity: /*[[${product.quantity}]]*/ 0,
       thumbnail: /*[[${product.thumbnail}]]*/ '',
       deliveryFee: /*[[${product.deliveryFee}]]*/ 0
     };

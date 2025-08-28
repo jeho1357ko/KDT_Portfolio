@@ -44,37 +44,50 @@ public class OrderController {
   @PostMapping("/single")
   public ApiResponse<OrderResponseDTO> saveOrder(@RequestBody OrderForm orderForm) {
     try {
-      // 1. 주문 저장
+      // 1) 유효성 + 재고 확인
+      if (orderForm.getItems() == null || orderForm.getItems().isEmpty()) {
+        return ApiResponse.of(ApiResponseCode.VALIDATION_ERROR, null);
+      }
+      OrderItem item = orderForm.getItems().get(0);
+      Optional<Product> productOpt = productSVC.findById(item.getProductId());
+      if (productOpt.isEmpty()) {
+        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+      }
+      Product product = productOpt.get();
+      if (!"판매중".equals(product.getStatus()) || product.getQuantity() < item.getQuantity()) {
+        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+      }
+
+      // 2) 주문 저장
       Order order = new Order();
       BeanUtils.copyProperties(orderForm, order);
+      order.setOrderStatus("결제완료");
+      order.setOrderDate(LocalDateTime.now());
       Long orderId = orderSVC.saveOrder(order);
-
       if (orderId == null) {
-        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);  // 주문 저장 실패
+        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
       }
 
-      // 2. 주문상품 유효성 검사
-      if (orderForm.getItems() == null || orderForm.getItems().isEmpty()) {
-        return ApiResponse.of(ApiResponseCode.VALIDATION_ERROR, null);  // 주문상품 없음
-      }
-
-      // 3. 주문상품 저장
-      OrderItem item = orderForm.getItems().get(0);
+      // 3) 주문상품 저장
       item.setOrderId(orderId);
       int result = orderItemSVC.saveItem(item);
-
       if (result == 0) {
-        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);  // 주문상품 저장 실패
+        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
       }
 
-      // 4. 응답 DTO 구성
+      // 4) 재고 차감
+      boolean decreased = productSVC.decreaseQuantity(item.getProductId(), item.getQuantity());
+      if (!decreased) {
+        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+      }
+
+      // 5) 응답 DTO
       OrderResponseDTO dto = new OrderResponseDTO();
       dto.setOrderId(orderId);
       dto.setOrderNumber(order.getOrderNumber());
       dto.setOrderDate(order.getOrderDate());
       dto.setOrderStatus(order.getOrderStatus());
       dto.setTotalPrice(item.getTotalPrice());
-
       return ApiResponse.of(ApiResponseCode.SUCCESS, dto);
 
     } catch (Exception e) {
@@ -89,53 +102,63 @@ public class OrderController {
     try {
       log.info("주문 요청 받음: {}", orderForm);
       
-      // 1. 로그인 유효성 검사
+      // 1) 로그인 유효성
       LoginForm loginBuyer = (LoginForm) session.getAttribute("loginBuyer");
       if (loginBuyer == null) {
         log.error("로그인 정보 없음");
-        return ApiResponse.of(ApiResponseCode.VALIDATION_ERROR, null); // 로그인 정보 없음
+        return ApiResponse.of(ApiResponseCode.VALIDATION_ERROR, null);
       }
 
-      // 2. 주문 유효성 검사
+      // 2) 주문 유효성
       if (orderForm.getItems() == null || orderForm.getItems().isEmpty()) {
         log.error("주문 상품 없음");
-        return ApiResponse.of(ApiResponseCode.VALIDATION_ERROR, null);  // 상품 없음
+        return ApiResponse.of(ApiResponseCode.VALIDATION_ERROR, null);
       }
 
-      // 3. buyerId 설정
-      orderForm.setBuyerId(loginBuyer.getBuyerId());
-      log.info("buyerId 설정: {}", orderForm.getBuyerId());
-
-      // 4. 주문 저장
-      Order order = new Order();
-      BeanUtils.copyProperties(orderForm, order);
-      
-      // 필수 필드 설정
-      order.setOrderStatus("결제완료"); // 기본 상태 설정
-      order.setOrderDate(LocalDateTime.now()); // 현재 시간 설정
-      
-      log.info("주문 엔티티 생성: {}", order);
-      
-      Long orderId = orderSVC.saveOrder(order);
-      log.info("주문 저장 결과 orderId: {}", orderId);
-
-      if (orderId == null) {
-        log.error("주문 저장 실패");
-        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);  // 주문 저장 실패
-      }
-
-      // 5. 주문상품 저장 (여러 건)
-      for (OrderItem item : orderForm.getItems()) {
-        item.setOrderId(orderId);
-        log.info("주문상품 저장: {}", item);
-        int result = orderItemSVC.saveItem(item);
-        if (result == 0) {
-          log.error("주문상품 저장 실패: {}", item);
-          return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);  // 개별 주문상품 저장 실패
+      // 3) 재고 사전 검증
+      for (OrderItem it : orderForm.getItems()) {
+        Optional<Product> p = productSVC.findById(it.getProductId());
+        if (p.isEmpty()) {
+          log.error("상품 없음: {}", it.getProductId());
+          return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+        }
+        Product pr = p.get();
+        if (!"판매중".equals(pr.getStatus()) || pr.getQuantity() < it.getQuantity()) {
+          log.error("재고 부족 또는 판매중 아님: pid={}, 재고={}, 요청={}", it.getProductId(), pr.getQuantity(), it.getQuantity());
+          return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
         }
       }
 
-      // 6. 응답 DTO 구성
+      // 4) buyerId 설정
+      orderForm.setBuyerId(loginBuyer.getBuyerId());
+
+      // 5) 주문 저장
+      Order order = new Order();
+      BeanUtils.copyProperties(orderForm, order);
+      order.setOrderStatus("결제완료");
+      order.setOrderDate(LocalDateTime.now());
+      Long orderId = orderSVC.saveOrder(order);
+      if (orderId == null) {
+        log.error("주문 저장 실패");
+        return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+      }
+
+      // 6) 주문상품 저장 + 재고 차감
+      for (OrderItem item : orderForm.getItems()) {
+        item.setOrderId(orderId);
+        int result = orderItemSVC.saveItem(item);
+        if (result == 0) {
+          log.error("주문상품 저장 실패: {}", item);
+          return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+        }
+        boolean decreased = productSVC.decreaseQuantity(item.getProductId(), item.getQuantity());
+        if (!decreased) {
+          log.error("재고 차감 실패: pid={}, qty={}", item.getProductId(), item.getQuantity());
+          return ApiResponse.of(ApiResponseCode.BUSINESS_ERROR, null);
+        }
+      }
+
+      // 7) 응답 DTO
       OrderForm dto = new OrderForm();
       dto.setOrderId(orderId);
       dto.setOrderNumber(order.getOrderNumber());
@@ -148,7 +171,7 @@ public class OrderController {
 
     } catch (Exception e) {
       log.error("주문 처리 중 예외 발생", e);
-      return ApiResponse.of(ApiResponseCode.INTERNAL_SERVER_ERROR, null);  // 시스템 예외 처리
+      return ApiResponse.of(ApiResponseCode.INTERNAL_SERVER_ERROR, null);
     }
   }
 

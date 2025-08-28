@@ -93,13 +93,25 @@ function setupEventListeners() {
 
   plusBtn.addEventListener('click', () => {
     let quantity = parseInt(quantityInput.value) || 1;
-    quantityInput.value = ++quantity;
-    calculateTotal();
+    const maxQuantity = productData?.quantity || 999;
+    if (quantity < maxQuantity) {
+      quantityInput.value = ++quantity;
+      calculateTotal();
+    } else {
+      alert(`재고가 부족합니다. (최대 ${maxQuantity}개)`);
+    }
   });
 
   quantityInput.addEventListener('input', () => {
     let quantity = parseInt(quantityInput.value);
-    if (isNaN(quantity) || quantity < 1) quantityInput.value = 1;
+    const maxQuantity = productData?.quantity || 999;
+
+    if (isNaN(quantity) || quantity < 1) {
+      quantityInput.value = 1;
+    } else if (quantity > maxQuantity) {
+      quantityInput.value = maxQuantity;
+      alert(`재고가 부족합니다. (최대 ${maxQuantity}개)`);
+    }
     calculateTotal();
   });
 }
@@ -116,6 +128,9 @@ async function addToCart() {
   if (productData.status === '비활성화') return alert('비활성화된 상품입니다.');
 
   const { quantity } = calculateTotal();
+  if (typeof productData.quantity === 'number' && quantity > productData.quantity) {
+    return alert(`재고가 부족합니다. (현재 재고: ${productData.quantity}개)`);
+  }
   const buyerId = document.getElementById('buyerId')?.value;
   if (!buyerId) return alert('로그인 정보가 없습니다.');
 
@@ -158,6 +173,9 @@ function buyNow() {
   if (productData.status === '비활성화') return alert('비활성화된 상품입니다.');
 
   const { quantity, total } = calculateTotal();
+  if (typeof productData.quantity === 'number' && quantity > productData.quantity) {
+    return alert(`재고가 부족합니다. (현재 재고: ${productData.quantity}개)`);
+  }
   const buyerId = document.getElementById('buyerId')?.value;
   if (!buyerId) return alert('로그인 정보가 없습니다.');
 
@@ -383,7 +401,10 @@ function displaySizePricesInPopup(data) {
   let html = '';
   if (data.sizeAverages && Object.keys(data.sizeAverages).length > 0) {
     html += '<h4>등급별 평균 가격</h4>';
-    Object.entries(data.sizeAverages).forEach(([grade, price]) => {
+    const gradeOrder = ['특','상','중','하'];
+    const orderedGrades = Object.entries(data.sizeAverages)
+      .sort(([g1], [g2]) => gradeOrder.indexOf(g1) - gradeOrder.indexOf(g2));
+    orderedGrades.forEach(([grade, price]) => {
       html += `
         <div class="price-item">
           <span class="price-label">${grade}</span>
@@ -449,7 +470,10 @@ function displaySizePrices(data) {
   let html = '';
   if (data.sizeAverages && Object.keys(data.sizeAverages).length > 0) {
     html += '<h3>등급별 평균 가격</h3>';
-    Object.entries(data.sizeAverages).forEach(([grade, price]) => {
+    const gradeOrder = ['특','상','중','하'];
+    const orderedGrades = Object.entries(data.sizeAverages)
+      .sort(([g1], [g2]) => gradeOrder.indexOf(g1) - gradeOrder.indexOf(g2));
+    orderedGrades.forEach(([grade, price]) => {
       html += `
         <div class="price-card">
           <div class="size-info">
