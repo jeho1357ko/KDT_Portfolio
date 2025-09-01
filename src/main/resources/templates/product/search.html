@@ -28,7 +28,7 @@
           </a>
           <a th:href="@{/buyer/cart/{bid}(bid=${buyerId})}" class="btn-outline">장바구니</a>
           <form th:action="@{/buyer/logout}" method="post" style="display:inline;">
-            <button type="submit" class="btn-filled" style="border:none; background:none; cursor:pointer;">로그아웃</button>
+            <button type="submit" class="btn-filled">로그아웃</button>
           </form>
         </th:block>
         
@@ -53,9 +53,9 @@
   </header>
 
   <!-- 동기화 실행 버튼 + 로그 -->
-  <form id="syncForm">
-    <button type="submit" id="syncButton">동기화 실행</button>
-  </form>
+<!--  <form id="syncForm">-->
+<!--    <button type="submit" id="syncButton">동기화 실행</button>-->
+<!--  </form>-->
 
   <div id="syncLog" style="margin-top:10px; padding:10px; border:1px solid #ddd; display:none;">
     <pre style="margin:0; white-space:pre-wrap; font-family:monospace;"></pre>
